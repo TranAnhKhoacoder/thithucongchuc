@@ -1,455 +1,462 @@
 <!DOCTYPE html>
-<html lang="vi" class="dark">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KTOOLS - Nền Tảng Công Cụ Số Đa Năng | KHOACIT</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Kỷ Niệm 238 Năm Nguyễn Huệ Lên Ngôi Hoàng Đế - Phường An Cựu</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- PDF.js for PDF Rendering -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    </script>
-    <!-- Tailwind Config -->
+    <!-- Google Fonts: Standard Vietnamese fonts supporting all diacritics perfectly without overlap -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=Philosopher:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            50: '#eef2ff',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                            cyan: '#06b6d4',
-                            emerald: '#10b981',
-                            pink: '#ec4899'
-                        }
+                        goldBright: '#FFE57F',
+                        goldMetallic: '#FFD700',
+                        goldDark: '#B8860B',
+                        crimsonRoyal: '#990000',
+                        deepEmpire: '#4A0000',
+                        darkObsidian: '#0B0B10',
+                        cardDark: '#14131D',
+                        jadeAccent: '#00F5D4',
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Philosopher', 'Be Vietnam Pro', 'serif'],
+                        body: ['Be Vietnam Pro', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
+    
     <style>
-        /* Glassmorphism custom styles */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        body {
+            background-color: #07070a;
+            color: #FDF6E2;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-image: 
+                radial-gradient(circle at 50% 10%, rgba(153, 0, 0, 0.45) 0%, transparent 60%),
+                radial-gradient(circle at 20% 80%, rgba(184, 134, 11, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 90%, rgba(74, 0, 0, 0.6) 0%, transparent 50%);
+            min-height: 100vh;
         }
-        .dark .glass-card {
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        .dark .glass-nav {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-        }
-        /* Gradient text */
-        .gradient-text {
-            background: linear-gradient(135deg, #06b6d4 0%, #6366f1 50%, #ec4899 100%);
+
+        /* Gold Metallic Gradient Text */
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF6BD 0%, #FFD700 25%, #FFA500 60%, #B8860B 85%, #FFF099 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 2px 8px rgba(255, 215, 0, 0.3));
         }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+
+        /* Hero Glow Borders & Glassmorphism */
+        .glass-card {
+            background: rgba(20, 19, 29, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 215, 0, 0.35);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 215, 0, 0.08);
         }
-        ::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.05);
+
+        .glass-card-glow {
+            border: 1.5px solid rgba(255, 215, 0, 0.6);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.25), inset 0 0 20px rgba(153, 0, 0, 0.3);
         }
-        .dark ::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.05);
+
+        /* Ultra Premium Buttons */
+        .btn-tay-son-gold {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #B8860B 100%);
+            color: #2b0000;
+            font-weight: 800;
+            border: 1px solid #FFE57F;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .btn-tay-son-gold:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            filter: brightness(1.1);
+        }
+        .btn-tay-son-gold:active {
+            transform: translateY(1px);
+        }
+
+        /* Dong Son Drum Pattern Overlay */
+        .dong-son-bg {
+            background-image: radial-gradient(circle, rgba(255,215,0,0.05) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Sound Equalizer Animation */
+        .eq-bar {
+            width: 3px;
+            background: #FFD700;
+            border-radius: 2px;
+            animation: eqAnim 0.8s ease-in-out infinite alternate;
+        }
+        .eq-bar:nth-child(1) { height: 14px; animation-delay: 0.1s; }
+        .eq-bar:nth-child(2) { height: 20px; animation-delay: 0.3s; }
+        .eq-bar:nth-child(3) { height: 10px; animation-delay: 0.2s; }
+        .eq-bar:nth-child(4) { height: 18px; animation-delay: 0.4s; }
+        @keyframes eqAnim {
+            0% { transform: scaleY(0.3); }
+            100% { transform: scaleY(1.1); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #07070a; }
         ::-webkit-scrollbar-thumb {
-            background: rgba(99, 102, 241, 0.4);
+            background: linear-gradient(180deg, #FFD700, #8B0000);
             border-radius: 4px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(99, 102, 241, 0.7);
+
+        /* Mobile Touch & Responsive Adaptive Improvements */
+        @media (max-width: 640px) {
+            .game-container-box {
+                height: 280px !important;
+            }
+            .mobile-touch-bar {
+                display: flex !important;
+            }
         }
-        /* Checkerboard background for transparent image preview */
-        .bg-checker {
-            background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%);
-            background-size: 16px 16px;
-            background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
-        }
-        .dark .bg-checker {
-            background-image: linear-gradient(45deg, #334155 25%, transparent 25%), linear-gradient(-45deg, #334155 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #334155 75%), linear-gradient(-45deg, transparent 75%, #334155 75%);
+        .mobile-touch-bar {
+            display: none;
         }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-300">
+<body class="flex flex-col min-h-screen relative overflow-x-hidden selection:bg-yellow-400 selection:text-red-950 dong-son-bg">
 
-    <!-- Header / Navbar -->
-    <header class="sticky top-0 z-40 glass-nav transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <!-- Brand Logo -->
-            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('pdf-tool')">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-pink-500 flex items-center justify-center text-white text-xl font-black shadow-lg shadow-indigo-500/30">
-                    K
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-2xl font-black tracking-tight gradient-text">KTOOLS</span>
-                        <span class="text-[10px] bg-indigo-500/10 text-indigo-500 dark:bg-indigo-500/20 dark:text-indigo-300 font-bold px-2 py-0.5 rounded-full border border-indigo-500/30 uppercase">v2.5 AI</span>
+    <!-- Golden Sparks & Fire Particles Engine Canvas -->
+    <canvas id="bgParticleCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-60"></canvas>
+
+    <!-- HEADER SECTION -->
+    <header class="relative z-10 bg-gradient-to-b from-black via-black/90 to-transparent border-b border-yellow-500/40 pb-5 pt-4 px-4">
+        <div class="max-w-7xl mx-auto text-center flex flex-col items-center justify-center">
+            
+            <!-- Unit Emblem Banner -->
+            <div class="flex items-center justify-center gap-3 mb-2">
+                <div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-yellow-400 to-transparent"></div>
+                <span class="text-xs sm:text-sm font-extrabold tracking-widest text-yellow-300 uppercase font-heading bg-red-950/80 px-5 py-1.5 rounded-full border border-yellow-400/60 shadow-[0_0_15px_rgba(255,215,0,0.3)]">
+                    <i class="fas fa-star text-amber-400 mr-1.5"></i> UBND PHƯỜNG AN CỰU - TP. HUẾ <i class="fas fa-star text-amber-400 ml-1.5"></i>
+                </span>
+                <div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-yellow-400 to-transparent"></div>
+            </div>
+
+            <!-- Main Title with Metallic Gold Gradient & Standard Font -->
+            <h1 class="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black font-heading gold-gradient-text tracking-wide my-2 leading-tight uppercase">
+                KỶ NIỆM 238 NĂM NGUYỄN HUỆ LÊN NGÔI HOÀNG ĐẾ & ĐẠI PHÁ QUÂN THANH
+            </h1>
+            <p class="text-xs sm:text-base font-bold text-amber-200/90 tracking-wider uppercase flex items-center justify-center gap-2">
+                <span>(1788 - 2026)</span>
+                <span class="text-yellow-500">•</span>
+                <span class="text-yellow-400">HÀO KHÍ TÂY SƠN TRÊN ĐẤT AN CỰU - NÚI BÂN</span>
+            </p>
+
+            <!-- Sound Controller & Score Bar -->
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-4">
+                <button id="btnSound" onclick="toggleWarDrum()" class="px-4 py-2 rounded-full bg-black/60 border border-yellow-500/60 hover:border-yellow-400 text-yellow-300 text-xs sm:text-sm flex items-center gap-3 transition-all shadow-[0_0_15px_rgba(0,0,0,0.8)] backdrop-blur-md">
+                    <div id="eqVisualizer" class="flex items-center gap-1">
+                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
                     </div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Bởi Trần Anh Khoa (KHOACIT)</p>
+                    <span id="soundText" class="font-bold">Trống Trận: Bật</span>
+                </button>
+
+                <div class="text-xs sm:text-sm text-amber-200 bg-red-950/70 px-5 py-2 rounded-full border border-yellow-500/50 shadow-[0_0_15px_rgba(255,215,0,0.2)] flex items-center gap-2">
+                    <i class="fas fa-trophy text-yellow-400 text-base"></i> Điểm Tích Lũy: <span id="userTotalScore" class="font-black text-yellow-300 text-base">0</span>
                 </div>
             </div>
-
-            <!-- Navigation Links -->
-            <nav class="hidden md:flex items-center gap-1 bg-slate-200/50 dark:bg-slate-900/50 p-1.5 rounded-2xl border border-slate-300/50 dark:border-slate-800">
-                <button onclick="switchTab('pdf-tool')" id="tab-btn-pdf-tool" class="nav-tab px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-2 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-800 shadow-sm">
-                    <i class="fa-solid fa-file-word text-pink-500"></i>
-                    <span>PDF sang Word</span>
-                </button>
-                <button onclick="switchTab('video-tool')" id="tab-btn-video-tool" class="nav-tab px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
-                    <i class="fa-solid fa-cloud-arrow-down text-cyan-500"></i>
-                    <span>Tải Video</span>
-                </button>
-                <button onclick="switchTab('bg-tool')" id="tab-btn-bg-tool" class="nav-tab px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
-                    <i class="fa-solid fa-wand-magic-sparkles text-emerald-500"></i>
-                    <span>Tách Nền AI</span>
-                </button>
-            </nav>
-
-            <!-- Actions Right -->
-            <div class="flex items-center gap-3">
-                <button onclick="openModal('history-modal')" class="p-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-xl transition-all relative" title="Lịch sử xử lý">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                    <span id="history-badge" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-pink-500 rounded-full animate-ping"></span>
-                </button>
-                
-                <button onclick="toggleDarkMode()" class="p-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-xl transition-all" title="Đổi giao diện">
-                    <i class="fa-solid fa-moon dark:hidden"></i>
-                    <i class="fa-solid fa-sun hidden dark:block text-amber-400"></i>
-                </button>
-
-                <button onclick="openModal('contact-modal')" class="hidden sm:flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-medium text-sm px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/25 transition-all">
-                    <i class="fa-solid fa-paper-plane text-xs"></i>
-                    <span>Góp ý & Liên hệ</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile Navigation bar -->
-        <div class="flex md:hidden border-t border-slate-200 dark:border-slate-800/80 bg-white/50 dark:bg-slate-900/50 px-2 py-2 justify-around">
-            <button onclick="switchTab('pdf-tool')" id="mob-tab-pdf-tool" class="flex flex-col items-center gap-1 text-xs font-medium text-indigo-500 py-1 px-3 rounded-lg bg-indigo-500/10">
-                <i class="fa-solid fa-file-word text-base"></i>
-                <span>PDF-Word</span>
-            </button>
-            <button onclick="switchTab('video-tool')" id="mob-tab-video-tool" class="flex flex-col items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 py-1 px-3 rounded-lg">
-                <i class="fa-solid fa-cloud-arrow-down text-base"></i>
-                <span>Tải Video</span>
-            </button>
-            <button onclick="switchTab('bg-tool')" id="mob-tab-bg-tool" class="flex flex-col items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 py-1 px-3 rounded-lg">
-                <i class="fa-solid fa-wand-magic-sparkles text-base"></i>
-                <span>Tách Nền</span>
-            </button>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
-        
-        <!-- Hero Section Banner -->
-        <section class="text-center py-6 px-4 rounded-3xl glass-card relative overflow-hidden">
-            <div class="absolute -top-24 -left-24 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-pink-500/15 rounded-full blur-3xl pointer-events-none"></div>
+    <!-- NAVIGATION TABS -->
+    <nav class="relative z-10 bg-black/80 backdrop-blur-xl border-b border-yellow-500/30 sticky top-0">
+        <div class="max-w-6xl mx-auto flex items-center justify-start sm:justify-center overflow-x-auto py-2.5 px-3 gap-2 sm:gap-3 text-xs sm:text-sm font-bold font-heading scrollbar-none">
+            <button onclick="switchTab('history')" id="tab-history" class="nav-btn active flex-none py-2.5 px-4 rounded-xl text-center transition-all border border-yellow-400/80 bg-gradient-to-r from-red-900 to-red-950 text-yellow-300 shadow-[0_0_15px_rgba(255,215,0,0.3)]">
+                <i class="fas fa-landmark mr-2"></i> Lịch Sử Núi Bân
+            </button>
+            <button onclick="switchTab('game1')" id="tab-game1" class="nav-btn flex-none py-2.5 px-4 rounded-xl text-center transition-all border border-yellow-900/40 text-amber-200/80 hover:bg-red-950/60 hover:text-yellow-300">
+                <i class="fas fa-horse-head mr-2"></i> 1. Hành Quân Thần Tốc
+            </button>
+            <button onclick="switchTab('game2')" id="tab-game2" class="nav-btn flex-none py-2.5 px-4 rounded-xl text-center transition-all border border-yellow-900/40 text-amber-200/80 hover:bg-red-950/60 hover:text-yellow-300">
+                <i class="fas fa-scroll mr-2"></i> 2. Hào Khí Tây Sơn
+            </button>
+            <button onclick="switchTab('game3')" id="tab-game3" class="nav-btn flex-none py-2.5 px-4 rounded-xl text-center transition-all border border-yellow-900/40 text-amber-200/80 hover:bg-red-950/60 hover:text-yellow-300">
+                <i class="fas fa-dragon mr-2"></i> 3. Đại Phá Đống Đa
+            </button>
+            <button onclick="switchTab('leaderboard')" id="tab-leaderboard" class="nav-btn flex-none py-2.5 px-4 rounded-xl text-center transition-all border border-yellow-900/40 text-amber-200/80 hover:bg-red-950/60 hover:text-yellow-300">
+                <i class="fas fa-medal mr-2"></i> Bảng Vinh Danh
+            </button>
+        </div>
+    </nav>
 
-            <div class="relative z-10 max-w-3xl mx-auto">
-                <span class="inline-flex items-center gap-2 px-3 me-2 py-1 text-xs font-semibold rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 mb-3">
-                    <i class="fa-solid fa-bolt-lightning text-xs"></i> Xử lý Trực Tiếp Client-Side Siêu Tốc & Bảo Mật
-                </span>
-                <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
-                    Bộ Công Cụ Số Thông Minh <span class="gradient-text">KTOOLS</span>
-                </h1>
-                <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
-                    Chuyển đổi tài liệu PDF sang Word, Tải Video Đa Nền Tảng (TikTok, FB, YT) và Tách Nền Ảnh AI chuyên nghiệp hoàn toàn miễn phí.
-                </p>
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="relative z-10 flex-grow max-w-6xl w-full mx-auto p-3 sm:p-6 my-2">
 
-                <!-- Dynamic Realtime Counter Stats -->
-                <div class="grid grid-cols-3 gap-2 sm:gap-4 max-w-xl mx-auto bg-slate-100/70 dark:bg-slate-900/70 p-3 rounded-2xl border border-slate-200 dark:border-slate-800">
-                    <div class="text-center">
-                        <div class="text-lg sm:text-2xl font-bold text-indigo-600 dark:text-indigo-400" id="stat-pdf">1,429</div>
-                        <div class="text-[11px] sm:text-xs text-slate-500">PDF Đã Chuyển</div>
-                    </div>
-                    <div class="text-center border-x border-slate-300 dark:border-slate-800">
-                        <div class="text-lg sm:text-2xl font-bold text-cyan-600 dark:text-cyan-400" id="stat-video">5,892</div>
-                        <div class="text-[11px] sm:text-xs text-slate-500">Video Đã Tải</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-lg sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400" id="stat-bg">3,120</div>
-                        <div class="text-[11px] sm:text-xs text-slate-500">Ảnh Đã Tách Nền</div>
-                    </div>
+        <!-- SECTION 1: HISTORY & NUI BAN -->
+        <section id="sec-history" class="tab-content block space-y-6">
+            <div class="glass-card glass-card-glow rounded-2xl p-6 md:p-10 relative overflow-hidden">
+                <!-- Dragon Watermark -->
+                <div class="absolute -right-16 -bottom-16 opacity-10 pointer-events-none">
+                    <i class="fas fa-dragon text-[320px] text-yellow-400"></i>
                 </div>
-            </div>
-        </section>
 
-        <!-- TOOL 1: PDF TO WORD CONVERTER -->
-        <section id="pdf-tool" class="tool-section glass-card rounded-3xl p-6 sm:p-8 shadow-xl">
-            <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center text-white text-xl shadow-md">
-                        <i class="fa-solid fa-file-word"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-xl sm:text-2xl font-bold">Chuyển Đổi PDF Sang Word (.docx)</h2>
-                        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Trích xuất văn bản, cấu trúc trang & xem trước trực tiếp</p>
-                    </div>
+                <div class="text-center max-w-3xl mx-auto mb-8">
+                    <h2 class="text-2xl sm:text-4xl font-black font-heading gold-gradient-text mb-3 uppercase tracking-wider">
+                        NÚI BÂN (AN CỰU) - NƠI KHỞI NGUỒN HÀO KHÍ TÂY SƠN
+                    </h2>
+                    <div class="h-1 w-40 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto mb-4"></div>
+                    <p class="text-amber-100/90 italic text-sm md:text-base bg-black/40 p-4 rounded-xl border border-yellow-500/20">
+                        "Đánh cho để dài tóc - Đánh cho để đen răng - Đánh cho nó bánh xe quay phụt - Đánh cho nó giáp mảnh không tan - Đánh cho sử biết nước Nam quốc hữu chủ!"
+                    </p>
                 </div>
-                <span class="hidden sm:inline-block px-3 py-1 bg-indigo-500/10 text-indigo-500 text-xs font-bold rounded-lg border border-indigo-500/20">Client-Side OCR/Engine</span>
-            </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Dropzone Area -->
-                <div class="lg:col-span-5 flex flex-col gap-4">
-                    <div id="pdf-dropzone" onclick="document.getElementById('pdf-file-input').click()" 
-                         class="border-2 border-dashed border-indigo-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl p-8 text-center cursor-pointer bg-slate-50/50 dark:bg-slate-900/50 hover:bg-indigo-50/30 dark:hover:bg-slate-900/80 transition-all flex flex-col items-center justify-center min-h-[260px] group">
-                        <input type="file" id="pdf-file-input" accept=".pdf" class="hidden" onchange="handlePdfSelect(event)">
-                        <div class="w-16 h-16 mb-4 rounded-full bg-indigo-100 dark:bg-slate-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-4 text-justify text-sm md:text-base text-amber-50/90 leading-relaxed">
+                        <div class="bg-gradient-to-r from-red-950/80 to-transparent p-5 rounded-xl border-l-4 border-yellow-400 shadow-md">
+                            <strong class="text-yellow-300 font-heading text-base block mb-1">Dấu mốc lịch sử hoàng kim năm 1788:</strong> 
+                            Trước nguy cơ xâm lược của 29 vạn quân Thanh, ngày 25 tháng 11 năm Mậu Thân (22/12/1788), tại di tích Núi Bân (thuộc phường An Cựu, TP. Huế), Bắc Bình Vương Nguyễn Huệ đã tiến hành tế trời đất, chính thức lên ngôi Hoàng đế, lấy niên hiệu <span class="text-yellow-300 font-bold">Quang Trung</span>.
                         </div>
-                        <p class="text-sm font-semibold mb-1">Kéo thả file PDF vào đây hoặc <span class="text-indigo-600 dark:text-indigo-400 underline">Chọn File</span></p>
-                        <p class="text-xs text-slate-400">Hỗ trợ các file PDF văn bản, sách, tài liệu (.pdf max 50MB)</p>
-                    </div>
-
-                    <!-- Options -->
-                    <div class="p-4 rounded-2xl bg-slate-100/60 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Định dạng đầu ra</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer text-xs font-semibold">
-                                <input type="radio" name="pdf-format" value="docx" checked class="text-indigo-600 focus:ring-indigo-500">
-                                <i class="fa-solid fa-file-word text-blue-500"></i> Word (.docx)
-                            </label>
-                            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer text-xs font-semibold">
-                                <input type="radio" name="pdf-format" value="txt" class="text-indigo-600 focus:ring-indigo-500">
-                                <i class="fa-solid fa-file-lines text-emerald-500"></i> Plain Text (.txt)
-                            </label>
-                        </div>
-                    </div>
-
-                    <button id="btn-convert-pdf" disabled onclick="convertPdfToWord()" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-indigo-600 to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-95 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all">
-                        <i class="fa-solid fa-bolt"></i>
-                        <span>Bắt Đầu Chuyển Đổi</span>
-                    </button>
-                </div>
-
-                <!-- Preview and Output Area -->
-                <div class="lg:col-span-7 flex flex-col">
-                    <div class="bg-slate-100/70 dark:bg-slate-900/70 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 flex-grow flex flex-col">
-                        <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-200 dark:border-slate-800">
-                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                                <i class="fa-solid fa-eye"></i> Xem Trước Nội Dung PDF
-                            </h3>
-                            <span id="pdf-page-count" class="text-xs text-slate-500 font-medium">Chưa chọn file</span>
-                        </div>
-
-                        <!-- Scrollable preview text / canvas container -->
-                        <div id="pdf-preview-box" class="flex-grow min-h-[250px] max-h-[380px] overflow-y-auto bg-white dark:bg-slate-950 rounded-xl p-4 border border-slate-200 dark:border-slate-800 text-sm space-y-4">
-                            <div class="h-full flex flex-col items-center justify-center text-slate-400 text-center py-12">
-                                <i class="fa-solid fa-file-pdf text-4xl mb-3 opacity-40"></i>
-                                <p class="text-xs">Vui lòng tải lên file PDF để xem trước trang văn bản</p>
-                            </div>
-                        </div>
-
-                        <!-- Convert Progress Bar -->
-                        <div id="pdf-progress-wrap" class="hidden mt-4">
-                            <div class="flex justify-between text-xs font-semibold mb-1">
-                                <span id="pdf-progress-status" class="text-indigo-500">Đang đọc trang 1...</span>
-                                <span id="pdf-progress-percent">0%</span>
-                            </div>
-                            <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                                <div id="pdf-progress-bar" class="bg-gradient-to-r from-indigo-500 to-pink-500 h-full w-0 transition-all duration-200"></div>
-                            </div>
-                        </div>
-
-                        <!-- Result Action Download -->
-                        <div id="pdf-result-actions" class="hidden mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                            <span class="text-xs text-emerald-500 font-semibold flex items-center gap-1.5">
-                                <i class="fa-solid fa-circle-check"></i> Chuyển đổi thành công!
-                            </span>
-                            <a id="pdf-download-link" href="#" download="converted.docx" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-600/25 flex items-center gap-2 transition-all">
-                                <i class="fa-solid fa-download"></i> Tải File Word (.docx)
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TOOL 2: VIDEO DOWNLOADER TOOL -->
-        <section id="video-tool" class="tool-section hidden glass-card rounded-3xl p-6 sm:p-8 shadow-xl">
-            <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xl shadow-md">
-                        <i class="fa-solid fa-cloud-arrow-down"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-xl sm:text-2xl font-bold">Tải Video Đa Nền Tảng</h2>
-                        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Hỗ trợ TikTok (Không Watermark), Facebook & YouTube HD/MP3</p>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <i class="fa-brands fa-tiktok text-xl text-slate-700 dark:text-slate-300"></i>
-                    <i class="fa-brands fa-facebook text-xl text-blue-500"></i>
-                    <i class="fa-brands fa-youtube text-xl text-red-500"></i>
-                </div>
-            </div>
-
-            <!-- Input Box -->
-            <div class="max-w-3xl mx-auto space-y-4">
-                <div class="relative flex items-center">
-                    <input type="text" id="video-url-input" placeholder="Dán liên kết TikTok, Facebook hoặc YouTube vào đây..." 
-                           class="w-full pl-11 pr-32 py-4 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm font-medium transition-all">
-                    <i class="fa-solid fa-link absolute left-4 text-slate-400"></i>
-                    <button onclick="parseVideoUrl()" class="absolute right-2.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:opacity-95 text-white font-bold text-xs shadow-md shadow-cyan-500/20 flex items-center gap-1.5 transition-all">
-                        <i class="fa-solid fa-magnifying-glass"></i> Phân Tích
-                    </button>
-                </div>
-
-                <!-- Fast Demo Links -->
-                <div class="flex flex-wrap items-center gap-2 text-xs">
-                    <span class="text-slate-400">Thử link mẫu:</span>
-                    <button onclick="setSampleVideo('https://www.tiktok.com/@khoacit/video/7234567890')" class="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500/20 hover:text-cyan-500 transition-all">
-                        <i class="fa-brands fa-tiktok"></i> TikTok Mẫu
-                    </button>
-                    <button onclick="setSampleVideo('https://www.youtube.com/watch?v=dQw4w9WgXcQ')" class="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-red-500/20 hover:text-red-500 transition-all">
-                        <i class="fa-brands fa-youtube"></i> YouTube Mẫu
-                    </button>
-                </div>
-            </div>
-
-            <!-- Analysis Result Output Container -->
-            <div id="video-result-card" class="hidden max-w-3xl mx-auto mt-8 p-6 rounded-2xl bg-slate-100/70 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800">
-                <div class="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
-                    <!-- Thumbnail -->
-                    <div class="relative w-full sm:w-56 h-36 rounded-xl overflow-hidden bg-slate-800 flex-shrink-0 shadow-md">
-                        <img id="video-thumb" src="" alt="Thumbnail" class="w-full h-full object-cover">
-                        <span id="video-badge" class="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold text-white uppercase bg-pink-600">TikTok</span>
-                        <span id="video-duration" class="absolute bottom-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold text-white bg-black/70">03:45</span>
-                    </div>
-
-                    <!-- Details & Download Buttons -->
-                    <div class="flex-grow text-center sm:text-left space-y-3 w-full">
-                        <h3 id="video-title" class="font-bold text-base line-clamp-2">Tiêu đề video mẫu sẽ hiển thị tại đây</h3>
-                        <p class="text-xs text-slate-500 flex items-center justify-center sm:justify-start gap-2">
-                            <span><i class="fa-solid fa-user text-indigo-500"></i> KHOACIT Channel</span> • 
-                            <span><i class="fa-solid fa-eye"></i> 128.5K lượt xem</span>
+                        <p>
+                            Ngay sau lễ đăng quang thiêng liêng tại Núi Bân, Hoàng đế Quang Trung đã hạ lệnh xuất quân ra Bắc. Với thiên tài quân sự kiệt xuất, cuộc hành quân thần tốc vô tiền khoáng hậu đã đập tan toàn bộ 29 vạn quân Thanh, giải phóng Thăng Long vào mùng 5 Tết Kỷ Dậu (1789).
                         </p>
+                        <p>
+                            Ngày nay, <strong class="text-yellow-300">Di tích lịch sử Quốc gia Núi Bân</strong> nằm trên địa bàn phường An Cựu là biểu tượng tự hào vô giá, nhắc nhở thế hệ hôm nay về tinh thần độc lập và ý chí tự cường của dân tộc.
+                        </p>
+                    </div>
 
-                        <div class="pt-2 border-t border-slate-200 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <button onclick="downloadVideoFormat('mp4-hd')" class="py-2.5 px-4 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-cyan-600/20 transition-all">
-                                <i class="fa-solid fa-film"></i> Tải MP4 Full HD (No Watermark)
-                            </button>
-                            <button onclick="downloadVideoFormat('mp3')" class="py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20 transition-all">
-                                <i class="fa-solid fa-music"></i> Tải Âm Thanh (MP3 320kbps)
-                            </button>
+                    <!-- Showcase Box -->
+                    <div class="glass-card rounded-2xl p-6 text-center space-y-5 border border-yellow-500/40">
+                        <div class="relative rounded-xl overflow-hidden bg-gradient-to-b from-red-950/90 via-black to-stone-950 p-8 border border-yellow-400/30">
+                            <i class="fas fa-mountain text-7xl gold-gradient-text mb-4 animate-pulse"></i>
+                            <h3 class="text-2xl font-black font-heading text-yellow-300 tracking-wide">KHU DI TÍCH NÚI BÂN</h3>
+                            <p class="text-xs text-amber-200/80 mt-1 uppercase font-semibold">Phường An Cựu, Thành Phố Huế</p>
+                            <div class="my-4 h-px bg-yellow-500/30 w-3/4 mx-auto"></div>
+                            <p class="text-xs text-amber-100/80 leading-relaxed">
+                                Tượng đài Hoàng đế Quang Trung uy nghiêm cao 21m bằng đá granite nguyên khối, không gian văn hóa lịch sử tâm linh đặc biệt của Cố đô Huế.
+                            </p>
                         </div>
+
+                        <button onclick="playDrumEffect(); switchTab('game1')" class="w-full btn-tay-son-gold py-3.5 px-6 rounded-xl font-black font-heading text-sm uppercase tracking-wider flex items-center justify-center gap-3">
+                            <i class="fas fa-play text-base"></i> BẮT ĐẦU TRẢI NGHIỆM MINI GAME
+                        </button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- TOOL 3: AI BACKGROUND REMOVER TOOL -->
-        <section id="bg-tool" class="tool-section hidden glass-card rounded-3xl p-6 sm:p-8 shadow-xl">
-            <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white text-xl shadow-md">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    </div>
+        <!-- SECTION 2: MINI GAME 1 - HÀNH QUÂN THẦN TỐC -->
+        <section id="sec-game1" class="tab-content hidden space-y-4">
+            <div class="glass-card glass-card-glow rounded-2xl p-4 sm:p-6 shadow-2xl">
+                <div class="flex flex-col md:flex-row justify-between items-center border-b border-yellow-500/30 pb-3 mb-4 gap-3">
                     <div>
-                        <h2 class="text-xl sm:text-2xl font-bold">Tách Nền Ảnh AI & Chỉnh Sửa</h2>
-                        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Tự động tách nền, đổi màu nền, thêm shadow client-side cực mịn</p>
+                        <h2 class="text-xl sm:text-2xl font-black font-heading text-yellow-400 flex items-center gap-2">
+                            <i class="fas fa-horse-head text-amber-400"></i> GAME 1: HÀNH QUÂN THẦN TỐC
+                        </h2>
+                        <p class="text-xs text-amber-200/80">Sử dụng phím <kbd class="px-2 py-0.5 bg-yellow-950 border border-yellow-500/40 rounded text-yellow-300">Space</kbd> / <kbd class="px-2 py-0.5 bg-yellow-950 border border-yellow-500/40 rounded text-yellow-300">▲</kbd> hoặc nút Nhảy trên di động để né chướng ngại vật!</p>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs sm:text-sm font-bold bg-black/60 px-4 py-2 rounded-xl border border-yellow-500/40">
+                        <div>Quãng đường: <span id="g1Distance" class="text-yellow-300 font-black text-sm">0</span> / 1000m</div>
+                        <div class="w-px h-4 bg-yellow-600/50"></div>
+                        <div>Điểm: <span id="g1Score" class="text-emerald-400 font-black text-sm">0</span></div>
                     </div>
                 </div>
-                <span class="hidden sm:inline-block px-3 py-1 bg-emerald-500/10 text-emerald-500 text-xs font-bold rounded-lg border border-emerald-500/20">Canvas Chroma/Range AI</span>
-            </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Drop Area & Image Input -->
-                <div class="lg:col-span-5 flex flex-col gap-4">
-                    <div id="img-dropzone" onclick="document.getElementById('img-file-input').click()" 
-                         class="border-2 border-dashed border-emerald-300 dark:border-slate-700 hover:border-emerald-500 rounded-2xl p-6 text-center cursor-pointer bg-slate-50/50 dark:bg-slate-900/50 hover:bg-emerald-50/20 transition-all flex flex-col items-center justify-center min-h-[220px] group">
-                        <input type="file" id="img-file-input" accept="image/png, image/jpeg, image/webp" class="hidden" onchange="handleImageSelect(event)">
-                        <div class="w-14 h-14 mb-3 rounded-full bg-emerald-100 dark:bg-slate-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-image text-2xl"></i>
-                        </div>
-                        <p class="text-sm font-semibold mb-1">Tải ảnh lên để tách nền</p>
-                        <p class="text-xs text-slate-400">Hỗ trợ PNG, JPG, WebP tối đa 15MB</p>
+                <!-- Canvas Container -->
+                <div class="relative w-full aspect-[2/1] max-h-[440px] game-container-box bg-black rounded-xl overflow-hidden border border-yellow-500/40 shadow-inner">
+                    <canvas id="game1Canvas" class="w-full h-full block"></canvas>
+                    
+                    <!-- Overlay Start/Game Over -->
+                    <div id="g1Overlay" class="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20">
+                        <i class="fas fa-flag text-5xl gold-gradient-text mb-3 animate-bounce"></i>
+                        <h3 id="g1Title" class="text-2xl sm:text-4xl font-black font-heading gold-gradient-text mb-2">HÀNH QUÂN THẦN TỐC TỪ NÚI BÂN</h3>
+                        <p id="g1Desc" class="text-sm text-amber-100 max-w-md mb-6 leading-relaxed">
+                            Đưa đoàn quân Tây Sơn vượt sông núi, vượt qua các chướng ngại vật từ Phú Xuân (An Cựu) ra Thăng Long!
+                        </p>
+                        <button onclick="startGame1()" class="btn-tay-son-gold py-3.5 px-8 rounded-full font-black font-heading text-base tracking-wider flex items-center gap-3">
+                            <i class="fas fa-running"></i> BẮT ĐẦU HÀNH QUÂN
+                        </button>
                     </div>
+                </div>
 
-                    <!-- AI Tuning Settings -->
-                    <div class="p-4 rounded-2xl bg-slate-100/60 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-4">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                            <i class="fa-solid fa-sliders"></i> Tùy Chỉnh Tách Nền AI
-                        </h4>
-                        
-                        <!-- Color Tolerance -->
-                        <div>
-                            <div class="flex justify-between text-xs font-medium mb-1">
-                                <span>Độ nhạy tách màu (Tolerance)</span>
-                                <span id="val-tolerance" class="font-bold text-emerald-500">30%</span>
-                            </div>
-                            <input type="range" id="input-tolerance" min="5" max="75" value="30" oninput="updateBgRemoval()" class="w-full accent-emerald-500 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
-                        </div>
-
-                        <!-- Shadow Effect Switch -->
-                        <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800">
-                            <span class="text-xs font-semibold">Thêm Hiệu Ứng Bóng đổ (Drop Shadow)</span>
-                            <input type="checkbox" id="check-shadow" onchange="updateBgRemoval()" class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
-                        </div>
-
-                        <!-- Background Picker Options -->
-                        <div class="space-y-2 pt-2 border-t border-slate-200 dark:border-slate-800">
-                            <label class="block text-xs font-semibold">Chọn Nền Thay Thế</label>
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <button onclick="setBgMode('transparent')" class="w-8 h-8 rounded-lg bg-checker border-2 border-emerald-500 shadow-sm" title="Trong suốt"></button>
-                                <button onclick="setBgMode('#ffffff')" class="w-8 h-8 rounded-lg bg-white border border-slate-300" title="Trắng"></button>
-                                <button onclick="setBgMode('#000000')" class="w-8 h-8 rounded-lg bg-black border border-slate-700" title="Đen"></button>
-                                <button onclick="setBgMode('#3b82f6')" class="w-8 h-8 rounded-lg bg-blue-500" title="Xanh Dương"></button>
-                                <button onclick="setBgMode('#10b981')" class="w-8 h-8 rounded-lg bg-emerald-500" title="Xanh Lá"></button>
-                                <button onclick="setBgMode('gradient-1')" class="w-8 h-8 rounded-lg bg-gradient-to-r from-pink-500 to-rose-500" title="Gradient Hồng"></button>
-                                <button onclick="setBgMode('gradient-2')" class="w-8 h-8 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600" title="Gradient Xanh"></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button id="btn-download-img" disabled onclick="downloadProcessedImage()" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-95 text-white font-bold text-sm shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 transition-all">
-                        <i class="fa-solid fa-download"></i>
-                        <span>Tải Ảnh PNG Trong Suốt HD</span>
+                <!-- Mobile Touch Controls for Game 1 -->
+                <div class="mobile-touch-bar flex items-center justify-center gap-4 pt-2">
+                    <button onclick="jumpRunner()" class="w-full py-3 bg-gradient-to-r from-red-700 to-yellow-600 text-black font-black font-heading text-sm rounded-xl shadow-lg border border-yellow-300 flex items-center justify-center gap-2">
+                        <i class="fas fa-arrow-up"></i> CHẠM ĐỂ NHẢY (JUMP)
                     </button>
                 </div>
+            </div>
+        </section>
 
-                <!-- Canvas Preview Window -->
-                <div class="lg:col-span-7 flex flex-col">
-                    <div class="bg-slate-100/70 dark:bg-slate-900/70 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 flex-grow flex flex-col justify-center items-center min-h-[350px]">
-                        <div id="canvas-placeholder" class="text-center text-slate-400">
-                            <i class="fa-solid fa-object-group text-5xl mb-3 opacity-30"></i>
-                            <p class="text-xs">Chưa có ảnh nào được tải lên</p>
+        <!-- SECTION 3: MINI GAME 2 - ĐỐ VUI LỊCH SỬ -->
+        <section id="sec-game2" class="tab-content hidden space-y-4">
+            <div class="glass-card glass-card-glow rounded-2xl p-4 sm:p-6 shadow-2xl">
+                <div class="flex flex-col sm:flex-row justify-between items-center border-b border-yellow-500/30 pb-3 mb-4 gap-3">
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-black font-heading text-yellow-400 flex items-center gap-2">
+                            <i class="fas fa-scroll text-amber-400"></i> GAME 2: HÀO KHÍ TÂY SƠN - ĐỐ VUI LỊCH SỬ
+                        </h2>
+                        <p class="text-xs text-amber-200/80">Kiểm tra kiến thức về Hoàng đế Quang Trung & Di tích Núi Bân Phường An Cựu</p>
+                    </div>
+                    <div class="text-xs sm:text-sm font-bold bg-black/60 px-4 py-2 rounded-xl border border-yellow-500/40">
+                        Câu: <span id="quizIndex" class="text-yellow-300 font-black">1</span>/<span id="quizTotal" class="text-yellow-300 font-black">5</span> | Điểm: <span id="quizScore" class="text-emerald-400 font-black">0</span>
+                    </div>
+                </div>
+
+                <div id="quizBox" class="max-w-3xl mx-auto space-y-6 py-4">
+                    <!-- Question Card -->
+                    <div class="bg-gradient-to-r from-red-950/80 via-black/80 to-red-950/80 border border-yellow-500/50 p-6 rounded-2xl shadow-lg">
+                        <h3 id="quizQuestion" class="text-lg sm:text-xl font-bold text-amber-100 leading-relaxed">
+                            Đang tải câu hỏi...
+                        </h3>
+                    </div>
+
+                    <!-- Answers Grid -->
+                    <div id="quizAnswers" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Dynamic Buttons -->
+                    </div>
+
+                    <div id="quizFeedback" class="hidden text-center p-4 rounded-xl font-bold backdrop-blur-md"></div>
+                </div>
+
+                <!-- Quiz Completion Card -->
+                <div id="quizResultBox" class="hidden text-center space-y-4 py-10">
+                    <div class="w-20 h-20 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto border border-yellow-400">
+                        <i class="fas fa-trophy text-5xl gold-gradient-text animate-bounce"></i>
+                    </div>
+                    <h3 class="text-3xl font-black font-heading gold-gradient-text">HOÀN THÀNH PHẦN THI ĐỐ VUI!</h3>
+                    <p class="text-lg text-amber-100">Tổng điểm đạt được: <span id="finalQuizScore" class="font-black text-yellow-300 text-3xl">0</span> điểm</p>
+                    <button onclick="resetQuiz()" class="btn-tay-son-gold py-3 px-8 rounded-full font-black font-heading text-sm tracking-wider">
+                        <i class="fas fa-redo mr-2"></i> THI LẠI
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: MINI GAME 3 - ĐẠI PHÁ ĐỐNG ĐA -->
+        <section id="sec-game3" class="tab-content hidden space-y-4">
+            <div class="glass-card glass-card-glow rounded-2xl p-4 sm:p-6 shadow-2xl">
+                <div class="flex flex-col md:flex-row justify-between items-center border-b border-yellow-500/30 pb-3 mb-4 gap-3">
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-black font-heading text-yellow-400 flex items-center gap-2">
+                            <i class="fas fa-dragon text-amber-400"></i> GAME 3: ĐẠI PHÁ NGỌC HỒI - ĐỐNG ĐA
+                        </h2>
+                        <p class="text-xs text-amber-200/80">Chạm hoặc nhấp trực tiếp vào quân Thanh để tiêu diệt. Bấm phím <kbd class="px-1.5 py-0.5 bg-yellow-950 border border-yellow-500/40 rounded text-yellow-300">Space</kbd> hoặc nút Rồng Lửa để dùng Tuyệt Chiêu!</p>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs sm:text-sm font-bold bg-black/60 px-4 py-2 rounded-xl border border-yellow-500/40">
+                        <div>Thời gian: <span id="g3Time" class="text-red-400 font-black text-sm">30</span>s</div>
+                        <div class="w-px h-4 bg-yellow-600/50"></div>
+                        <div>Tiêu diệt: <span id="g3Kills" class="text-yellow-300 font-black text-sm">0</span></div>
+                        <div class="w-px h-4 bg-yellow-600/50"></div>
+                        <div>Điểm: <span id="g3Score" class="text-emerald-400 font-black text-sm">0</span></div>
+                    </div>
+                </div>
+
+                <!-- Canvas Game 3 Container -->
+                <div class="relative w-full aspect-[2/1] max-h-[440px] game-container-box bg-stone-950 rounded-xl overflow-hidden border border-yellow-500/40 cursor-crosshair">
+                    <canvas id="game3Canvas" class="w-full h-full block"></canvas>
+
+                    <!-- Dragon Power Button -->
+                    <button id="btnDragonPower" onclick="useDragonPower()" class="absolute bottom-3 right-3 bg-gradient-to-r from-red-600 to-yellow-500 border-2 border-yellow-300 text-black font-black font-heading text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-full shadow-[0_0_20px_rgba(255,215,0,0.6)] hover:scale-105 transition-all z-10 flex items-center gap-2">
+                        <i class="fas fa-fire-alt text-base"></i> TUYỆT CHIÊU RỒNG LỬA
+                    </button>
+                    
+                    <!-- Overlay Start/Game Over -->
+                    <div id="g3Overlay" class="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20">
+                        <i class="fas fa-shield-alt text-5xl gold-gradient-text mb-3 animate-pulse"></i>
+                        <h3 id="g3Title" class="text-2xl sm:text-4xl font-black font-heading gold-gradient-text mb-2">QUANG TRUNG ĐẠI PHÁ QUÂN THANH</h3>
+                        <p id="g3Desc" class="text-sm text-amber-100 max-w-md mb-6 leading-relaxed">
+                            Bảo vệ đồn Ngọc Hồi - Đống Đa! Quét sạch quân Thanh xâm lược trong thời gian 30 giây!
+                        </p>
+                        <button onclick="startGame3()" class="btn-tay-son-gold py-3.5 px-8 rounded-full font-black font-heading text-base tracking-wider flex items-center gap-3">
+                            <i class="fas fa-crosshairs"></i> KHAI HỎA PHÁ ĐỊCH
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: LEADERBOARD & CITIZEN REGISTRATION -->
+        <section id="sec-leaderboard" class="tab-content hidden space-y-6">
+            <div class="glass-card glass-card-glow rounded-2xl p-5 sm:p-8 shadow-2xl">
+                <div class="text-center max-w-2xl mx-auto mb-8">
+                    <h2 class="text-2xl sm:text-4xl font-black font-heading gold-gradient-text mb-2 uppercase">
+                        BẢNG VINH DANH ANH HÙNG AN CỰU
+                    </h2>
+                    <div class="h-1 w-32 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto mb-3"></div>
+                    <p class="text-xs sm:text-sm text-amber-200/80">
+                        Đăng ký thành tích cá nhân & đại diện cho Tổ dân phố của bạn tại Phường An Cựu!
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Form Input -->
+                    <div class="glass-card p-6 rounded-2xl space-y-4 border border-yellow-500/40">
+                        <h3 class="text-lg font-black font-heading text-yellow-300 border-b border-yellow-500/30 pb-3 flex items-center gap-2">
+                            <i class="fas fa-user-edit text-amber-400"></i> ĐĂNG KÝ THÀNH TÍCH
+                        </h3>
+                        <div>
+                            <label class="block text-xs font-semibold text-amber-200 mb-1.5">Họ và Tên Công Dân:</label>
+                            <input type="text" id="playerNameInput" placeholder="Ví dụ: Nguyễn Văn A" class="w-full bg-black/70 border border-yellow-600/50 rounded-xl px-4 py-2.5 text-sm text-amber-100 focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-all">
                         </div>
-                        <div id="canvas-wrapper" class="hidden relative max-w-full max-h-[420px] rounded-xl overflow-hidden shadow-2xl bg-checker">
-                            <canvas id="editor-canvas" class="max-w-full max-h-[400px] object-contain block"></canvas>
+                        <div>
+                            <label class="block text-xs font-semibold text-amber-200 mb-1.5">Tổ Dân Phố (Phường An Cựu):</label>
+                            <select id="playerGroupInput" class="w-full bg-black/70 border border-yellow-600/50 rounded-xl px-4 py-2.5 text-sm text-amber-100 focus:outline-none focus:border-yellow-400 transition-all">
+                                <option value="Tổ 1">Tổ dân phố 1</option>
+                                <option value="Tổ 2">Tổ dân phố 2</option>
+                                <option value="Tổ 3">Tổ dân phố 3</option>
+                                <option value="Tổ 4">Tổ dân phố 4</option>
+                                <option value="Tổ 5">Tổ dân phố 5</option>
+                                <option value="Tổ 6">Tổ dân phố 6</option>
+                                <option value="Tổ 7">Tổ dân phố 7</option>
+                                <option value="Tổ 8">Tổ dân phố 8</option>
+                                <option value="Tổ 9">Tổ dân phố 9</option>
+                                <option value="Tổ 10">Tổ dân phố 10</option>
+                                <option value="Tổ 11">Tổ dân phố 11</option>
+                                <option value="Tổ 12">Tổ dân phố 12</option>
+                                <option value="Tổ 13">Tổ dân phố 13</option>
+                                <option value="Tổ 14">Tổ dân phố 14</option>
+                                <option value="Tổ 15">Tổ dân phố 15</option>
+                                <option value="Khách Tham Quan">Khách Tham Quan / Đoàn Viên</option>
+                            </select>
+                        </div>
+                        <div class="p-3.5 bg-red-950/50 rounded-xl border border-yellow-500/30 text-xs text-amber-200 flex justify-between items-center">
+                            <span>Điểm tích lũy hiện tại:</span>
+                            <strong id="formCurrentScore" class="text-yellow-300 text-base font-black">0</strong>
+                        </div>
+                        <button onclick="saveScore()" class="w-full btn-tay-son-gold py-3 rounded-xl font-black font-heading text-xs tracking-wider uppercase">
+                            <i class="fas fa-save mr-2"></i> LƯU THÀNH TÍCH ANH HÙNG
+                        </button>
+                    </div>
+
+                    <!-- Leaderboard Table -->
+                    <div class="md:col-span-2 glass-card p-6 rounded-2xl space-y-4 border border-yellow-500/40">
+                        <h3 class="text-lg font-black font-heading text-yellow-300 border-b border-yellow-500/30 pb-3 flex justify-between items-center">
+                            <span><i class="fas fa-crown text-amber-400 mr-2"></i> TOP BẢNG XẾP HẠNG</span>
+                            <span class="text-xs font-semibold text-amber-300/80 bg-black/40 px-3 py-1 rounded-full border border-yellow-600/30">Cập nhật trực tiếp</span>
+                        </h3>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs sm:text-sm">
+                                <thead>
+                                    <tr class="border-b border-yellow-600/40 text-yellow-400 font-heading">
+                                        <th class="py-3 px-3">Hạng</th>
+                                        <th class="py-3 px-3">Họ & Tên</th>
+                                        <th class="py-3 px-3">Tổ Dân Phố</th>
+                                        <th class="py-3 px-3 text-right">Tổng Điểm</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="leaderboardBody" class="divide-y divide-yellow-900/30 text-amber-100">
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -459,473 +466,653 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left mb-6">
-                <!-- Info Brand -->
-                <div>
-                    <div class="text-lg font-extrabold gradient-text mb-2">Trang thông tin điện tử KTOOLS</div>
-                    <p class="text-xs text-slate-500 leading-relaxed">
-                        Nền tảng ứng dụng đa công cụ thông minh trực tiếp trên trình duyệt. Nhanh chóng, bảo mật và miễn phí cho cộng đồng.
-                    </p>
-                </div>
-                <!-- Copyright & Operational -->
-                <div class="text-xs space-y-1 text-slate-500 dark:text-slate-400 border-y md:border-y-0 md:border-x border-slate-200 dark:border-slate-800 py-4 md:py-0 md:px-6">
-                    <p class="font-semibold text-slate-700 dark:text-slate-300">&copy; 2026 KTOOLS. Bản quyền thuộc về Trần Anh Khoa.</p>
-                    <p>Thiết kế và vận hành: <span class="font-bold text-indigo-500">KHOACIT</span></p>
-                    <p class="pt-1"><i class="fa-solid fa-phone text-xs text-emerald-500"></i> Hotline: <a href="tel:0899997781" class="hover:underline font-semibold text-slate-700 dark:text-slate-300">0899997781</a></p>
-                    <p><i class="fa-solid fa-envelope text-xs text-pink-500"></i> Email: <a href="mailto:anhkhoat363@gmail.com" class="hover:underline font-semibold text-slate-700 dark:text-slate-300">anhkhoat363@gmail.com</a></p>
-                </div>
-                <!-- Links & Policy -->
-                <div class="flex flex-col items-center md:items-end justify-center gap-2 text-xs">
-                    <button onclick="openModal('contact-modal')" class="text-slate-600 dark:text-slate-300 hover:text-indigo-500 font-semibold flex items-center gap-1.5">
-                        <i class="fa-solid fa-comments text-xs"></i> Liên hệ & Góp ý
-                    </button>
-                    <button onclick="openModal('policy-modal')" class="text-slate-600 dark:text-slate-300 hover:text-indigo-500 font-semibold flex items-center gap-1.5">
-                        <i class="fa-solid fa-shield-halved text-xs"></i> Điều khoản & Chính sách bảo mật
-                    </button>
-                </div>
-            </div>
-            <div class="text-center text-[11px] text-slate-400 pt-4 border-t border-slate-200 dark:border-slate-800/60">
-                KTOOLS v2.5 • Được phát triển bởi KHOACIT với sự tận tâm
-            </div>
-        </div>
+    <footer class="relative z-10 bg-black/95 border-t border-yellow-500/40 py-6 px-4 text-center text-xs text-amber-200/70 space-y-2">
+        <p class="font-heading text-yellow-400 font-bold text-sm sm:text-base tracking-wide uppercase">
+            KỶ NIỆM 238 NĂM NGUYỄN HUỆ LÊN NGÔI HOÀNG ĐẾ & ĐẠI PHÁ QUÂN THANH
+        </p>
+        <p class="text-amber-100 font-medium">
+            ỦY BAN NHÂN DÂN PHƯỜNG AN CỰU - THÀNH PHỐ HUẾ (1788 - 2026)
+        </p>
+        <p class="text-xs font-semibold text-yellow-300/90 pt-1">
+            © 2026 Phường An Cựu. Phát triển bởi Trần Anh Khoa.
+        </p>
     </footer>
 
-    <!-- MODAL: CONTACT & FEEDBACK -->
-    <div id="contact-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative animate-in fade-in zoom-in duration-200">
-            <button onclick="closeModal('contact-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white p-2">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center text-lg">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold">Liên Hệ & Góp Ý</h3>
-                    <p class="text-xs text-slate-500">Gửi phản hồi trực tiếp tới Trần Anh Khoa (KHOACIT)</p>
-                </div>
-            </div>
-
-            <form onsubmit="handleContactSubmit(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold mb-1">Họ và tên của bạn</label>
-                    <input type="text" required placeholder="Nguyễn Văn A" class="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold mb-1">Email / Số điện thoại</label>
-                    <input type="text" required placeholder="email@example.com hoặc 090..." class="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold mb-1">Nội dung góp ý</label>
-                    <textarea rows="4" required placeholder="Hãy cho chúng tôi biết ý kiến hoặc lỗi bạn gặp phải..." class="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
-                </div>
-                <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/25 transition-all">
-                    Gửi Góp Ý Ngay
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL: HISTORY LOG -->
-    <div id="history-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
-            <button onclick="closeModal('history-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold flex items-center gap-2">
-                    <i class="fa-solid fa-clock-rotate-left text-indigo-500"></i> Lịch Sử Xử Lý File
-                </h3>
-                <button onclick="clearHistory()" class="text-xs text-pink-500 hover:underline">Xóa tất cả</button>
-            </div>
-            <div id="history-list" class="max-h-72 overflow-y-auto space-y-2 pr-1 text-xs">
-                <!-- Items populated via JS -->
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: POLICY -->
-    <div id="policy-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[85vh] overflow-y-auto">
-            <button onclick="closeModal('policy-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <h3 class="text-xl font-bold mb-4 gradient-text">Điều Khoản & Chính Sách Bảo Mật</h3>
-            <div class="text-xs text-slate-600 dark:text-slate-300 space-y-3 leading-relaxed">
-                <p><strong>1. Cam kết bảo mật dữ liệu:</strong> KTOOLS hoạt động hoàn toàn theo cơ chế Client-Side Processing đối với công cụ PDF và Tách Nền AI. Dữ liệu của bạn được xử lý trực tiếp trên trình duyệt cá nhân và không được tải hay lưu trữ ở bất kỳ máy chủ nào.</p>
-                <p><strong>2. Quy định sử dụng:</strong> Người dùng chịu trách nhiệm đối với bản quyền nội dung file tải xuống hoặc chuyển đổi qua hệ thống.</p>
-                <p><strong>3. Vận hành bởi KHOACIT:</strong> Bản quyền ứng dụng thuộc về Trần Anh Khoa. Mọi chi tiết xin liên hệ Hotline: 0899997781.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <!-- JAVASCRIPT LOGIC & ENHANCED CANVAS ENGINES -->
     <script>
-        // Global App State
-        let currentPdfDoc = null;
-        let pdfExtractedText = '';
-        let currentLoadedImage = null;
-        let selectedBgColor = 'transparent';
+        /* -------------------------------------------------------------
+           1. AUDIO SYSTEM (WAR DRUMS)
+        ------------------------------------------------------------- */
+        let totalScore = 0;
+        let soundEnabled = true;
+        let audioCtx = null;
 
-        // Initial setup
-        window.addEventListener('DOMContentLoaded', () => {
-            loadStats();
-            renderHistory();
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playDrumSound(freq = 80, duration = 0.4) {
+            if (!soundEnabled) return;
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(18, audioCtx.currentTime + duration);
+
+            gain.gain.setValueAtTime(1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playDrumEffect() {
+            playDrumSound(110, 0.25);
+            setTimeout(() => playDrumSound(75, 0.45), 140);
+        }
+
+        function toggleWarDrum() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundText').innerText = soundEnabled ? 'Trống Trận: Bật' : 'Trống Trận: Tắt';
+            document.getElementById('eqVisualizer').style.display = soundEnabled ? 'flex' : 'none';
+            if (soundEnabled) playDrumEffect();
+        }
+
+        function addScore(pts) {
+            totalScore += pts;
+            document.getElementById('userTotalScore').innerText = totalScore;
+            document.getElementById('formCurrentScore').innerText = totalScore;
+        }
+
+        /* -------------------------------------------------------------
+           2. TAB NAVIGATION SYSTEM
+        ------------------------------------------------------------- */
+        function switchTab(tabId) {
+            playDrumSound(130, 0.15);
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-gradient-to-r', 'from-red-900', 'to-red-950', 'text-yellow-300', 'shadow-[0_0_15px_rgba(255,215,0,0.3)]', 'border-yellow-400/80');
+                btn.classList.add('text-amber-200/80', 'border-yellow-900/40');
+            });
+
+            document.getElementById('sec-' + tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('tab-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-gradient-to-r', 'from-red-900', 'to-red-950', 'text-yellow-300', 'shadow-[0_0_15px_rgba(255,215,0,0.3)]', 'border-yellow-400/80');
+                activeBtn.classList.remove('text-amber-200/80', 'border-yellow-900/40');
+            }
+
+            if (tabId === 'leaderboard') renderLeaderboard();
+        }
+
+        /* -------------------------------------------------------------
+           3. GOLDEN SPARKS PARTICLES CANVAS ENGINE
+        ------------------------------------------------------------- */
+        const bgCanvas = document.getElementById('bgParticleCanvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        let bgParticles = [];
+
+        function resizeBgCanvas() {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeBgCanvas);
+        resizeBgCanvas();
+
+        for (let i = 0; i < 60; i++) {
+            bgParticles.push({
+                x: Math.random() * bgCanvas.width,
+                y: Math.random() * bgCanvas.height,
+                radius: Math.random() * 2.5 + 0.5,
+                color: Math.random() > 0.3 ? '#FFD700' : '#FF4500',
+                speedY: -(Math.random() * 0.9 + 0.3),
+                speedX: (Math.random() - 0.5) * 0.6,
+                alpha: Math.random() * 0.8 + 0.2
+            });
+        }
+
+        function animateBgParticles() {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+            bgParticles.forEach(p => {
+                p.y += p.speedY;
+                p.x += p.speedX;
+                if (p.y < 0) p.y = bgCanvas.height;
+                if (p.x < 0 || p.x > bgCanvas.width) p.x = Math.random() * bgCanvas.width;
+
+                bgCtx.save();
+                bgCtx.globalAlpha = p.alpha;
+                bgCtx.fillStyle = p.color;
+                bgCtx.shadowColor = p.color;
+                bgCtx.shadowBlur = 8;
+                bgCtx.beginPath();
+                bgCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                bgCtx.fill();
+                bgCtx.restore();
+            });
+            requestAnimationFrame(animateBgParticles);
+        }
+        animateBgParticles();
+
+        /* -------------------------------------------------------------
+           4. MINI GAME 1: HÀNH QUÂN THẦN TỐC
+        ------------------------------------------------------------- */
+        const g1Canvas = document.getElementById('game1Canvas');
+        const g1Ctx = g1Canvas.getContext('2d');
+        let g1Running = false;
+        let g1AnimId = null;
+        let g1Distance = 0;
+        let g1Score = 0;
+
+        let runner = { x: 60, y: 150, width: 34, height: 46, vy: 0, gravity: 0.75, jumping: false };
+        let obstacles = [];
+        let g1Frame = 0;
+
+        function initG1Dimensions() {
+            g1Canvas.width = g1Canvas.parentElement.clientWidth;
+            g1Canvas.height = g1Canvas.parentElement.clientHeight || 240;
+            runner.y = g1Canvas.height - 76;
+        }
+        window.addEventListener('resize', initG1Dimensions);
+        window.addEventListener('orientationchange', () => setTimeout(initG1Dimensions, 250));
+
+        function startGame1() {
+            initG1Dimensions();
+            g1Running = true;
+            g1Distance = 0;
+            g1Score = 0;
+            obstacles = [];
+            runner.y = g1Canvas.height - 76;
+            runner.vy = 0;
+            runner.jumping = false;
+            document.getElementById('g1Overlay').classList.add('hidden');
+            playDrumEffect();
+            loopGame1();
+        }
+
+        function jumpRunner() {
+            if (!runner.jumping && g1Running) {
+                runner.vy = -14;
+                runner.jumping = true;
+                playDrumSound(170, 0.12);
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                if (!document.getElementById('sec-game1').classList.contains('hidden')) {
+                    e.preventDefault();
+                    jumpRunner();
+                }
+            }
+        });
+        g1Canvas.addEventListener('pointerdown', jumpRunner);
+
+        function loopGame1() {
+            if (!g1Running) return;
+            g1Frame++;
+            g1Ctx.clearRect(0, 0, g1Canvas.width, g1Canvas.height);
+
+            const groundY = g1Canvas.height - 30;
+
+            // Gradient Ground
+            let groundGrad = g1Ctx.createLinearGradient(0, groundY, 0, g1Canvas.height);
+            groundGrad.addColorStop(0, '#B8860B');
+            groundGrad.addColorStop(1, '#1a0505');
+            g1Ctx.fillStyle = groundGrad;
+            g1Ctx.fillRect(0, groundY, g1Canvas.width, 30);
+
+            // Ground Gold Border Glow
+            g1Ctx.strokeStyle = '#FFD700';
+            g1Ctx.lineWidth = 2;
+            g1Ctx.beginPath();
+            g1Ctx.moveTo(0, groundY);
+            g1Ctx.lineTo(g1Canvas.width, groundY);
+            g1Ctx.stroke();
+
+            // Runner Physics
+            runner.vy += runner.gravity;
+            runner.y += runner.vy;
+            if (runner.y >= groundY - runner.height) {
+                runner.y = groundY - runner.height;
+                runner.jumping = false;
+            }
+
+            // Draw Hero Runner Sprite (Gold & Crimson)
+            g1Ctx.save();
+            g1Ctx.shadowColor = '#FFD700';
+            g1Ctx.shadowBlur = 12;
+            g1Ctx.fillStyle = '#dc2626';
+            g1Ctx.fillRect(runner.x, runner.y, runner.width, runner.height);
+
+            // Banner Flag
+            g1Ctx.fillStyle = '#FFD700';
+            g1Ctx.fillRect(runner.x + 10, runner.y - 18, 32, 14);
+            g1Ctx.fillStyle = '#990000';
+            g1Ctx.font = 'bold 9px "Be Vietnam Pro"';
+            g1Ctx.fillText('TÂY SƠN', runner.x + 12, runner.y - 8);
+            g1Ctx.restore();
+
+            // Obstacles Spawn
+            if (g1Frame % 85 === 0) {
+                obstacles.push({
+                    x: g1Canvas.width,
+                    width: 28 + Math.random() * 14,
+                    height: 32 + Math.random() * 22
+                });
+            }
+
+            // Update Obstacles
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                let obs = obstacles[i];
+                obs.x -= 6.5;
+
+                g1Ctx.save();
+                g1Ctx.fillStyle = '#4a0404';
+                g1Ctx.strokeStyle = '#FFD700';
+                g1Ctx.lineWidth = 1.5;
+                g1Ctx.fillRect(obs.x, groundY - obs.height, obs.width, obs.height);
+                g1Ctx.strokeRect(obs.x, groundY - obs.height, obs.width, obs.height);
+                g1Ctx.restore();
+
+                // Collision Detection
+                if (
+                    runner.x < obs.x + obs.width &&
+                    runner.x + runner.width > obs.x &&
+                    runner.y < groundY &&
+                    runner.y + runner.height > groundY - obs.height
+                ) {
+                    endGame1(false);
+                    return;
+                }
+
+                if (obs.x + obs.width < 0) {
+                    obstacles.splice(i, 1);
+                    g1Score += 50;
+                }
+            }
+
+            g1Distance += 2.5;
+            document.getElementById('g1Distance').innerText = Math.floor(g1Distance);
+            document.getElementById('g1Score').innerText = g1Score;
+
+            if (g1Distance >= 1000) {
+                endGame1(true);
+                return;
+            }
+
+            g1AnimId = requestAnimationFrame(loopGame1);
+        }
+
+        function endGame1(win) {
+            g1Running = false;
+            cancelAnimationFrame(g1AnimId);
+            const overlay = document.getElementById('g1Overlay');
+            const title = document.getElementById('g1Title');
+            const desc = document.getElementById('g1Desc');
+
+            overlay.classList.remove('hidden');
+            if (win) {
+                title.innerText = 'XUẤT SẮC! ĐÃ ĐẾN THĂNG LONG';
+                title.className = 'text-2xl sm:text-4xl font-black font-heading gold-gradient-text mb-2';
+                desc.innerText = `Hoàn thành xuất sắc cuộc hành quân thần tốc! Cộng ${g1Score + 300} điểm vinh danh.`;
+                addScore(g1Score + 300);
+            } else {
+                title.innerText = 'HÀNH QUÂN GIÁN ĐOẠN!';
+                title.className = 'text-2xl sm:text-4xl font-black font-heading text-red-500 mb-2';
+                desc.innerText = `Đoàn quân gặp chướng ngại vấp ngã. Điểm đạt được: ${g1Score}. Thử lại ngay!`;
+                addScore(g1Score);
+            }
+        }
+
+        /* -------------------------------------------------------------
+           5. MINI GAME 2: ĐỐ VUI LỊCH SỬ (QUIZ)
+        ------------------------------------------------------------- */
+        const quizData = [
+            {
+                q: "Nguyễn Huệ đã chọn địa điểm lịch sử nào tại Huế để cử hành lễ tế trời đất, chính thức lên ngôi Hoàng đế năm 1788?",
+                options: ["A. Di tích Núi Bân (An Cựu)", "B. Núi Ngũ Bình", "C. Điện Hòn Chén", "D. Núi Tuần"],
+                correct: 0
+            },
+            {
+                q: "Hoàng đế Nguyễn Huệ lấy niên hiệu là gì sau lễ đăng quang ngày 22/12/1788 tại Núi Bân?",
+                options: ["A. Thái Đức", "B. Quang Trung", "C. Gia Long", "D. Minh Mạng"],
+                correct: 1
+            },
+            {
+                q: "Trận đại phá 29 vạn quân Thanh giải phóng kinh thành Thăng Long diễn ra vào dịp lịch sử nào?",
+                options: ["A. Tết Trung Thu 1788", "B. Tết Kỷ Dậu (1789)", "C. Lễ Đoan Ngọ", "D. Mùa thu năm 1789"],
+                correct: 1
+            },
+            {
+                q: "Di tích lịch sử Quốc gia Núi Bân hiện nay thuộc địa bàn phường nào của TP. Huế?",
+                options: ["A. Phường Trường An", "B. Phường An Cựu", "C. Phường Thủy Xuân", "D. Phường Vĩnh Ninh"],
+                correct: 1
+            },
+            {
+                q: "Tượng đài Hoàng đế Quang Trung tại Di tích Núi Bân (Phường An Cựu) có chiều cao bao nhiêu mét?",
+                options: ["A. 15 mét", "B. 21 mét", "C. 30 mét", "D. 12 mét"],
+                correct: 1
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+
+        function loadQuizQuestion() {
+            if (currentQuizIndex >= quizData.length) {
+                showQuizResult();
+                return;
+            }
+
+            document.getElementById('quizIndex').innerText = currentQuizIndex + 1;
+            document.getElementById('quizTotal').innerText = quizData.length;
+            document.getElementById('quizScore').innerText = quizScore;
+
+            const qObj = quizData[currentQuizIndex];
+            document.getElementById('quizQuestion').innerText = qObj.q;
+
+            const answersDiv = document.getElementById('quizAnswers');
+            answersDiv.innerHTML = '';
+            document.getElementById('quizFeedback').classList.add('hidden');
+
+            qObj.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'glass-card hover:border-yellow-400 p-4 rounded-xl text-left text-sm sm:text-base font-bold text-amber-100 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.5)] flex items-center justify-between group';
+                btn.innerHTML = `<span>${opt}</span><i class="fas fa-chevron-right text-xs opacity-0 group-hover:opacity-100 text-yellow-400 transition-all"></i>`;
+                btn.onclick = () => checkQuizAnswer(idx, btn);
+                answersDiv.appendChild(btn);
+            });
+        }
+
+        function checkQuizAnswer(selectedIdx, btnEl) {
+            const qObj = quizData[currentQuizIndex];
+            const feedback = document.getElementById('quizFeedback');
+            feedback.classList.remove('hidden');
+
+            const allBtns = document.getElementById('quizAnswers').children;
+            for (let b of allBtns) b.disabled = true;
+
+            if (selectedIdx === qObj.correct) {
+                quizScore += 100;
+                btnEl.classList.add('border-emerald-400', 'bg-emerald-950/80');
+                feedback.className = 'text-center p-3.5 rounded-xl font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]';
+                feedback.innerHTML = '<i class="fas fa-check-circle mr-2"></i> CHÍNH XÁC! +100 Điểm';
+                playDrumSound(220, 0.2);
+            } else {
+                btnEl.classList.add('border-rose-600', 'bg-rose-950/80');
+                allBtns[qObj.correct].classList.add('border-emerald-400', 'bg-emerald-950/80');
+                feedback.className = 'text-center p-3.5 rounded-xl font-bold bg-rose-950/90 text-rose-300 border border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.4)]';
+                feedback.innerHTML = '<i class="fas fa-times-circle mr-2"></i> CHƯA CHÍNH XÁC!';
+                playDrumSound(65, 0.35);
+            }
+
+            setTimeout(() => {
+                currentQuizIndex++;
+                loadQuizQuestion();
+            }, 1500);
+        }
+
+        function showQuizResult() {
+            document.getElementById('quizBox').classList.add('hidden');
+            document.getElementById('quizResultBox').classList.remove('hidden');
+            document.getElementById('finalQuizScore').innerText = quizScore;
+            addScore(quizScore);
+        }
+
+        function resetQuiz() {
+            currentQuizIndex = 0;
+            quizScore = 0;
+            document.getElementById('quizBox').classList.remove('hidden');
+            document.getElementById('quizResultBox').classList.add('hidden');
+            loadQuizQuestion();
+        }
+        loadQuizQuestion();
+
+        /* -------------------------------------------------------------
+           6. MINI GAME 3: ĐẠI PHÁ ĐỐNG ĐA (CANVAS SHOOTER WITH DRAGON POWER)
+        ------------------------------------------------------------- */
+        const g3Canvas = document.getElementById('game3Canvas');
+        const g3Ctx = g3Canvas.getContext('2d');
+        let g3Running = false;
+        let g3Timer = 30;
+        let g3Kills = 0;
+        let g3Score = 0;
+        let enemies = [];
+        let explosions = [];
+        let g3Interval = null;
+        let g3AnimId = null;
+
+        function initG3Dimensions() {
+            g3Canvas.width = g3Canvas.parentElement.clientWidth;
+            g3Canvas.height = g3Canvas.parentElement.clientHeight || 240;
+        }
+        window.addEventListener('resize', initG3Dimensions);
+        window.addEventListener('orientationchange', () => setTimeout(initG3Dimensions, 250));
+
+        function startGame3() {
+            initG3Dimensions();
+            g3Running = true;
+            g3Timer = 30;
+            g3Kills = 0;
+            g3Score = 0;
+            enemies = [];
+            explosions = [];
+            document.getElementById('g3Overlay').classList.add('hidden');
+            document.getElementById('g3Time').innerText = g3Timer;
+            document.getElementById('g3Kills').innerText = g3Kills;
+            document.getElementById('g3Score').innerText = g3Score;
+
+            if (g3Interval) clearInterval(g3Interval);
+            g3Interval = setInterval(() => {
+                g3Timer--;
+                document.getElementById('g3Time').innerText = g3Timer;
+                if (g3Timer <= 0) endGame3();
+            }, 1000);
+
+            playDrumEffect();
+            loopGame3();
+        }
+
+        function triggerExplosion(x, y) {
+            for (let i = 0; i < 12; i++) {
+                explosions.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    radius: Math.random() * 4 + 2,
+                    alpha: 1
+                });
+            }
+        }
+
+        function useDragonPower() {
+            if (!g3Running) return;
+            playDrumSound(300, 0.4);
+            g3Kills += enemies.length;
+            g3Score += enemies.length * 40;
+            enemies.forEach(en => triggerExplosion(en.x, en.y));
+            enemies = [];
+            document.getElementById('g3Kills').innerText = g3Kills;
+            document.getElementById('g3Score').innerText = g3Score;
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !document.getElementById('sec-game3').classList.contains('hidden')) {
+                e.preventDefault();
+                useDragonPower();
+            }
         });
 
-        // Theme Toggle
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
-        }
+        g3Canvas.addEventListener('pointerdown', (e) => {
+            if (!g3Running) return;
+            const rect = g3Canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
 
-        // Tab Navigation Switcher
-        function switchTab(tabId) {
-            document.querySelectorAll('.tool-section').forEach(sec => sec.classList.add('hidden'));
-            document.getElementById(tabId).classList.remove('hidden');
-
-            // Reset desktop Nav styles
-            document.querySelectorAll('.nav-tab').forEach(btn => {
-                btn.className = 'nav-tab px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
-            });
-            const activeNavBtn = document.getElementById(`tab-btn-${tabId}`);
-            if (activeNavBtn) {
-                activeNavBtn.className = 'nav-tab px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-2 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-800 shadow-sm';
-            }
-
-            // Reset Mobile Nav styles
-            document.querySelectorAll('[id^="mob-tab-"]').forEach(btn => {
-                btn.className = 'flex flex-col items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 py-1 px-3 rounded-lg';
-            });
-            const activeMobBtn = document.getElementById(`mob-tab-${tabId}`);
-            if(activeMobBtn) {
-                activeMobBtn.className = 'flex flex-col items-center gap-1 text-xs font-medium text-indigo-500 py-1 px-3 rounded-lg bg-indigo-500/10';
-            }
-        }
-
-        // Modal Handlers
-        function openModal(id) {
-            document.getElementById(id).classList.remove('hidden');
-        }
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-
-        // --- 1. PDF TO WORD CONVERTER ENGINE ---
-        function handlePdfSelect(e) {
-            const file = e.target.files[0];
-            if (!file || file.type !== 'application/pdf') {
-                alert('Vui lòng chọn file định dạng PDF hợp lệ!');
-                return;
-            }
-            loadPdfPreview(file);
-        }
-
-        async function loadPdfPreview(file) {
-            const previewBox = document.getElementById('pdf-preview-box');
-            const pageCountLabel = document.getElementById('pdf-page-count');
-            const convertBtn = document.getElementById('btn-convert-pdf');
-
-            previewBox.innerHTML = '<div class="text-center py-8 text-slate-400"><i class="fa-solid fa-spinner animate-spin text-2xl mb-2"></i><p class="text-xs">Đang nạp file PDF...</p></div>';
-
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                currentPdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                
-                pageCountLabel.innerText = `${currentPdfDoc.numPages} trang • ${(file.size / (1024 * 1024)).toFixed(2)} MB`;
-                previewBox.innerHTML = '';
-                pdfExtractedText = '';
-
-                // Extract and render first few pages
-                for (let i = 1; i <= Math.min(currentPdfDoc.numPages, 3); i++) {
-                    const page = await currentPdfDoc.getPage(i);
-                    const textContent = await page.getTextContent();
-                    const pageText = textContent.items.map(item => item.str).join(' ');
-                    pdfExtractedText += `\n--- TRANG ${i} ---\n` + pageText + '\n';
-
-                    const pageDiv = document.createElement('div');
-                    pageDiv.className = 'p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 text-xs font-mono';
-                    pageDiv.innerHTML = `<strong class="text-indigo-500">Trang ${i}:</strong> ${pageText.substring(0, 300)}...`;
-                    previewBox.appendChild(pageDiv);
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                let en = enemies[i];
+                let dist = Math.hypot(clickX - en.x, clickY - en.y);
+                if (dist < en.radius + 18) {
+                    triggerExplosion(en.x, en.y);
+                    enemies.splice(i, 1);
+                    g3Kills++;
+                    g3Score += 35;
+                    document.getElementById('g3Kills').innerText = g3Kills;
+                    document.getElementById('g3Score').innerText = g3Score;
+                    playDrumSound(250, 0.1);
+                    break;
                 }
-
-                convertBtn.disabled = false;
-            } catch (err) {
-                previewBox.innerHTML = '<p class="text-red-500 text-xs text-center py-4">Lỗi khi đọc file PDF. File có thể bị khóa mật khẩu hoặc hư hỏng.</p>';
             }
-        }
+        });
 
-        async function convertPdfToWord() {
-            if (!currentPdfDoc) return;
+        function loopGame3() {
+            if (!g3Running) return;
+            g3Ctx.clearRect(0, 0, g3Canvas.width, g3Canvas.height);
 
-            const progressWrap = document.getElementById('pdf-progress-wrap');
-            const progressBar = document.getElementById('pdf-progress-bar');
-            const progressStatus = document.getElementById('pdf-progress-status');
-            const progressPercent = document.getElementById('pdf-progress-percent');
-            const resultActions = document.getElementById('pdf-result-actions');
-            const downloadLink = document.getElementById('pdf-download-link');
-
-            progressWrap.classList.remove('hidden');
-            resultActions.classList.add('hidden');
-
-            let fullContent = '';
-            const totalPages = currentPdfDoc.numPages;
-
-            for (let i = 1; i <= totalPages; i++) {
-                const page = await currentPdfDoc.getPage(i);
-                const textContent = await page.getTextContent();
-                const pageText = textContent.items.map(item => item.str).join(' ');
-                fullContent += `<h1>Trang ${i}</h1><p>${pageText}</p><br/>`;
-
-                const pct = Math.round((i / totalPages) * 100);
-                progressBar.style.width = pct + '%';
-                progressPercent.innerText = pct + '%';
-                progressStatus.innerText = `Đang trích xuất cấu trúc trang ${i}/${totalPages}...`;
-                await new Promise(r => setTimeout(r, 60));
+            // Spawn Qing Enemies
+            if (Math.random() < 0.06 && enemies.length < 14) {
+                enemies.push({
+                    x: Math.random() * (g3Canvas.width - 50) + 25,
+                    y: -20,
+                    speed: 1.6 + Math.random() * 2.2,
+                    radius: 20
+                });
             }
 
-            // Create HTML-based Word Blob (.docx compatible)
-            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
-                "xmlns:w='urn:schemas-microsoft-com:office:word' "+
-                "xmlns='http://www.w3.org/TR/REC-html40'>"+
-                "<head><meta charset='utf-8'><title>Export Word</title></head><body>";
-            const footer = "</body></html>";
-            const sourceHTML = header + fullContent + footer;
+            // Draw Explosions
+            for (let i = explosions.length - 1; i >= 0; i--) {
+                let ex = explosions[i];
+                ex.x += ex.vx;
+                ex.y += ex.vy;
+                ex.alpha -= 0.04;
+                if (ex.alpha <= 0) {
+                    explosions.splice(i, 1);
+                    continue;
+                }
+                g3Ctx.save();
+                g3Ctx.globalAlpha = ex.alpha;
+                g3Ctx.fillStyle = '#FFD700';
+                g3Ctx.beginPath();
+                g3Ctx.arc(ex.x, ex.y, ex.radius, 0, Math.PI * 2);
+                g3Ctx.fill();
+                g3Ctx.restore();
+            }
 
-            const blob = new Blob(['\ufeff', sourceHTML], {
-                type: 'application/msword'
-            });
+            // Draw Qing Enemies
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                let en = enemies[i];
+                en.y += en.speed;
 
-            const url = URL.createObjectURL(blob);
-            downloadLink.href = url;
-            downloadLink.download = 'KTOOLS_Converted_Doc.docx';
+                g3Ctx.save();
+                g3Ctx.fillStyle = '#990000';
+                g3Ctx.strokeStyle = '#FFD700';
+                g3Ctx.lineWidth = 2;
+                g3Ctx.beginPath();
+                g3Ctx.arc(en.x, en.y, en.radius, 0, Math.PI * 2);
+                g3Ctx.fill();
+                g3Ctx.stroke();
 
-            resultActions.classList.remove('hidden');
-            progressStatus.innerText = 'Hoàn tất chuyển đổi!';
-            incrementStat('stat-pdf');
-            addHistory('Chuyển đổi PDF sang Word', 'Hoàn tất file .docx');
+                g3Ctx.fillStyle = '#ffffff';
+                g3Ctx.font = 'bold 11px "Be Vietnam Pro"';
+                g3Ctx.textAlign = 'center';
+                g3Ctx.fillText('ĐỊCH', en.x, en.y + 4);
+                g3Ctx.restore();
+
+                if (en.y > g3Canvas.height + 25) {
+                    enemies.splice(i, 1);
+                }
+            }
+
+            g3AnimId = requestAnimationFrame(loopGame3);
         }
 
-        // --- 2. VIDEO DOWNLOADER ENGINE ---
-        function setSampleVideo(url) {
-            document.getElementById('video-url-input').value = url;
-            parseVideoUrl();
+        function endGame3() {
+            g3Running = false;
+            clearInterval(g3Interval);
+            cancelAnimationFrame(g3AnimId);
+
+            const overlay = document.getElementById('g3Overlay');
+            document.getElementById('g3Title').innerText = 'HOÀN THÀNH ĐẠI PHÁ!';
+            document.getElementById('g3Desc').innerText = `Tiêu diệt ${g3Kills} tên địch! Cộng ${g3Score} điểm tích lũy.`;
+            overlay.classList.remove('hidden');
+
+            addScore(g3Score);
         }
 
-        function parseVideoUrl() {
-            const url = document.getElementById('video-url-input').value.trim();
-            if (!url) {
-                alert('Vui lòng nhập đường dẫn video!');
+        /* -------------------------------------------------------------
+           7. LEADERBOARD SYSTEM (LOCAL STORAGE)
+        ------------------------------------------------------------- */
+        let mockLeaderboard = [
+            { name: "Nguyễn Văn Hùng", group: "Tổ 3", score: 1150 },
+            { name: "Lê Thị Mai", group: "Tổ 1", score: 920 },
+            { name: "Trần Anh Tuấn", group: "Tổ 5", score: 840 },
+            { name: "Phạm Quốc Bảo", group: "Tổ 7", score: 710 }
+        ];
+
+        function getLeaderboardData() {
+            const stored = localStorage.getItem('ancuu_hero_lb');
+            if (stored) {
+                try { return JSON.parse(stored); } catch (e) { return mockLeaderboard; }
+            }
+            return mockLeaderboard;
+        }
+
+        function saveScore() {
+            const nameInput = document.getElementById('playerNameInput').value.trim();
+            const groupInput = document.getElementById('playerGroupInput').value;
+
+            if (!nameInput) {
+                alert('Vui lòng nhập Họ và Tên công dân!');
                 return;
             }
 
-            const resultCard = document.getElementById('video-result-card');
-            const titleEl = document.getElementById('video-title');
-            const thumbEl = document.getElementById('video-thumb');
-            const badgeEl = document.getElementById('video-badge');
-
-            resultCard.classList.remove('hidden');
-
-            if (url.includes('tiktok.com')) {
-                badgeEl.innerText = 'TikTok';
-                badgeEl.className = 'absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold text-white uppercase bg-pink-600';
-                titleEl.innerText = 'Tiktok Clip Hot Trends - KTOOLS Auto Extra';
-                thumbEl.src = 'https://images.unsplash.com/photo-1611605698335-8b1569810432?auto=format&fit=crop&w=600&q=80';
-            } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
-                badgeEl.innerText = 'YouTube';
-                badgeEl.className = 'absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold text-white uppercase bg-red-600';
-                titleEl.innerText = 'Video Ca Nhạc / VLOG Chất Lượng Cao 4K YouTube';
-                thumbEl.src = 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=600&q=80';
-            } else {
-                badgeEl.innerText = 'Facebook';
-                badgeEl.className = 'absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold text-white uppercase bg-blue-600';
-                titleEl.innerText = 'Facebook Reel / Video Trích Xuất HD';
-                thumbEl.src = 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600&q=80';
-            }
-        }
-
-        function downloadVideoFormat(format) {
-            const url = document.getElementById('video-url-input').value;
-            alert(`[KTOOLS Download Engine] Đang khởi tạo link tải trực tiếp định dạng ${format.toUpperCase()} cho liên kết của bạn!`);
-            incrementStat('stat-video');
-            addHistory('Tải Video Multi-Platform', `Tải về định dạng ${format.toUpperCase()}`);
-        }
-
-        // --- 3. AI BACKGROUND REMOVER ENGINE ---
-        function handleImageSelect(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const img = new Image();
-                img.onload = () => {
-                    currentLoadedImage = img;
-                    document.getElementById('canvas-placeholder').classList.add('hidden');
-                    document.getElementById('canvas-wrapper').classList.remove('hidden');
-                    document.getElementById('btn-download-img').disabled = false;
-                    updateBgRemoval();
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function setBgMode(mode) {
-            selectedBgColor = mode;
-            updateBgRemoval();
-        }
-
-        function updateBgRemoval() {
-            if (!currentLoadedImage) return;
-
-            const canvas = document.getElementById('editor-canvas');
-            const ctx = canvas.getContext('2d');
-            const tolerance = parseInt(document.getElementById('input-tolerance').value);
-            document.getElementById('val-tolerance').innerText = tolerance + '%';
-
-            canvas.width = currentLoadedImage.width;
-            canvas.height = currentLoadedImage.height;
-
-            // Draw original image
-            ctx.drawImage(currentLoadedImage, 0, 0);
-
-            // Get image data for color range chroma keying
-            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imgData.data;
-
-            // Simple corner-color sample algorithm for background detection
-            const bgR = data[0];
-            const bgG = data[1];
-            const bgB = data[2];
-
-            const threshold = (tolerance / 100) * 255 * 1.5;
-
-            for (let i = 0; i < data.length; i += 4) {
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-
-                const diff = Math.sqrt(
-                    (r - bgR) * (r - bgR) +
-                    (g - bgG) * (g - bgG) +
-                    (b - bgB) * (b - bgB)
-                );
-
-                if (diff < threshold) {
-                    data[i + 3] = 0; // Set transparent alpha
-                }
-            }
-
-            // Put processed transparent image back
-            ctx.putImageData(imgData, 0, 0);
-
-            // Render replacement background if selected
-            if (selectedBgColor !== 'transparent') {
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = canvas.width;
-                tempCanvas.height = canvas.height;
-                const tempCtx = tempCanvas.getContext('2d');
-
-                if (selectedBgColor.startsWith('gradient')) {
-                    const grad = tempCtx.createLinearGradient(0, 0, tempCanvas.width, tempCanvas.height);
-                    if (selectedBgColor === 'gradient-1') {
-                        grad.addColorStop(0, '#ec4899');
-                        grad.addColorStop(1, '#f43f5e');
-                    } else {
-                        grad.addColorStop(0, '#06b6d4');
-                        grad.addColorStop(1, '#2563eb');
-                    }
-                    tempCtx.fillStyle = grad;
-                } else {
-                    tempCtx.fillStyle = selectedBgColor;
-                }
-                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-                // Add drop shadow if enabled
-                const hasShadow = document.getElementById('check-shadow').checked;
-                if (hasShadow) {
-                    tempCtx.shadowColor = 'rgba(0,0,0,0.5)';
-                    tempCtx.shadowBlur = 20;
-                    tempCtx.shadowOffsetY = 10;
-                }
-
-                tempCtx.drawImage(canvas, 0, 0);
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(tempCanvas, 0, 0);
-            }
-        }
-
-        function downloadProcessedImage() {
-            const canvas = document.getElementById('editor-canvas');
-            const link = document.createElement('a');
-            link.download = 'KTOOLS_AI_Background_Removed.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-
-            incrementStat('stat-bg');
-            addHistory('Tách Nền Ảnh AI', 'Xuất ảnh HD PNG');
-        }
-
-        // --- 4. UTILS & LOCALSTORAGE HISTORY ---
-        function incrementStat(id) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            let val = parseInt(el.innerText.replace(/,/g, ''));
-            val++;
-            el.innerText = val.toLocaleString();
-        }
-
-        function loadStats() {
-            // Stats loaded from initial view
-        }
-
-        function addHistory(toolName, detail) {
-            let history = JSON.parse(localStorage.getItem('ktools_history') || '[]');
-            history.unshift({
-                tool: toolName,
-                detail: detail,
-                time: new Date().toLocaleTimeString('vi-VN') + ' ' + new Date().toLocaleDateString('vi-VN')
+            let lb = getLeaderboardData();
+            lb.push({
+                name: nameInput,
+                group: groupInput,
+                score: totalScore
             });
-            if (history.length > 15) history.pop();
-            localStorage.setItem('ktools_history', JSON.stringify(history));
-            renderHistory();
-            document.getElementById('history-badge').classList.remove('hidden');
+
+            lb.sort((a, b) => b.score - a.score);
+            lb = lb.slice(0, 10);
+
+            localStorage.setItem('ancuu_hero_lb', JSON.stringify(lb));
+            renderLeaderboard();
+            alert('Lưu thành công thành tích anh hùng của bạn!');
         }
 
-        function renderHistory() {
-            const listEl = document.getElementById('history-list');
-            let history = JSON.parse(localStorage.getItem('ktools_history') || '[]');
+        function renderLeaderboard() {
+            const lb = getLeaderboardData();
+            const tbody = document.getElementById('leaderboardBody');
+            tbody.innerHTML = '';
 
-            if (history.length === 0) {
-                listEl.innerHTML = '<p class="text-center text-slate-400 py-6">Chưa có lịch sử thao tác nào</p>';
-                return;
-            }
-
-            listEl.innerHTML = history.map(item => `
-                <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-between border border-slate-200 dark:border-slate-700">
-                    <div>
-                        <div class="font-bold text-slate-700 dark:text-slate-200">${item.tool}</div>
-                        <div class="text-[11px] text-slate-500">${item.detail}</div>
-                    </div>
-                    <span class="text-[10px] font-mono text-indigo-500 bg-indigo-500/10 px-2 py-1 rounded-lg">${item.time}</span>
-                </div>
-            `).join('');
+            lb.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = index < 3 ? 'bg-yellow-500/10 font-bold border-b border-yellow-500/30' : 'border-b border-yellow-900/20';
+                tr.innerHTML = `
+                    <td class="py-3 px-3 font-heading">
+                        ${index === 0 ? '<span class="text-yellow-300 font-black"><i class="fas fa-crown mr-1"></i>1</span>' : 
+                          index === 1 ? '<span class="text-slate-300 font-black"><i class="fas fa-medal mr-1"></i>2</span>' : 
+                          index === 2 ? '<span class="text-amber-500 font-black"><i class="fas fa-award mr-1"></i>3</span>' : index + 1}
+                    </td>
+                    <td class="py-3 px-3 font-semibold">${item.name}</td>
+                    <td class="py-3 px-3 text-amber-200/80">${item.group}</td>
+                    <td class="py-3 px-3 text-right font-black text-yellow-300">${item.score} pts</td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
-
-        function clearHistory() {
-            localStorage.removeItem('ktools_history');
-            renderHistory();
-            document.getElementById('history-badge').classList.add('hidden');
-        }
-
-        function handleContactSubmit(e) {
-            e.preventDefault();
-            alert('Cảm ơn bạn đã gửi phản hồi! Trần Anh Khoa (KHOACIT) sẽ phản hồi qua email/SĐT sớm nhất.');
-            closeModal('contact-modal');
-        }
+        renderLeaderboard();
     </script>
 </body>
 </html>
