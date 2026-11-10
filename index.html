@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThoitietHue - System Theo Dõi Lũ Lụt & Mực Nước TP. Huế | Dev Trần Anh Khoa</title>
+    <title>ThoitietHue - Theo Dõi Lũ Lụt & Trạm Đỉnh Bạch Mã | Dev Trần Anh Khoa</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -52,20 +52,20 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background: #090d16;
+            background: #080c14;
             color: #f8fafc;
         }
 
         /* Glassmorphic UI */
         .glass-panel {
-            background: rgba(15, 23, 42, 0.75);
+            background: rgba(15, 23, 42, 0.78);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .glass-card {
-            background: rgba(30, 41, 59, 0.4);
+            background: rgba(30, 41, 59, 0.45);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.06);
         }
@@ -77,8 +77,8 @@
 
         /* Animations */
         @keyframes pulse-glow {
-            0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8)); }
-            50% { opacity: 0.4; filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.3)); }
+            0%, 100% { opacity: 1; filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.9)); }
+            50% { opacity: 0.3; filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.3)); }
         }
         .pulse-live { animation: pulse-glow 1.5s infinite; }
 
@@ -117,36 +117,46 @@
     <div id="toast-container" class="fixed top-20 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
 
     <!-- HEADER / NAVIGATION -->
-    <header class="sticky top-0 z-40 glass-panel border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
+    <header class="sticky top-0 z-40 glass-panel border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 
                 <!-- Brand Title -->
                 <div class="flex items-center gap-3">
                     <div class="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
-                        <i class="fa-solid fa-water text-xl"></i>
+                        <i class="fa-solid fa-cloud-showers-water text-xl"></i>
                         <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-slate-950 pulse-live"></span>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
                             <span class="font-black text-xl text-white tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">ThoitietHue</span>
-                            <span class="px-2 py-0.5 text-[10px] font-extrabold bg-cyan-500/20 text-cyan-300 rounded-md border border-cyan-500/40 font-mono">v3.0 ULTRA</span>
+                            <span class="px-2 py-0.5 text-[10px] font-extrabold bg-cyan-500/20 text-cyan-300 rounded-md border border-cyan-500/40 font-mono">v3.5 ULTRA</span>
                         </div>
                         <p class="text-[11px] text-slate-400 font-medium flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-ping"></span>
-                            Giám Sát Lũ Lụt Realtime TP. Huế
+                            Realtime Water & Bạch Mã Weather Monitoring
                         </p>
                     </div>
                 </div>
 
-                <!-- Center Live Status -->
-                <div class="hidden lg:flex items-center gap-4 bg-slate-900/90 px-4 py-2 rounded-full border border-slate-800/80">
+                <!-- Realtime Interval Controls -->
+                <div class="hidden lg:flex items-center gap-3 bg-slate-900/90 px-4 py-1.5 rounded-full border border-slate-800">
                     <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span class="text-xs font-semibold text-slate-300" id="live-tick-text">Tự động đồng bộ (3s)</span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" id="sync-led"></span>
+                        <span class="text-xs font-bold text-slate-300">Đồng bộ:</span>
                     </div>
+                    <select id="sync-interval-select" onchange="changeSyncInterval(this.value)" class="bg-slate-950 text-cyan-400 text-xs font-mono font-bold px-2 py-1 rounded-lg border border-slate-700 focus:outline-none">
+                        <option value="3000">3s (Siêu nhanh)</option>
+                        <option value="5000" selected>5s (Tiêu chuẩn)</option>
+                        <option value="10000">10s (Tiết kiệm)</option>
+                        <option value="30000">30s (Chậm)</option>
+                        <option value="manual">Thủ công</option>
+                    </select>
                     <div class="h-3 w-px bg-slate-700"></div>
-                    <span class="text-xs font-mono text-cyan-400 font-bold" id="live-update-timer">Vừa cập nhật: 0s trước</span>
+                    <span class="text-xs font-mono text-cyan-400 font-bold" id="live-update-timer">0s trước</span>
+                    <button onclick="manualRefreshData()" class="p-1 px-2 rounded-lg bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-600 hover:text-white transition text-xs font-bold" title="Cập nhật ngay">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
                 </div>
 
                 <!-- Developer Badge -->
@@ -170,16 +180,16 @@
     </header>
 
     <!-- LIVE EMERGENCY BREAKING TICKER -->
-    <div class="bg-gradient-to-r from-red-950/80 via-amber-950/60 to-slate-950 border-b border-red-500/30 text-xs py-2 px-4 overflow-hidden relative">
+    <div class="bg-gradient-to-r from-red-950/90 via-amber-950/70 to-slate-950 border-b border-red-500/30 text-xs py-2 px-4 overflow-hidden relative">
         <div class="max-w-7xl mx-auto flex items-center gap-3">
             <span class="px-2 py-0.5 font-black bg-red-600 text-white rounded text-[10px] tracking-wider uppercase shrink-0 flex items-center gap-1">
                 <i class="fa-solid fa-bell animate-bounce"></i> KHẨN CẤP
             </span>
             <div class="overflow-hidden relative w-full font-medium text-slate-200">
                 <div class="whitespace-nowrap animate-marquee flex items-center gap-8" id="ticker-content">
-                    <span>⚠️ <strong>Sông Bồ (Tứ Phú)</strong>: Mực nước 304cm - Vượt Báo Động II (+4cm). Yêu cầu hạ lưu sơ tán tài sản khẩn cấp.</span>
+                    <span>⛰️ <strong>Đỉnh Bạch Mã (1,449m)</strong>: Lượng mưa tích lũy 24h đạt <strong class="text-amber-400 font-mono" id="ticker-bm-rain">342.5mm</strong> - Nguy cơ sạt lở đèo Bạch Mã cao.</span>
+                    <span>⚠️ <strong>Sông Bồ (Tứ Phú)</strong>: Mực nước 304cm - Vượt Báo Động II (+4cm). Yêu cầu hạ lưu sơ tán khẩn cấp.</span>
                     <span>🌊 <strong>Thủy Điện Hương Điền</strong>: Đang duy trì xả lũ điều tiết 1,250 m³/s.</span>
-                    <span>🚨 <strong>Cầu Đập Đá</strong>: Nước đã tràn ngập 45cm - Cấm toàn bộ xe máy và xe ô tô gầm thấp di chuyển.</span>
                 </div>
             </div>
         </div>
@@ -188,97 +198,118 @@
     <!-- MAIN CONTENT AREA -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        <!-- QUICK METRICS OVERVIEW (4 STAT CARDS) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- QUICK METRICS OVERVIEW (5 STAT CARDS INCL. BẠCH MÃ) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             
-            <!-- Card 1: Sông Bồ -->
-            <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-amber-500/50 transition duration-300">
-                <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition"></div>
+            <!-- Card 1: ĐỈNH BẠCH MÃ (NEW TELEMETRY) -->
+            <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-purple-500/50 transition duration-300 bg-gradient-to-b from-purple-950/30 to-transparent">
+                <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition"></div>
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Trạm Tứ Phú (Sông Bồ)</p>
-                        <h3 class="text-3xl font-black text-white mt-1 font-mono tracking-tight" id="val-tu-phu">
-                            304 <span class="text-sm font-normal text-slate-400">cm</span>
+                        <p class="text-[10px] font-extrabold text-purple-300 uppercase tracking-wider flex items-center gap-1">
+                            <i class="fa-solid fa-mountain"></i> Đỉnh Bạch Mã (1,449m)
+                        </p>
+                        <h3 class="text-2xl font-black text-white mt-1 font-mono tracking-tight" id="val-bm-rain">
+                            342.5 <span class="text-xs font-normal text-slate-400">mm/24h</span>
                         </h3>
                     </div>
-                    <span class="px-2.5 py-1 text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-xl flex items-center gap-1 shadow-lg">
-                        <i class="fa-solid fa-triangle-exclamation"></i> BĐ II
+                    <span class="px-2 py-1 text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded-xl shadow-lg">
+                        Cực Mưa
                     </span>
                 </div>
-                <div class="mt-4 flex items-center justify-between text-xs">
-                    <span class="text-slate-400">Mức BĐ3: 450cm</span>
-                    <span class="text-amber-400 font-bold flex items-center gap-1" id="trend-tu-phu">
-                        <i class="fa-solid fa-arrow-up"></i> +2.4 cm/h
+                <div class="mt-3 flex items-center justify-between text-xs">
+                    <span class="text-slate-400"><i class="fa-solid fa-temperature-low text-cyan-400 mr-1"></i><span id="bm-temp">16.4°C</span></span>
+                    <span class="text-amber-400 font-bold flex items-center gap-1" id="bm-wind">
+                        <i class="fa-solid fa-wind"></i> Gió: 42 km/h
                     </span>
+                </div>
+                <div class="w-full bg-slate-800/80 h-2 rounded-full mt-2 overflow-hidden border border-slate-700/50">
+                    <div id="bar-bm-rain" class="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-700" style="width: 85%"></div>
+                </div>
+            </div>
+
+            <!-- Card 2: Sông Bồ -->
+            <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-amber-500/50 transition duration-300">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Trạm Tứ Phú (Sông Bồ)</p>
+                        <h3 class="text-2xl font-black text-white mt-1 font-mono tracking-tight" id="val-tu-phu">
+                            304 <span class="text-xs font-normal text-slate-400">cm</span>
+                        </h3>
+                    </div>
+                    <span class="px-2 py-1 text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-xl">
+                        BĐ II
+                    </span>
+                </div>
+                <div class="mt-3 flex items-center justify-between text-xs">
+                    <span class="text-slate-400">BĐ3: 450cm</span>
+                    <span class="text-amber-400 font-bold" id="trend-tu-phu"><i class="fa-solid fa-arrow-up"></i> +2.4 cm/h</span>
                 </div>
                 <div class="w-full bg-slate-800/80 h-2 rounded-full mt-2 overflow-hidden border border-slate-700/50">
                     <div id="bar-tu-phu" class="bg-gradient-to-r from-amber-500 to-red-500 h-full rounded-full transition-all duration-700" style="width: 67.5%"></div>
                 </div>
             </div>
 
-            <!-- Card 2: Sông Hương -->
+            <!-- Card 3: Sông Hương -->
             <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-cyan-500/50 transition duration-300">
-                <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl group-hover:bg-cyan-500/20 transition"></div>
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Trạm Kim Long (Sông Hương)</p>
-                        <h3 class="text-3xl font-black text-white mt-1 font-mono tracking-tight" id="val-kim-long">
-                            103 <span class="text-sm font-normal text-slate-400">cm</span>
+                        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Trạm Kim Long (Sông Hương)</p>
+                        <h3 class="text-2xl font-black text-white mt-1 font-mono tracking-tight" id="val-kim-long">
+                            103 <span class="text-xs font-normal text-slate-400">cm</span>
                         </h3>
                     </div>
-                    <span class="px-2.5 py-1 text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-xl flex items-center gap-1 shadow-lg">
-                        <i class="fa-solid fa-shield-halved"></i> Dưới Đập Đá
+                    <span class="px-2 py-1 text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-xl">
+                        Dưới Đập Đá
                     </span>
                 </div>
-                <div class="mt-4 flex items-center justify-between text-xs">
-                    <span class="text-slate-400">Ngưỡng Đập Đá: 180cm</span>
-                    <span class="text-emerald-400 font-bold flex items-center gap-1" id="trend-kim-long">
-                        <i class="fa-solid fa-minus"></i> Ổn định
-                    </span>
+                <div class="mt-3 flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Đập Đá: 180cm</span>
+                    <span class="text-emerald-400 font-bold" id="trend-kim-long"><i class="fa-solid fa-minus"></i> Ổn định</span>
                 </div>
                 <div class="w-full bg-slate-800/80 h-2 rounded-full mt-2 overflow-hidden border border-slate-700/50">
                     <div id="bar-kim-long" class="bg-gradient-to-r from-cyan-500 to-emerald-400 h-full rounded-full transition-all duration-700" style="width: 29.4%"></div>
                 </div>
             </div>
 
-            <!-- Card 3: Lượng Mưa Tích Lũy -->
+            <!-- Card 4: Lượng Mưa TP Huế -->
             <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-blue-500/50 transition duration-300">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Lượng Mưa 24h Trung Bình</p>
-                        <h3 class="text-3xl font-black text-white mt-1 font-mono tracking-tight" id="val-rain">
-                            148.2 <span class="text-sm font-normal text-slate-400">mm</span>
+                        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Mưa TP. Huế 24h</p>
+                        <h3 class="text-2xl font-black text-white mt-1 font-mono tracking-tight" id="val-rain">
+                            148.2 <span class="text-xs font-normal text-slate-400">mm</span>
                         </h3>
                     </div>
-                    <div class="p-2.5 bg-blue-500/20 text-blue-400 rounded-xl border border-blue-500/30">
-                        <i class="fa-solid fa-cloud-showers-heavy text-lg"></i>
+                    <div class="p-2 bg-blue-500/20 text-blue-400 rounded-xl border border-blue-500/30">
+                        <i class="fa-solid fa-cloud-showers-heavy"></i>
                     </div>
                 </div>
-                <div class="mt-4 flex items-center justify-between text-xs">
-                    <span class="text-slate-400">Cường độ mưa: Mưa rất to</span>
-                    <span class="text-blue-400 font-bold" id="rain-peak">Đỉnh: Nam Đông (218mm)</span>
+                <div class="mt-3 flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Cường độ: Rất to</span>
+                    <span class="text-blue-400 font-bold">Đỉnh Bạch Mã: 342mm</span>
                 </div>
                 <div class="w-full bg-slate-800/80 h-2 rounded-full mt-2 overflow-hidden border border-slate-700/50">
                     <div class="bg-gradient-to-r from-blue-500 to-indigo-500 h-full rounded-full" style="width: 65%"></div>
                 </div>
             </div>
 
-            <!-- Card 4: Tổng Xả Thủy Điện -->
+            <!-- Card 5: Tổng Xả Thủy Điện -->
             <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-orange-500/50 transition duration-300">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Tổng Xả Thủy Điện (Hương Điền/Tả Trạch)</p>
-                        <h3 class="text-3xl font-black text-white mt-1 font-mono tracking-tight" id="val-discharge">
-                            1,570 <span class="text-sm font-normal text-slate-400">m³/s</span>
+                        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Tổng Xả Thủy Điện</p>
+                        <h3 class="text-2xl font-black text-white mt-1 font-mono tracking-tight" id="val-discharge">
+                            1,570 <span class="text-xs font-normal text-slate-400">m³/s</span>
                         </h3>
                     </div>
-                    <span class="px-2.5 py-1 text-xs font-black bg-orange-500/20 text-orange-300 border border-orange-500/40 rounded-xl">
-                        Xả Lưu Lượng Lớn
+                    <span class="px-2 py-1 text-[10px] font-black bg-orange-500/20 text-orange-300 border border-orange-500/40 rounded-xl">
+                        Xả Lớn
                     </span>
                 </div>
-                <div class="mt-4 flex items-center justify-between text-xs">
-                    <span class="text-slate-400">Hương Điền: 1,250 m³/s</span>
-                    <span class="text-orange-400 font-bold">Tả Trạch: 320 m³/s</span>
+                <div class="mt-3 flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Hương Điền: 1,250</span>
+                    <span class="text-orange-400 font-bold">Tả Trạch: 320</span>
                 </div>
                 <div class="w-full bg-slate-800/80 h-2 rounded-full mt-2 overflow-hidden border border-slate-700/50">
                     <div class="bg-gradient-to-r from-orange-500 to-red-500 h-full rounded-full" style="width: 78%"></div>
@@ -289,26 +320,163 @@
 
         <!-- MAIN TABS NAVIGATION -->
         <div class="flex border-b border-slate-800/80 overflow-x-auto no-scrollbar gap-2 sm:gap-6 text-sm font-bold">
-            <button onclick="switchTab('tab-water')" id="btn-tab-water" class="tab-btn py-3 px-2 border-b-2 border-cyan-400 text-cyan-300 flex items-center gap-2 whitespace-nowrap transition">
-                <i class="fa-solid fa-chart-line"></i> Mực Nước & Biểu Đồ
+            <button onclick="switchTab('tab-bachma')" id="btn-tab-bachma" class="tab-btn py-3 px-2 border-b-2 border-purple-400 text-purple-300 flex items-center gap-2 whitespace-nowrap transition">
+                <i class="fa-solid fa-mountain text-purple-400"></i> Trạm Đỉnh Bạch Mã (1,449m)
+                <span class="px-1.5 py-0.5 text-[9px] bg-purple-600 text-white rounded font-black">CỰC MƯA</span>
+            </button>
+            <button onclick="switchTab('tab-water')" id="btn-tab-water" class="tab-btn py-3 px-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+                <i class="fa-solid fa-chart-line"></i> Mực Nước Sông
             </button>
             <button onclick="switchTab('tab-camera')" id="btn-tab-camera" class="tab-btn py-3 px-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition relative">
                 <i class="fa-solid fa-video text-red-500 animate-pulse"></i> Camera Ngập 8 Điểm Live
-                <span class="px-1.5 py-0.5 text-[9px] bg-red-600 text-white rounded font-black tracking-wider">8 CAM</span>
             </button>
             <button onclick="switchTab('tab-ai')" id="btn-tab-ai" class="tab-btn py-3 px-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
-                <i class="fa-solid fa-brain text-purple-400"></i> AI Dự Báo & Hồ Thủy Điện
+                <i class="fa-solid fa-brain text-purple-400"></i> AI Dự Báo & Thủy Điện
             </button>
             <button onclick="switchTab('tab-rain')" id="btn-tab-rain" class="tab-btn py-3 px-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
                 <i class="fa-solid fa-cloud-showers-water"></i> Lượng Mưa Các Huyện
             </button>
             <button onclick="switchTab('tab-report')" id="btn-tab-report" class="tab-btn py-3 px-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
-                <i class="fa-solid fa-bullhorn text-amber-400"></i> Báo Cáo Ngập & Hotline
+                <i class="fa-solid fa-bullhorn text-amber-400"></i> Báo Cáo & Hotline
             </button>
         </div>
 
+        <!-- TAB CONTENT SPECIAL: TRẠM ĐỈNH BẠCH MÃ (1,449M) -->
+        <div id="tab-bachma" class="tab-content space-y-6">
+            
+            <!-- Station Header Banner -->
+            <div class="glass-panel p-6 rounded-3xl border border-purple-500/30 bg-gradient-to-r from-purple-950/40 via-slate-900 to-slate-900 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl"></div>
+                <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 text-xs font-black bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded-full flex items-center gap-1.5">
+                                <i class="fa-solid fa-tower-observation"></i> TRẠM QUAN TRẮC KHÍ TƯỢNG CAO KHÔNG
+                            </span>
+                            <span class="px-2.5 py-1 text-xs font-mono font-bold bg-slate-800 text-cyan-300 rounded-full">Độ cao: 1,449m</span>
+                        </div>
+                        <h2 class="text-2xl font-black text-white">Trạm Khí Tượng & Lượng Mưa Đỉnh Bạch Mã</h2>
+                        <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
+                            Đỉnh Bạch Mã được mệnh danh là một trong những trung tâm mưa lớn nhất Việt Nam. Lượng mưa tại đây quyết định trực tiếp lưu lượng lũ tràn về lưu vực Sông Hương & Sông Truồi.
+                        </p>
+                    </div>
+
+                    <!-- Landslide Risk Gauge -->
+                    <div class="glass-card p-4 rounded-2xl border border-red-500/40 bg-red-950/20 text-center shrink-0 w-full lg:w-72">
+                        <p class="text-[10px] text-red-300 font-extrabold uppercase tracking-wider">Cảnh Báo Sạt Lở Đèo Bạch Mã & QL1A</p>
+                        <div class="flex items-center justify-center gap-2 mt-1">
+                            <i class="fa-solid fa-triangle-exclamation text-red-500 text-2xl animate-bounce"></i>
+                            <span class="text-2xl font-black text-red-400 font-mono" id="bm-risk-level">NGUY CƠ RẤT CAO</span>
+                        </div>
+                        <p class="text-[11px] text-slate-300 mt-1">Chỉ số nguy cơ: <strong class="text-amber-400 font-mono" id="bm-risk-score">88/100</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4 Telemetry Detail Widgets -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                
+                <div class="glass-panel p-4 rounded-2xl border border-slate-800 space-y-1">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Nhiệt Độ Đỉnh Núi</p>
+                    <p class="text-2xl font-black text-cyan-300 font-mono" id="bm-detail-temp">16.4 °C</p>
+                    <p class="text-[11px] text-slate-400">Độ ẩm không khí: <span class="text-white font-bold" id="bm-humidity">98%</span></p>
+                </div>
+
+                <div class="glass-panel p-4 rounded-2xl border border-slate-800 space-y-1">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Gió Giật Đỉnh Núi</p>
+                    <p class="text-2xl font-black text-amber-300 font-mono" id="bm-detail-wind">42 km/h</p>
+                    <p class="text-[11px] text-slate-400">Hướng gió: <span class="text-white font-bold">Đông Bắc (Cấp 6)</span></p>
+                </div>
+
+                <div class="glass-panel p-4 rounded-2xl border border-slate-800 space-y-1">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Mưa Tích Lũy 1 Giờ Qua</p>
+                    <p class="text-2xl font-black text-purple-300 font-mono" id="bm-detail-rain1h">38.5 mm/h</p>
+                    <p class="text-[11px] text-purple-400 font-bold">Mưa xối xả liên tục</p>
+                </div>
+
+                <div class="glass-panel p-4 rounded-2xl border border-slate-800 space-y-1">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Độ Phủ Sương Mù</p>
+                    <p class="text-2xl font-black text-emerald-300 font-mono" id="bm-visibility">Dày Đặc</p>
+                    <p class="text-[11px] text-slate-400">Tầm nhìn xa: < 15m</p>
+                </div>
+
+            </div>
+
+            <!-- Charts Grid: Bach Ma Rain Timeline & Hydro Inflow Forecast -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Chart Bach Ma Hourly Rain -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-base text-white flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full bg-purple-400 shadow-md shadow-purple-400/50"></span>
+                                    Lượng Mưa Theo Giờ Tại Đỉnh Bạch Mã (mm)
+                                </h3>
+                                <p class="text-xs text-slate-400 mt-0.5">Dữ liệu quan trắc tự động cập nhật thời gian thực</p>
+                            </div>
+                            <span class="px-2.5 py-1 text-xs font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded-full">
+                                Trạm ID: BM-1449
+                            </span>
+                        </div>
+                        <div class="relative h-72 w-full">
+                            <canvas id="chartBachMaRain"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Chart: Bach Ma vs Other Stations -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-base text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-code-compare text-cyan-400"></i>
+                                    So Sánh Lượng Mưa Bạch Mã vs Các Trạm Huế (mm)
+                                </h3>
+                                <p class="text-xs text-slate-400 mt-0.5">Tỷ lệ lượng mưa thượng nguồn so với trung tâm thành phố</p>
+                            </div>
+                        </div>
+                        <div class="relative h-72 w-full">
+                            <canvas id="chartRainComparison"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bach Ma Hydro Flow Impact Warning -->
+            <div class="glass-panel p-5 rounded-2xl border border-purple-500/30 bg-purple-950/10 space-y-3">
+                <h3 class="font-bold text-base text-purple-300 flex items-center gap-2">
+                    <i class="fa-solid fa-water-ladders text-purple-400"></i>
+                    Dự Báo Tác Động Dòng Chảy Từ Đỉnh Bạch Mã Đến Sông Hương & Hồ Tả Trạch
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+                        <p class="font-bold text-white">Thời gian nước dồn về Tả Trạch:</p>
+                        <p class="text-cyan-400 font-mono font-bold text-sm">~ 3.5 - 4.0 Giờ Tới</p>
+                        <p class="text-slate-400">Lưu lượng dự kiến đổ về: +480 m³/s</p>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+                        <p class="font-bold text-white">Tác động Sông Hương (Kim Long):</p>
+                        <p class="text-amber-400 font-mono font-bold text-sm">Tăng +12 cm đến 18 cm</p>
+                        <p class="text-slate-400">Dự kiến đạt đỉnh vào chiều nay</p>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+                        <p class="font-bold text-white">Cảnh Báo Tuyến Đèo Phú Lộc:</p>
+                        <p class="text-red-400 font-mono font-bold text-sm">Cảnh báo đá lăn & sạt trượt</p>
+                        <p class="text-slate-400">Hạn chế di chuyển qua đèo Bạch Mã</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
         <!-- TAB CONTENT 1: MỰC NƯỚC SÔNG CHART ENGINE -->
-        <div id="tab-water" class="tab-content space-y-6">
+        <div id="tab-water" class="tab-content space-y-6 hidden">
 
             <!-- Filter Toolbar -->
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 glass-panel p-4 rounded-2xl">
@@ -402,6 +570,7 @@
                                 <th class="p-3">Sông Hương (Kim Long)</th>
                                 <th class="p-3">Cảnh Báo Sông Hương</th>
                                 <th class="p-3">Sông Bồ (Tứ Phú)</th>
+                                <th class="p-3 font-bold text-purple-300">Đỉnh Bạch Mã (Rain 1h)</th>
                                 <th class="p-3 rounded-r-xl">Cảnh Báo Sông Bồ</th>
                             </tr>
                         </thead>
@@ -462,11 +631,11 @@
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                     <div class="space-y-2">
                         <span class="px-3 py-1 text-xs font-extrabold bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded-full inline-flex items-center gap-1.5">
-                            <i class="fa-solid fa-microchip"></i> ĐỘC QUYỀN HUẾ-AI PREDICT ENGINE v3.0
+                            <i class="fa-solid fa-microchip"></i> ĐỘC QUYỀN HUẾ-AI PREDICT ENGINE v3.5
                         </span>
                         <h3 class="text-xl font-black text-white">Dự Báo Xu Hướng Lũ Trong 12 Giờ Tới</h3>
                         <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
-                            Mô hình AI kết hợp dữ liệu lượng mưa thượng nguồn Nam Đông - A Lưới và lưu lượng xả lũ từ thủy điện Hương Điền & Tả Trạch.
+                            Mô hình AI kết hợp dữ liệu lượng mưa thượng nguồn Đỉnh Bạch Mã - Nam Đông - A Lưới và lưu lượng xả lũ từ thủy điện Hương Điền & Tả Trạch.
                         </p>
                     </div>
                     <div class="glass-card p-4 rounded-xl border border-purple-500/30 text-center shrink-0 min-w-[200px]">
@@ -557,7 +726,7 @@
                         <p class="font-bold text-red-400 flex items-center gap-1.5">
                             <i class="fa-solid fa-triangle-exclamation"></i> VÙNG BÁO ĐỘNG ĐỎ (Khẩn Cấp Sơ Tán)
                         </p>
-                        <p class="text-slate-300">Phường Hương Sơ, An Hòa, Hương Vinh, Kim Long (Vùng ven sông Bồ & Sông Hương), Phường An Cựu (Vùng ven sông An Cựu).</p>
+                        <p class="text-slate-300">Phường Hương Sơ, An Hòa, Hương Vinh, Kim Long (Vùng ven sông Bồ & Sông Hương), Phường An Cựu (Vùng ven sông An Cựu), Huyện Phú Lộc (Vùng chân đèo Bạch Mã).</p>
                     </div>
 
                     <div class="p-3.5 rounded-xl bg-amber-950/20 border border-amber-500/30 space-y-1.5">
@@ -594,6 +763,14 @@
                     </h3>
 
                     <div class="space-y-3 text-xs">
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-purple-500/40 flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-purple-300">Đỉnh Bạch Mã (1,449m)</p>
+                                <p class="text-slate-400 text-[11px]">Trung tâm mưa cực đại</p>
+                            </div>
+                            <span class="font-mono font-bold text-purple-400 text-sm" id="rain-stat-bm">342.5 mm</span>
+                        </div>
+
                         <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex justify-between items-center">
                             <div>
                                 <p class="font-bold text-white">Nam Đông (Thượng Nguồn)</p>
@@ -620,7 +797,7 @@
 
                         <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex justify-between items-center">
                             <div>
-                                <p class="font-bold text-white">TP. Huế (Trung Tâm)</p>
+                                <p class="font-bold text-white">TP. Huế (Kim Long)</p>
                                 <p class="text-slate-400 text-[11px]">Mưa rải rác đến to</p>
                             </div>
                             <span class="font-mono font-bold text-emerald-400 text-sm">118.2 mm</span>
@@ -646,8 +823,8 @@
 
                     <form onsubmit="submitFloodReport(event)" class="space-y-3 text-xs">
                         <div>
-                            <label class="block font-semibold text-slate-300 mb-1">Vị Trí Ngập (Đường / Phường):</label>
-                            <input type="text" id="rep-location" required placeholder="VD: Đường Nguyễn Huệ, Phường Vĩnh Ninh..." class="w-full p-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:border-cyan-400 focus:outline-none">
+                            <label class="block font-semibold text-slate-300 mb-1">Vị Trí Ngập (Đường / Phường / Huyện):</label>
+                            <input type="text" id="rep-location" required placeholder="VD: Đường Nguyễn Huệ, Đèo Bạch Mã..." class="w-full p-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:border-cyan-400 focus:outline-none">
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
@@ -657,6 +834,7 @@
                                     <option value="10-20cm">10 - 20 cm (Ngập nhẹ bánh xe)</option>
                                     <option value="30-50cm">30 - 50 cm (Ngập sâu pô xe)</option>
                                     <option value=">70cm">Trên 70 cm (Ngập lụt tràn nhà)</option>
+                                    <option value="sat-lo">Sạt lở đất đá đường đèo</option>
                                 </select>
                             </div>
 
@@ -668,7 +846,7 @@
 
                         <div>
                             <label class="block font-semibold text-slate-300 mb-1">Ghi Chú Thêm:</label>
-                            <textarea id="rep-note" rows="2" placeholder="VD: Đã giăng dây cảnh báo, xe máy bị chết máy nhiều..." class="w-full p-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:border-cyan-400 focus:outline-none"></textarea>
+                            <textarea id="rep-note" rows="2" placeholder="VD: Đã giăng dây cảnh báo, sạt lở đá nhỏ..." class="w-full p-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:border-cyan-400 focus:outline-none"></textarea>
                         </div>
 
                         <button type="submit" class="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 font-bold text-white rounded-xl shadow-lg transition flex items-center justify-center gap-2">
@@ -681,7 +859,7 @@
                 <div class="glass-panel p-5 rounded-2xl border border-red-500/30 bg-red-950/10 space-y-4">
                     <h3 class="font-bold text-lg text-red-400 flex items-center gap-2">
                         <i class="fa-solid fa-phone-volume text-red-500"></i>
-                        Đường Dây Nóng Cứu Hộ Khẩn Cấp TP. Huế
+                        Đường Dây Nóng Cứu Hộ Khẩn Cấp TP. Huế & Phú Lộc
                     </h3>
                     <p class="text-xs text-slate-300">Chạm trực tiếp để gọi ứng cứu sơ tán & trợ giúp y tế khẩn cấp 24/7:</p>
 
@@ -809,12 +987,12 @@
             </div>
 
             <p class="text-xs text-slate-300 leading-relaxed">
-                Tác giả & Nhà phát triển hệ thống <strong>ThoitietHue Ultra Monitoring</strong>. Dự án phi lợi nhuận hỗ trợ người dân Huế cập nhật mực nước lũ và vị trí ngập trực tiếp.
+                Tác giả & Nhà phát triển hệ thống <strong>ThoitietHue Ultra Monitoring v3.5</strong>. Hệ thống tích hợp Trạm Đỉnh Bạch Mã & Giám sát lụt bão thời gian thực.
             </p>
 
             <div class="pt-2 border-t border-slate-800 flex justify-center gap-4 text-sm text-slate-400">
                 <span class="hover:text-amber-400 cursor-pointer"><i class="fa-solid fa-globe"></i> Hue-S Ecosystem</span>
-                <span class="hover:text-amber-400 cursor-pointer"><i class="fa-solid fa-code-branch"></i> v3.0 PRO</span>
+                <span class="hover:text-amber-400 cursor-pointer"><i class="fa-solid fa-mountain"></i> Bach Ma Telemetry</span>
             </div>
         </div>
     </div>
@@ -823,8 +1001,8 @@
     <footer class="mt-12 border-t border-slate-800/80 glass-panel py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400">
             <div>
-                <p class="font-bold text-slate-200">ThoitietHue - Hệ Thống Theo Dõi Mực Nước Sông & Cảnh Báo Ngập TP. Huế</p>
-                <p class="mt-0.5 text-slate-500">Nguồn dữ liệu: Ban chỉ huy phòng thủ dân sự thành phố Huế & Giám sát Hue-S</p>
+                <p class="font-bold text-slate-200">ThoitietHue - Hệ Thống Theo Dõi Lũ Lụt & Khí Tượng Đỉnh Bạch Mã</p>
+                <p class="mt-0.5 text-slate-500">Nguồn dữ liệu: Trạm Khí tượng Đỉnh Bạch Mã & Ban chỉ huy PCTT Thừa Thiên Huế</p>
             </div>
 
             <div class="flex items-center gap-3 bg-slate-900/90 px-4 py-2 rounded-2xl border border-slate-800">
@@ -839,10 +1017,21 @@
 
     <!-- JAVASCRIPT ENGINE -->
     <script>
-        // Global Hydro Datasets
+        // Global Datasets
         const timeLabels = ['06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00'];
         let dataKimLong = [106, 103, 101, 99, 95, 98, 95, 98, 99, 103];
         let dataTuPhu = [142, 151, 156, 174, 194, 218, 242, 267, 288, 304];
+        let dataBachMaRainHourly = [18.5, 22.0, 28.4, 31.0, 35.2, 42.0, 39.5, 41.2, 38.5, 46.2];
+
+        // Telemetry state for Bach Ma Peak
+        let bmState = {
+            rain24h: 342.5,
+            rain1h: 38.5,
+            temp: 16.4,
+            humidity: 98,
+            windSpeed: 42,
+            visibility: 'Dày Đặc'
+        };
 
         // 8 LIVE CAMERAS DATASET
         const camerasList = [
@@ -854,8 +1043,7 @@
                 depth: 'Tràn Đập: 45 cm',
                 flowSpeed: 'Dòng chảy xiết (2.5m/s)',
                 statusText: 'Ngập Sâu - Cấm Xe',
-                image: 'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80',
-                vehicleStatus: 'Cấm toàn bộ phương tiện nhỏ'
+                image: 'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80'
             },
             {
                 id: 'cam-2',
@@ -864,9 +1052,8 @@
                 status: 'warning',
                 depth: 'Mực nước tràn: 20 cm',
                 flowSpeed: 'Dòng chậm (0.8m/s)',
-                statusText: 'Ngập Nhẹ - Di Chuyển Chậm',
-                image: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&q=80',
-                vehicleStatus: 'Xe máy chú ý tắt máy'
+                statusText: 'Ngập Nhẹ',
+                image: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&q=80'
             },
             {
                 id: 'cam-3',
@@ -876,8 +1063,7 @@
                 depth: 'Mực nước tràn: 60 cm',
                 flowSpeed: 'Dòng xoáy (1.8m/s)',
                 statusText: 'Ngập Sâu - Phong Tỏa',
-                image: 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80',
-                vehicleStatus: 'Đã giăng dây chốt chặn'
+                image: 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80'
             },
             {
                 id: 'cam-4',
@@ -887,8 +1073,7 @@
                 depth: 'Mực nước tràn: 18 cm',
                 flowSpeed: 'Dòng vừa (1.0m/s)',
                 statusText: 'Ngập Mép Đường',
-                image: 'https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=800&q=80',
-                vehicleStatus: 'Ô tô gầm cao đi được'
+                image: 'https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=800&q=80'
             },
             {
                 id: 'cam-5',
@@ -897,9 +1082,8 @@
                 status: 'safe',
                 depth: 'Mực nước: 0 cm',
                 flowSpeed: 'Bình thường',
-                statusText: 'Giao Thông Thông Suốt',
-                image: 'https://images.unsplash.com/photo-1477959858617-67f30ac4ce78?auto=format&fit=crop&w=800&q=80',
-                vehicleStatus: 'Lưu thông hoàn toàn an toàn'
+                statusText: 'Thông Suốt',
+                image: 'https://images.unsplash.com/photo-1477959858617-67f30ac4ce78?auto=format&fit=crop&w=800&q=80'
             },
             {
                 id: 'cam-6',
@@ -909,19 +1093,17 @@
                 depth: 'Mực nước tràn: 15 cm',
                 flowSpeed: 'Dòng chậm',
                 statusText: 'Ngập Cục Bộ',
-                image: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=800&q=80',
-                vehicleStatus: 'Di chuyển cẩn thận'
+                image: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=800&q=80'
             },
             {
                 id: 'cam-7',
-                title: 'Khu Vực Cửa Hậu - Tây Lộc',
-                location: 'Phường Tây Lộc (Thành Nội)',
+                title: 'Đèo Bạch Mã (Km 12)',
+                location: 'Huyện Phú Lộc',
                 status: 'danger',
-                depth: 'Mực nước tràn: 50 cm',
-                flowSpeed: 'Dòng chảy mạnh (2.0m/s)',
-                statusText: 'Ngập Sâu Cửa Thành',
-                image: 'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?auto=format&fit=crop&w=800&q=80',
-                vehicleStatus: 'Xe nhỏ ngưng lưu thông'
+                depth: 'Sạt lở đá lăn',
+                flowSpeed: 'Nước chảy sô đỉnh núi',
+                statusText: 'Nguy Cổ Sạt Lở',
+                image: 'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?auto=format&fit=crop&w=800&q=80'
             },
             {
                 id: 'cam-8',
@@ -931,14 +1113,18 @@
                 depth: 'Mực nước: 0 cm',
                 flowSpeed: 'Bình thường',
                 statusText: 'Thông Thoáng',
-                image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=800&q=80',
-                vehicleStatus: 'Xe đi bình thường'
+                image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=800&q=80'
             }
         ];
 
         let chartKLInstance = null;
         let chartTPInstance = null;
         let chartRainInstance = null;
+        let chartBMInstance = null;
+        let chartRainCompInstance = null;
+
+        let syncTimerId = null;
+        let currentInterval = 5000;
         let lastUpdateTimeSeconds = 0;
         let currentCamFilter = 'all';
 
@@ -947,8 +1133,97 @@
             initCharts();
             renderTable();
             renderCameras();
-            startLiveSimulationEngine();
+            startRealtimeEngine(currentInterval);
         };
+
+        // Realtime Engine with customizable intervals
+        function startRealtimeEngine(ms) {
+            if (syncTimerId) clearInterval(syncTimerId);
+            
+            // Increment timer display
+            setInterval(() => {
+                lastUpdateTimeSeconds++;
+                document.getElementById('live-update-timer').innerText = `${lastUpdateTimeSeconds}s trước`;
+
+                const now = new Date();
+                const timeStr = now.toTimeString().split(' ')[0];
+                document.querySelectorAll('.live-clock').forEach(el => el.innerText = timeStr);
+                const timerModal = document.getElementById('modal-cam-timer');
+                if (timerModal) timerModal.innerText = timeStr;
+            }, 1000);
+
+            if (ms !== 'manual') {
+                syncTimerId = setInterval(() => {
+                    executeDataSync();
+                }, parseInt(ms));
+            }
+        }
+
+        function changeSyncInterval(val) {
+            currentInterval = val;
+            if (val === 'manual') {
+                if (syncTimerId) clearInterval(syncTimerId);
+                document.getElementById('sync-led').classList.remove('bg-emerald-400');
+                document.getElementById('sync-led').classList.add('bg-amber-400');
+                showToast('Chế độ đồng bộ: THỦ CÔNG (Nhấn nút reload để cập nhật)', 'info');
+            } else {
+                document.getElementById('sync-led').classList.remove('bg-amber-400');
+                document.getElementById('sync-led').classList.add('bg-emerald-400');
+                startRealtimeEngine(val);
+                showToast(`Đã đổi tần suất cập nhật thành ${val/1000}s`, 'success');
+            }
+        }
+
+        function manualRefreshData() {
+            executeDataSync();
+            showToast('Đã làm mới dữ liệu trạm Bạch Mã & mực nước sông khẩn cấp!', 'success');
+        }
+
+        // Single data sync execution logic
+        function executeDataSync() {
+            lastUpdateTimeSeconds = 0;
+
+            // Random walk drift for Tứ Phú, Kim Long & Bạch Mã
+            const tpDelta = Math.floor(Math.random() * 3) - 1; 
+            const klDelta = Math.floor(Math.random() * 2) - 1;
+            const bmRainDelta = (Math.random() * 0.8 - 0.3).toFixed(1);
+            const bmTempDelta = (Math.random() * 0.2 - 0.1).toFixed(1);
+
+            const lastTP = dataTuPhu[dataTuPhu.length - 1];
+            const lastKL = dataKimLong[dataKimLong.length - 1];
+            const lastBMRain = dataBachMaRainHourly[dataBachMaRainHourly.length - 1];
+
+            const newTP = Math.max(100, lastTP + tpDelta);
+            const newKL = Math.max(80, lastKL + klDelta);
+            const newBMRain = Math.max(5.0, parseFloat((lastBMRain + parseFloat(bmRainDelta)).toFixed(1)));
+            
+            dataTuPhu[dataTuPhu.length - 1] = newTP;
+            dataKimLong[dataKimLong.length - 1] = newKL;
+            dataBachMaRainHourly[dataBachMaRainHourly.length - 1] = newBMRain;
+
+            bmState.rain24h = parseFloat((bmState.rain24h + (newBMRain / 120)).toFixed(1));
+            bmState.temp = parseFloat((bmState.temp + parseFloat(bmTempDelta)).toFixed(1));
+
+            // UI updates
+            document.getElementById('val-tu-phu').innerHTML = `${newTP} <span class="text-xs font-normal text-slate-400">cm</span>`;
+            document.getElementById('val-kim-long').innerHTML = `${newKL} <span class="text-xs font-normal text-slate-400">cm</span>`;
+            document.getElementById('val-bm-rain').innerHTML = `${bmState.rain24h} <span class="text-xs font-normal text-slate-400">mm/24h</span>`;
+            document.getElementById('bm-temp').innerText = `${bmState.temp}°C`;
+            document.getElementById('bm-detail-temp').innerText = `${bmState.temp} °C`;
+            document.getElementById('bm-detail-rain1h').innerText = `${newBMRain} mm/h`;
+            document.getElementById('ticker-bm-rain').innerText = `${bmState.rain24h}mm`;
+            document.getElementById('rain-stat-bm').innerText = `${bmState.rain24h} mm`;
+
+            // Update Charts
+            if (chartKLInstance) chartKLInstance.update('none');
+            if (chartTPInstance) chartTPInstance.update('none');
+            if (chartBMInstance) chartBMInstance.update('none');
+            if (chartRainCompInstance) {
+                chartRainCompInstance.data.datasets[0].data[0] = bmState.rain24h;
+                chartRainCompInstance.update('none');
+            }
+            renderTable();
+        }
 
         // Render 8 Cameras
         function renderCameras() {
@@ -959,7 +1234,7 @@
                 let badge = '';
                 let border = '';
                 if (cam.status === 'danger') {
-                    badge = '<span class="px-2 py-0.5 text-[10px] font-black bg-red-600 text-white rounded">🔴 Ngập Sâu</span>';
+                    badge = '<span class="px-2 py-0.5 text-[10px] font-black bg-red-600 text-white rounded">🔴 Cảnh Báo Sâu</span>';
                     border = 'border-red-500/30 hover:border-red-500';
                 } else if (cam.status === 'warning') {
                     badge = '<span class="px-2 py-0.5 text-[10px] font-black bg-amber-500 text-slate-950 rounded">🟡 Ngập Nhẹ</span>';
@@ -1081,18 +1356,79 @@
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('border-cyan-400', 'text-cyan-300');
+                btn.classList.remove('border-purple-400', 'text-purple-300', 'border-cyan-400', 'text-cyan-300');
                 btn.classList.add('border-transparent', 'text-slate-400');
             });
 
             document.getElementById(tabId).classList.remove('hidden');
             const activeBtn = document.getElementById('btn-' + tabId);
             activeBtn.classList.remove('border-transparent', 'text-slate-400');
-            activeBtn.classList.add('border-cyan-400', 'text-cyan-300');
+            if (tabId === 'tab-bachma') {
+                activeBtn.classList.add('border-purple-400', 'text-purple-300');
+            } else {
+                activeBtn.classList.add('border-cyan-400', 'text-cyan-300');
+            }
         }
 
-        // Initialize Charts
+        // Initialize All Charts
         function initCharts() {
+            // Bach Ma Hourly Rain Chart
+            const ctxBM = document.getElementById('chartBachMaRain').getContext('2d');
+            const gradBM = ctxBM.createLinearGradient(0, 0, 0, 250);
+            gradBM.addColorStop(0, 'rgba(168, 85, 247, 0.45)');
+            gradBM.addColorStop(1, 'rgba(168, 85, 247, 0.0)');
+
+            chartBMInstance = new Chart(ctxBM, {
+                type: 'line',
+                data: {
+                    labels: timeLabels,
+                    datasets: [{
+                        label: 'Lượng mưa Đỉnh Bạch Mã (mm/h)',
+                        data: dataBachMaRainHourly,
+                        borderColor: '#a855f7',
+                        borderWidth: 3,
+                        backgroundColor: gradBM,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#c084fc'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { min: 0, max: 80, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+
+            // Rain Comparison Chart (Bach Ma vs Others)
+            const ctxRainComp = document.getElementById('chartRainComparison').getContext('2d');
+            chartRainCompInstance = new Chart(ctxRainComp, {
+                type: 'bar',
+                data: {
+                    labels: ['Đỉnh Bạch Mã', 'Nam Đông', 'A Lưới', 'Phong Điền', 'TP. Huế (Kim Long)'],
+                    datasets: [{
+                        label: 'Tổng mưa 24h (mm)',
+                        data: [bmState.rain24h, 218.5, 172.0, 145.8, 118.2],
+                        backgroundColor: ['#a855f7', '#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+
             // Kim Long Chart
             const ctxKL = document.getElementById('chartKimLong').getContext('2d');
             const gradKL = ctxKL.createLinearGradient(0, 0, 0, 250);
@@ -1159,15 +1495,15 @@
                 }
             });
 
-            // Rain Bar Chart
+            // Rain Bar Chart (District)
             const ctxRain = document.getElementById('chartRainfall').getContext('2d');
             chartRainInstance = new Chart(ctxRain, {
                 type: 'bar',
                 data: {
-                    labels: ['Nam Đông', 'A Lưới', 'TP. Huế', 'Phong Điền', 'Phú Vang'],
+                    labels: ['Đỉnh Bạch Mã', 'Nam Đông', 'A Lưới', 'TP. Huế', 'Phong Điền', 'Phú Vang'],
                     datasets: [{
-                        data: [218.5, 172.0, 118.2, 145.8, 92.4],
-                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'],
+                        data: [342.5, 218.5, 172.0, 118.2, 145.8, 92.4],
+                        backgroundColor: ['#a855f7', '#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'],
                         borderRadius: 8
                     }]
                 },
@@ -1189,6 +1525,7 @@
             for (let i = timeLabels.length - 1; i >= 0; i--) {
                 const klVal = dataKimLong[i];
                 const tpVal = dataTuPhu[i];
+                const bmVal = dataBachMaRainHourly[i];
                 
                 const klStatus = klVal >= 180 ? '<span class="text-amber-400 font-bold">Tràn Đập Đá</span>' : '<span class="text-emerald-400">An toàn</span>';
                 const tpStatus = tpVal >= 300 ? '<span class="text-red-400 font-bold">Vượt BĐ2 (+4cm)</span>' : '<span class="text-amber-400">BĐ1</span>';
@@ -1199,6 +1536,7 @@
                         <td class="p-3 font-mono font-bold text-cyan-400">${klVal} cm</td>
                         <td class="p-3">${klStatus}</td>
                         <td class="p-3 font-mono font-bold text-amber-400">${tpVal} cm</td>
+                        <td class="p-3 font-mono font-bold text-purple-400">${bmVal} mm/h</td>
                         <td class="p-3">${tpStatus}</td>
                     </tr>
                 `;
@@ -1219,50 +1557,10 @@
             showToast(`Đã tải dữ liệu thủy văn trong ${range}`, 'info');
         }
 
-        // REAL-TIME AUTO UPDATE ENGINE (Random Walk Drift)
-        function startLiveSimulationEngine() {
-            // Timer counter tick
-            setInterval(() => {
-                lastUpdateTimeSeconds++;
-                document.getElementById('live-update-timer').innerText = `Vừa cập nhật: ${lastUpdateTimeSeconds}s trước`;
-                
-                const now = new Date();
-                const timeStr = now.toTimeString().split(' ')[0];
-                document.querySelectorAll('.live-clock').forEach(el => el.innerText = timeStr);
-                const timerModal = document.getElementById('modal-cam-timer');
-                if (timerModal) timerModal.innerText = timeStr;
-            }, 1000);
-
-            // Data Drift every 3 seconds
-            setInterval(() => {
-                lastUpdateTimeSeconds = 0;
-                
-                const tpDelta = Math.floor(Math.random() * 3) - 1; // -1, 0, 1
-                const klDelta = Math.floor(Math.random() * 2) - 1;
-
-                const lastTP = dataTuPhu[dataTuPhu.length - 1];
-                const lastKL = dataKimLong[dataKimLong.length - 1];
-
-                const newTP = Math.max(100, lastTP + tpDelta);
-                const newKL = Math.max(80, lastKL + klDelta);
-
-                dataTuPhu[dataTuPhu.length - 1] = newTP;
-                dataKimLong[dataKimLong.length - 1] = newKL;
-
-                document.getElementById('val-tu-phu').innerHTML = `${newTP} <span class="text-sm font-normal text-slate-400">cm</span>`;
-                document.getElementById('val-kim-long').innerHTML = `${newKL} <span class="text-sm font-normal text-slate-400">cm</span>`;
-
-                if (chartKLInstance) chartKLInstance.update('none');
-                if (chartTPInstance) chartTPInstance.update('none');
-                renderTable();
-
-            }, 3000);
-        }
-
         function submitFloodReport(e) {
             e.preventDefault();
             const location = document.getElementById('rep-location').value;
-            showToast(`Đã gửi báo cáo điểm ngập "${location}" lên hệ thống Hue-S!`, 'success');
+            showToast(`Đã gửi báo cáo khẩn cấp khu vực "${location}" lên hệ thống Hue-S!`, 'success');
             e.target.reset();
         }
 
