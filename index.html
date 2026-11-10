@@ -1,490 +1,1295 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUEWEATHER - Theo dõi Lũ lụt & Mực nước Sông Huế (Nhà phát triển: Trần Anh Khoa)</title>
-    <!-- Tailwind CSS CDN -->
+    <title>ThoitietHue - System Theo Dõi Lũ Lụt & Mực Nước TP. Huế | Dev Trần Anh Khoa</title>
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & ReactDOM -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-    <!-- Babel Standalone for JSX compilation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
-    <!-- Lucide Icons UMD -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        },
+                        neon: {
+                            blue: '#00f0ff',
+                            purple: '#7000ff',
+                            pink: '#ff007f',
+                            amber: '#ffb700',
+                            emerald: '#00ffaa'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-    </style>
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-cyan-500 selection:text-slate-950">
-    <!-- Root container for React app -->
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-        // Map Lucide icons cleanly from global window.lucide
-        const Waves = (props) => React.createElement(lucide.Waves, props);
-        const Droplet = (props) => React.createElement(lucide.Droplet, props);
-        const AlertTriangle = (props) => React.createElement(lucide.AlertTriangle, props);
-        const AlertOctagon = (props) => React.createElement(lucide.AlertOctagon, props);
-        const Info = (props) => React.createElement(lucide.Info, props);
-        const CheckCircle2 = (props) => React.createElement(lucide.CheckCircle2, props);
-        const RefreshCw = (props) => React.createElement(lucide.RefreshCw, props);
-        const PhoneCall = (props) => React.createElement(lucide.PhoneCall, props);
-        const Sliders = (props) => React.createElement(lucide.Sliders, props);
-        const Activity = (props) => React.createElement(lucide.Activity, props);
-        const Navigation = (props) => React.createElement(lucide.Navigation, props);
-        const ShieldAlert = (props) => React.createElement(lucide.ShieldAlert, props);
-        const Compass = (props) => React.createElement(lucide.Compass, props);
-        const TrendingUp = (props) => React.createElement(lucide.TrendingUp, props);
-        const TrendingDown = (props) => React.createElement(lucide.TrendingDown, props);
-        const Download = (props) => React.createElement(lucide.Download, props);
-        const Share2 = (props) => React.createElement(lucide.Share2, props);
-        const Check = (props) => React.createElement(lucide.Check, props);
-        const Search = (props) => React.createElement(lucide.Search, props);
-        const CloudRain = (props) => React.createElement(lucide.CloudRain, props);
-        const Radio = (props) => React.createElement(lucide.Radio, props);
-        const ExternalLink = (props) => React.createElement(lucide.ExternalLink, props);
-        const Github = (props) => React.createElement(lucide.Github, props);
-
-        const INITIAL_STATIONS = [
-          {
-            id: 'kim_long',
-            name: 'Trạm Kim Long (Sông Hương & Đập Đá)',
-            river: 'Sông Hương',
-            district: 'Phú Xuân / TP. Huế',
-            level: 1.03,
-            levelCm: 103,
-            bd1: 2.0,
-            bd2: 2.5,
-            bd3: 3.5,
-            dapDaLevel: 1.8,
-            trend: +0.03,
-            status: 'safe',
-            lastUpdate: '11:00, 10/11/2026',
-            historyData: [
-              { time: '06:30', val: 106 },
-              { time: '07:00', val: 103 },
-              { time: '07:30', val: 101 },
-              { time: '08:00', val: 99 },
-              { time: '08:30', val: 95 },
-              { time: '09:00', val: 98 },
-              { time: '09:30', val: 95 },
-              { time: '10:00', val: 98 },
-              { time: '10:30', val: 99 },
-              { time: '11:00', val: 103 },
-            ]
-          },
-          {
-            id: 'tu_phu',
-            name: 'Trạm Tứ Phú (Sông Bồ)',
-            river: 'Sông Bồ',
-            district: 'Thị xã Hương Trà',
-            level: 3.04,
-            levelCm: 304,
-            bd1: 1.5,
-            bd2: 3.0,
-            bd3: 4.5,
-            trend: +0.16,
-            status: 'warning',
-            lastUpdate: '11:00, 10/11/2026',
-            historyData: [
-              { time: '06:30', val: 142 },
-              { time: '07:00', val: 151 },
-              { time: '07:30', val: 156 },
-              { time: '08:00', val: 174 },
-              { time: '08:30', val: 194 },
-              { time: '09:00', val: 218 },
-              { time: '09:30', val: 242 },
-              { time: '10:00', val: 267 },
-              { time: '10:30', val: 288 },
-              { time: '11:00', val: 304 },
-            ]
-          },
-          {
-            id: 'binh_dien',
-            name: 'Trạm Thủy văn Bình Điền',
-            river: 'Thượng nguồn Sông Hương',
-            district: 'Thị xã Hương Thủy',
-            level: 71.4,
-            levelCm: 7140,
-            bd1: 65.0,
-            bd2: 70.0,
-            bd3: 74.5,
-            trend: +0.20,
-            status: 'warning',
-            lastUpdate: '11:00, 10/11/2026'
-          },
-          {
-            id: 'thuong_nhat',
-            name: 'Trạm Thượng Nhật',
-            river: 'Sông Nam Đông',
-            district: 'Huyện Nam Đông',
-            level: 57.8,
-            levelCm: 5780,
-            bd1: 57.0,
-            bd2: 59.0,
-            bd3: 61.0,
-            trend: -0.05,
-            status: 'caution',
-            lastUpdate: '11:00, 10/11/2026'
-          }
-        ];
-
-        const INITIAL_DAMS = [
-          {
-            id: 'ta_trach',
-            name: 'Hồ Tả Trạch',
-            river: 'Sông Hương',
-            capacityPercent: 88,
-            waterLevel: 42.8,
-            maxLevel: 45.0,
-            inflow: 780,
-            outflow: 520,
-            status: 'Đang xả điều tiết'
-          },
-          {
-            id: 'binh_dien_dam',
-            name: 'Thủy điện Bình Điền',
-            river: 'Sông Hữu Trạch',
-            capacityPercent: 94,
-            waterLevel: 83.5,
-            maxLevel: 85.0,
-            inflow: 950,
-            outflow: 890,
-            status: 'Xả lũ tăng cường'
-          },
-          {
-            id: 'huong_dien',
-            name: 'Thủy điện Hương Điền',
-            river: 'Sông Bồ',
-            capacityPercent: 91,
-            waterLevel: 56.4,
-            maxLevel: 58.0,
-            inflow: 1100,
-            outflow: 1050,
-            status: 'Cảnh báo mức cao'
-          }
-        ];
-
-        const HOTSPOTS = [
-          { id: 1, name: 'Đập Đá (Huế)', location: 'Nối Lê Lợi - Nguyễn Sinh Cung', depth: 0.65, status: 'Cấm giao thông', risk: 'high', x: 52, y: 48 },
-          { id: 2, name: 'Đường Bến Nghé - Hùng Vương', location: 'Phường Phú Hội', depth: 0.35, status: 'Ngập nhẹ xe máy', risk: 'medium', x: 48, y: 52 },
-          { id: 3, name: 'Khu vực Vĩnh Ninh', location: 'Đường Nguyễn Huệ / Điện Biên Phủ', depth: 0.20, status: 'Di chuyển chậm', risk: 'low', x: 44, y: 56 },
-          { id: 4, name: 'Phường Vĩ Dạ', location: 'Đường Phạm Văn Đồng', depth: 0.50, status: 'Ngập cục bộ', risk: 'high', x: 58, y: 44 },
-          { id: 5, name: 'Khu Thành Nội (Kinh Thành)', location: 'Đoạn Cửa Quảng Đức / Nhật Lệ', depth: 0.30, status: 'Ngập nhẹ', risk: 'medium', x: 42, y: 40 }
-        ];
-
-        function App() {
-          const [activeTab, setActiveTab] = useState('overview');
-          const [stations, setStations] = useState(INITIAL_STATIONS);
-          const [dams, setDams] = useState(INITIAL_DAMS);
-          const [timeRange, setTimeRange] = useState('6h');
-          const [rainfall24h, setRainfall24h] = useState(245.8);
-          const [simulationMode, setSimulationMode] = useState('live'); 
-          const [autoRefresh, setAutoRefresh] = useState(true);
-          const [lastRefreshedTime, setLastRefreshedTime] = useState('11:00, 10/11/2026');
-          const [searchQuery, setSearchQuery] = useState('');
-          const [copiedLink, setCopiedLink] = useState(false);
-
-          const [sosForm, setSosForm] = useState({ name: '', phone: '', location: '', waterDepth: '0.3', description: '' });
-          const [sosSubmitted, setSosSubmitted] = useState(false);
-          const [communityReports, setCommunityReports] = useState([
-            { id: 1, user: 'Anh Minh (Vĩ Dạ)', phone: '0905******', location: 'Thôn Con Hến, Vĩ Dạ', depth: '0.8m', desc: 'Nước dâng nhanh vào nhà, cần hỗ trợ thuyền di dời.', time: '10 phút trước' },
-            { id: 2, user: 'Chị Hoa (Kim Long)', phone: '0914******', location: 'Kiệt 108 Kim Long', depth: '0.4m', desc: 'Ngập đường kiệt xóm, xe máy không đi được.', time: '25 phút trước' }
-          ]);
-
-          const simulateTelemetryUpdate = () => {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ', 10/11/2026';
-            setLastRefreshedTime(timeStr);
-          };
-
-          const handleScenarioChange = (mode) => {
-            setSimulationMode(mode);
-            if (mode === 'heavy_rain') setRainfall24h(345.5);
-            else if (mode === 'normal') setRainfall24h(20.0);
-          };
-
-          const handleSosSubmit = (e) => {
-            e.preventDefault();
-            if (!sosForm.location || !sosForm.phone) return;
-            const newReport = {
-              id: Date.now(),
-              user: sosForm.name || 'Người dân ẩn danh',
-              phone: sosForm.phone,
-              location: sosForm.location,
-              depth: `${sosForm.waterDepth}m`,
-              desc: sosForm.description || 'Không có mô tả chi tiết.',
-              time: 'Vừa xong'
-            };
-            setCommunityReports([newReport, ...communityReports]);
-            setSosSubmitted(true);
-            setTimeout(() => setSosSubmitted(false), 4000);
-            setSosForm({ name: '', phone: '', location: '', waterDepth: '0.3', description: '' });
-          };
-
-          const exportReport = () => {
-            const reportText = `==== BÁO CÁO HUEWEATHER (NHÀ PHÁT TRIỂN: TRẦN ANH KHOA) ====\nThời gian: ${lastRefreshedTime}\nNguồn: Ban chỉ huy phòng thủ dân sự TP Huế\n- Trạm Kim Long: ${stations[0].levelCm} cm\n- Trạm Tứ Phú (Sông Bồ): ${stations[1].levelCm} cm (Vượt BĐ2)\n======================================================`;
-            const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `HUEWEATHER_Report.txt`;
-            link.click();
-            URL.revokeObjectURL(url);
-          };
-
-          const copyShareLink = () => {
-            navigator.clipboard.writeText(window.location.href);
-            setCopiedLink(true);
-            setTimeout(() => setCopiedLink(false), 2000);
-          };
-
-          return (
-            <div className="min-h-screen bg-slate-950 text-slate-100 font-sans">
-              {/* HEADER */}
-              <header className="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-lg">
-                <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-cyan-500 to-teal-400 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-                      <Waves className="w-6 h-6 text-slate-950" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h1 className="text-xl font-black bg-gradient-to-r from-cyan-400 via-blue-300 to-white bg-clip-text text-transparent">
-                          HUEWEATHER
-                        </h1>
-                        <span className="bg-cyan-950 text-cyan-300 border border-cyan-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">TP. Huế</span>
-                      </div>
-                      <p className="text-xs text-slate-400">
-                        <span>Theo dõi Lũ lụt & Mực nước</span> • <span className="text-cyan-400 font-medium">Phát triển: Trần Anh Khoa</span>
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <button onClick={exportReport} className="p-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs flex items-center gap-1 font-medium">
-                      <Download className="w-4 h-4 text-cyan-400" />
-                      <span className="hidden md:inline">Báo cáo</span>
-                    </button>
-                    <button onClick={copyShareLink} className="p-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs flex items-center gap-1 font-medium">
-                      {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4 text-cyan-400" />}
-                      <span className="hidden md:inline">{copiedLink ? 'Đã chép' : 'Chia sẻ'}</span>
-                    </button>
-                    <a href="tel:02343822240" className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg font-bold text-xs shadow-md">
-                      <PhoneCall className="w-3.5 h-3.5" />
-                      <span>1022 Huế</span>
-                    </a>
-                  </div>
-                </div>
-              </header>
-
-              {/* BANNER */}
-              <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-slate-950 border-b border-blue-900/40 px-4 py-2 text-xs flex items-center justify-between text-blue-200">
-                <div className="max-w-7xl mx-auto w-full flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <Radio className="w-4 h-4 text-cyan-400 animate-pulse shrink-0" />
-                    <span><strong>Nguồn dữ liệu chính thức:</strong> Ban chỉ huy phòng thủ dân sự thành phố Huế (Cập nhật: {lastRefreshedTime})</span>
-                  </div>
-                  <div className="text-[11px] text-cyan-300 bg-blue-900/40 px-2.5 py-0.5 rounded border border-blue-800">
-                    Sông Bồ (Tứ Phú): <strong className="text-amber-300">304 cm</strong> (Vượt BĐ2) | Kim Long: <strong>103 cm</strong>
-                  </div>
-                </div>
-              </div>
-
-              {/* MAIN CONTENT */}
-              <main className="max-w-7xl mx-auto px-4 py-6">
-                {/* CONTROLS */}
-                <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5 mr-2">
-                      <Sliders className="w-4 h-4 text-cyan-400" /> Kịch bản kiểm tra:
-                    </span>
-                    <button onClick={() => handleScenarioChange('live')} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${simulationMode === 'live' ? 'bg-cyan-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-300'}`}>Thực tế (Live)</button>
-                    <button onClick={() => handleScenarioChange('heavy_rain')} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${simulationMode === 'heavy_rain' ? 'bg-red-600 text-white font-bold' : 'bg-slate-800 text-slate-300'}`}>🌧️ Mưa lớn diện rộng</button>
-                    <button onClick={() => handleScenarioChange('dam_release')} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${simulationMode === 'dam_release' ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-300'}`}>🌊 Xả lũ khẩn cấp</button>
-                  </div>
-                </div>
-
-                {/* TABS */}
-                <div className="flex border-b border-slate-800 mb-6 space-x-4 overflow-x-auto">
-                  <button onClick={() => setActiveTab('overview')} className={`pb-3 px-4 text-sm font-medium border-b-2 flex items-center gap-2 whitespace-nowrap ${activeTab === 'overview' ? 'border-cyan-400 text-cyan-400 font-bold' : 'border-transparent text-slate-400'}`}>
-                    <Activity className="w-4 h-4" /> Biểu Đồ & Trạm Thủy Văn
-                  </button>
-                  <button onClick={() => setActiveTab('map')} className={`pb-3 px-4 text-sm font-medium border-b-2 flex items-center gap-2 whitespace-nowrap ${activeTab === 'map' ? 'border-cyan-400 text-cyan-400 font-bold' : 'border-transparent text-slate-400'}`}>
-                    <Navigation className="w-4 h-4" /> Bản Đồ Ngập Lụt Huế
-                  </button>
-                  <button onClick={() => setActiveTab('dams')} className={`pb-3 px-4 text-sm font-medium border-b-2 flex items-center gap-2 whitespace-nowrap ${activeTab === 'dams' ? 'border-cyan-400 text-cyan-400 font-bold' : 'border-transparent text-slate-400'}`}>
-                    <Waves className="w-4 h-4" /> Hồ Chứa Thủy Điện
-                  </button>
-                  <button onClick={() => setActiveTab('sos')} className={`pb-3 px-4 text-sm font-medium border-b-2 flex items-center gap-2 whitespace-nowrap ${activeTab === 'sos' ? 'border-cyan-400 text-cyan-400 font-bold' : 'border-transparent text-slate-400'}`}>
-                    <ShieldAlert className="w-4 h-4" /> Kênh Cứu Hộ SOS 1022
-                  </button>
-                </div>
-
-                {/* TAB 1 */}
-                {activeTab === 'overview' && (
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {/* Kim Long Chart */}
-                      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
-                        <div>
-                          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                            <div>
-                              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                                <Waves className="w-5 h-5 text-cyan-400" /> Trạm Kim Long (Sông Hương & Đập Đá)
-                              </h3>
-                              <p className="text-[11px] text-slate-400">Đập Đá: 180 cm | BĐ1: 200 cm | BĐ3: 350 cm</p>
-                            </div>
-                            <span className="bg-cyan-500/20 text-cyan-300 font-extrabold text-sm px-3 py-1 rounded-lg border border-cyan-500/30">103 cm</span>
-                          </div>
-                          <div className="mt-4 bg-slate-950 rounded-xl p-4 border border-slate-800 h-44 relative">
-                            <svg className="w-full h-full overflow-visible" viewBox="0 0 500 160">
-                              <line x1="0" y1="10" x2="500" y2="10" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="3 3" />
-                              <text x="440" y="8" fill="#ef4444" fontSize="10">350 (BĐ3)</text>
-                              <line x1="0" y1="75" x2="500" y2="75" stroke="#c084fc" strokeWidth="1.5" strokeDasharray="4 2" />
-                              <text x="420" y="72" fill="#c084fc" fontSize="10">Đập đá: 180</text>
-                              <path d="M 10,110 Q 60,113 110,115 T 210,122 T 310,118 T 410,117 T 490,112 L 490,150 L 10,150 Z" fill="#0284c7" opacity="0.3" />
-                              <path d="M 10,110 Q 60,113 110,115 T 210,122 T 310,118 T 410,117 T 490,112" fill="none" stroke="#38bdf8" strokeWidth="3" />
-                              <circle cx="490" cy="112" r="5" fill="#22c55e" stroke="#fff" strokeWidth="2" />
-                              <text x="475" y="100" fill="#22c55e" fontSize="11" fontWeight="bold">103</text>
-                            </svg>
-                          </div>
-                        </div>
-                        <div className="mt-4 pt-3 border-t border-slate-800 flex justify-between text-xs text-slate-400">
-                          <span>Trạng thái: <strong className="text-emerald-400">Dưới mức tràn Đập Đá</strong></span>
-                          <span>Cập nhật: 11:00</span>
-                        </div>
-                      </div>
-
-                      {/* Tứ Phú Chart */}
-                      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
-                        <div>
-                          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                            <div>
-                              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                                <Droplet className="w-5 h-5 text-amber-400" /> Trạm Tứ Phú (Sông Bồ)
-                              </h3>
-                              <p className="text-[11px] text-slate-400">BĐ1: 150 cm | BĐ2: 300 cm | BĐ3: 450 cm</p>
-                            </div>
-                            <span className="bg-amber-500/20 text-amber-300 font-extrabold text-sm px-3 py-1 rounded-lg border border-amber-500/30">304 cm</span>
-                          </div>
-                          <div className="mt-4 bg-slate-950 rounded-xl p-4 border border-slate-800 h-44 relative">
-                            <svg className="w-full h-full overflow-visible" viewBox="0 0 500 160">
-                              <line x1="0" y1="55" x2="500" y2="55" stroke="#eab308" strokeWidth="1.5" />
-                              <text x="450" y="52" fill="#eab308" fontSize="10">300 (BĐ2)</text>
-                              <path d="M 10,115 L 60,110 L 110,108 L 160,100 L 210,92 L 260,82 L 310,72 L 360,62 L 410,56 L 490,52 L 490,150 L 10,150 Z" fill="#f59e0b" opacity="0.3" />
-                              <path d="M 10,115 L 60,110 L 110,108 L 160,100 L 210,92 L 260,82 L 310,72 L 360,62 L 410,56 L 490,52" fill="none" stroke="#f59e0b" strokeWidth="3.5" />
-                              <circle cx="490" cy="52" r="6" fill="#ef4444" stroke="#fff" strokeWidth="2" />
-                              <text x="468" y="42" fill="#ef4444" fontSize="12" fontWeight="black">304</text>
-                            </svg>
-                          </div>
-                        </div>
-                        <div className="mt-4 pt-3 border-t border-slate-800 flex justify-between text-xs text-slate-400">
-                          <span>Cảnh báo: <strong className="text-amber-400">Vượt Báo động 2</strong></span>
-                          <span>Cập nhật: 11:00</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* TAB 2: MAP */}
-                {activeTab === 'map' && (
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                      <h3 className="text-base font-bold text-white mb-2">Bản Đồ Quan Trắc Ngập Lụt Huế</h3>
-                      <div className="relative w-full h-[400px] bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center">
-                        <svg className="absolute inset-0 w-full h-full opacity-70" viewBox="0 0 600 400">
-                          <path d="M 50,350 C 150,300 180,240 250,220 C 320,200 380,180 480,160 C 520,150 560,110 590,50" fill="none" stroke="#38bdf8" strokeWidth="8"/>
-                        </svg>
-                        {HOTSPOTS.map((spot) => (
-                          <div key={spot.id} style={{ left: `${spot.x}%`, top: `${spot.y}%` }} className="absolute transform -translate-x-1/2 -translate-y-1/2">
-                            <span className="relative flex h-4 w-4 items-center justify-center">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                      <h3 className="text-base font-bold text-white mb-3">Trạm Thủy Văn TP Huế</h3>
-                      <div className="space-y-3">
-                        {stations.map(s => (
-                          <div key={s.id} className="p-3 bg-slate-950 border border-slate-800 rounded-xl">
-                            <h4 className="font-bold text-slate-200 text-xs">{s.name}</h4>
-                            <div className="mt-1 text-sm font-black text-cyan-300">Mực nước: {s.levelCm} cm</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* TAB 3: DAMS */}
-                {activeTab === 'dams' && (
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                    <h3 className="text-lg font-bold text-white mb-4">Vận Hành Hồ Chứa Thủy Điện Thừa Thiên Huế</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {dams.map(dam => (
-                        <div key={dam.id} className="bg-slate-950 border border-slate-800 rounded-xl p-4">
-                          <h4 className="font-bold text-white text-base">{dam.name}</h4>
-                          <div className="mt-2 space-y-1 text-xs text-slate-300">
-                            <p>Sông: <span className="text-cyan-300">{dam.river}</span></p>
-                            <p>Mực nước: <strong className="text-white">{dam.waterLevel} m</strong></p>
-                            <p>Lưu lượng xả: <strong className="text-amber-400">{dam.outflow} m³/s</strong></p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* TAB 4: SOS */}
-                {activeTab === 'sos' && (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                      <h3 className="text-lg font-bold text-white mb-2">Kênh Cứu Hộ SOS & Phản Ánh Huế</h3>
-                      {sosSubmitted && <div className="bg-emerald-950 text-emerald-300 p-3 rounded-xl mb-4 text-xs">✅ Đã gửi phản ánh thành công!</div>}
-                      <form onSubmit={handleSosSubmit} className="space-y-3">
-                        <input type="text" required placeholder="Họ và tên..." value={sosForm.name} onChange={e => setSosForm({...sosForm, name: e.target.value})} className="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-xs text-white" />
-                        <input type="tel" required placeholder="Số điện thoại..." value={sosForm.phone} onChange={e => setSosForm({...sosForm, phone: e.target.value})} className="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-xs text-white" />
-                        <input type="text" required placeholder="Địa điểm ngập cụ thể..." value={sosForm.location} onChange={e => setSosForm({...sosForm, location: e.target.value})} className="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-xs text-white" />
-                        <textarea rows="3" placeholder="Mô tả tình hình..." value={sosForm.description} onChange={e => setSosForm({...sosForm, description: e.target.value})} className="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-xs text-white" />
-                        <button type="submit" className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2.5 rounded-lg text-xs">Gửi Phản Ánh</button>
-                      </form>
-                    </div>
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                      <h3 className="text-base font-bold text-white mb-3">Cộng Đồng Phản Ánh</h3>
-                      <div className="space-y-3">
-                        {communityReports.map(rep => (
-                          <div key={rep.id} className="p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs space-y-1">
-                            <strong className="text-cyan-300">{rep.user}</strong>
-                            <p className="text-slate-300">📍 {rep.location}</p>
-                            <p className="text-amber-400 font-semibold">Mức ngập: {rep.depth}</p>
-                            <p className="text-slate-400">"{rep.desc}"</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </main>
-
-              {/* FOOTER */}
-              <footer className="border-t border-slate-800 mt-12 py-6 bg-slate-950 text-slate-500 text-xs text-center">
-                <p className="font-bold text-slate-300">HUEWEATHER — Theo dõi Thời tiết & Mực nước Sông Thành phố Huế</p>
-                <p className="mt-1">Nhà phát triển: <strong className="text-cyan-400">Trần Anh Khoa</strong> | Nguồn dữ liệu: Ban chỉ huy phòng thủ dân sự TP. Huế</p>
-              </footer>
-            </div>
-          );
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #090d16;
+            color: #f8fafc;
         }
 
-        ReactDOM.render(<App />, document.getElementById('root'));
+        /* Glassmorphic UI */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Animations */
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8)); }
+            50% { opacity: 0.4; filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.3)); }
+        }
+        .pulse-live { animation: pulse-glow 1.5s infinite; }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        .scanline::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 240, 255, 0.05) 51%);
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0b1120; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-down { animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-cyan-500 selection:text-slate-950">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-20 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                
+                <!-- Brand Title -->
+                <div class="flex items-center gap-3">
+                    <div class="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+                        <i class="fa-solid fa-water text-xl"></i>
+                        <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-slate-950 pulse-live"></span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-black text-xl text-white tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">ThoitietHue</span>
+                            <span class="px-2 py-0.5 text-[10px] font-extrabold bg-cyan-500/20 text-cyan-300 rounded-md border border-cyan-500/40 font-mono">v3.0 ULTRA</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 font-medium flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-ping"></span>
+                            Giám Sát Lũ Lụt Realtime TP. Huế
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Center Live Status -->
+                <div class="hidden lg:flex items-center gap-4 bg-slate-900/90 px-4 py-2 rounded-full border border-slate-800/80">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-xs font-semibold text-slate-300" id="live-tick-text">Tự động đồng bộ (3s)</span>
+                    </div>
+                    <div class="h-3 w-px bg-slate-700"></div>
+                    <span class="text-xs font-mono text-cyan-400 font-bold" id="live-update-timer">Vừa cập nhật: 0s trước</span>
+                </div>
+
+                <!-- Developer Badge -->
+                <div class="flex items-center gap-3">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold">KTS HỆ THỐNG</p>
+                        <p class="text-xs font-black text-amber-400 flex items-center justify-end gap-1 tracking-wide">
+                            <i class="fa-solid fa-code text-[10px]"></i> Trần Anh Khoa
+                        </p>
+                    </div>
+                    <div class="relative group cursor-pointer" onclick="showDevInfo()">
+                        <div class="w-10 h-10 rounded-xl bg-slate-800 border-2 border-amber-500/50 flex items-center justify-center text-amber-400 font-extrabold text-sm shadow-lg shadow-amber-500/10 group-hover:border-amber-400 transition">
+                            TAK
+                        </div>
+                        <span class="absolute -bottom-1 -right-1 px-1 py-0.2 bg-amber-500 text-slate-950 font-black text-[8px] rounded">PRO</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- LIVE EMERGENCY BREAKING TICKER -->
+    <div class="bg-gradient-to-r from-red-950/80 via-amber-950/60 to-slate-950 border-b border-red-500/30 text-xs py-2 px-4 overflow-hidden relative">
+        <div class="max-w-7xl mx-auto flex items-center gap-3">
+            <span class="px-2 py-0.5 font-black bg-red-600 text-white rounded text-[10px] tracking-wider uppercase shrink-0 flex items-center gap-1">
+                <i class="fa-solid fa-bell animate-bounce"></i> KHẨN CẤP
+            </span>
+            <div class="overflow-hidden relative w-full font-medium text-slate-200">
+                <div class="whitespace-nowrap animate-marquee flex items-center gap-8" id="ticker-content">
+                    <span>⚠️ <strong>Sông Bồ (Tứ Phú)</strong>: Mực nước 304cm - Vượt Báo Động II (+4cm). Yêu cầu hạ lưu sơ tán tài sản khẩn cấp.</span>
+                    <span>🌊 <strong>Thủy Điện Hương Điền</strong>: Đang duy trì xả lũ điều tiết 1,250 m³/s.</span>
+                    <span>🚨 <strong>Cầu Đập Đá</strong>: Nước đã tràn ngập 45cm - Cấm toàn bộ xe máy và xe ô tô gầm thấp di chuyển.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- QUICK METRICS OVERVIEW (4 STAT CARDS) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- Card 1: Sông Bồ -->
+            <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-amber-500/50 transition duration-300">
+                <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Trạm Tứ Phú (Sông Bồ)</p>
+                        <h3 class="text-3xl font-black text-white mt-1 font-mono tracking-tight" id="val-tu-phu">
+                            304 <span class="text-sm font-normal text-slate-400">cm</span>
+                        </h3>
+                    </div>
+                    <span class="px-2.5 py-1 text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-xl flex items-center gap-1 shadow-lg">
+                        <i class="fa-solid fa-triangle-exclamation"></i> BĐ II
+                    </span>
+                </div>
+                <div class="mt-4 flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Mức BĐ3: 450cm</span>
+                    <span class="text-amber-400 font-bold flex items-center gap-1" id="trend-tu-phu">
+                        <i class="fa-solid fa-arrow-up"></i> +2.4 cm/h
+                    </span>
+                </div>
+                <div class="w-full bg-slate-800/80 h-2 rounded-full mt-2 overflow-hidden border border-slate-700/50">
+                    <div id="bar-tu-phu" class="bg-gradient-to-r from-amber-500 to-red-500 h-full rounded-full transition-all duration-700" style="width: 67.5%"></div>
+                </div>
+            </div>
+
+            <!-- Card 2: Sông Hương -->
+            <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-cyan-500/50 transition duration-300">
+                <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl group-hover:bg-cyan-500/20 transition"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Trạm Kim Long (Sông Hương)</p>
+                        <h3 class="text-3xl font-black text-white mt-1 font-mono tracking-tight" id="val-kim-long">
+                            103 <span class="text-sm font-normal text-slate-400">cm</span>
+                        </h3>
+                    </div>
+                    <span class="px-2.5 py-1 text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-xl flex items-center gap-1 shadow-lg">
+                        <i class="fa-solid fa-shield-halved"></i> Dưới Đập Đá
+                    </span>
+                </div>
+                <div class="mt-4 flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Ngưỡng Đập Đá: 180cm</span>
+                    <span class="text-emerald-400 font-bold flex items-center gap-1" id="trend-kim-long">
+                        <i class="fa-solid fa-minus"></i> Ổn định
+                    </span>
+                </div>
+                <div class="w-full bg-slate-800/80 h-2 rounded-full mt-2 overflow-hidden border border-slate-700/50">
+                    <div id="bar-kim-long" class="bg-gradient-to-r from-cyan-500 to-emerald-400 h-full rounded-full transition-all duration-700" style="width: 29.4%"></div>
+                </div>
+            </div>
+
+            <!-- Card 3: Lượng Mưa Tích Lũy -->
+            <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-blue-500/50 transition duration-300">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Lượng Mưa 24h Trung Bình</p>
+                        <h3 class="text-3xl font-black text-white mt-1 font-mono tracking-tight" id="val-rain">
+                            148.2 <span class="text-sm font-normal text-slate-400">mm</span>
+                        </h3>
+                    </div>
+                    <div class="p-2.5 bg-blue-500/20 text-blue-400 rounded-xl border border-blue-500/30">
+                        <i class="fa-solid fa-cloud-showers-heavy text-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Cường độ mưa: Mưa rất to</span>
+                    <span class="text-blue-400 font-bold" id="rain-peak">Đỉnh: Nam Đông (218mm)</span>
+                </div>
+                <div class="w-full bg-slate-800/80 h-2 rounded-full mt-2 overflow-hidden border border-slate-700/50">
+                    <div class="bg-gradient-to-r from-blue-500 to-indigo-500 h-full rounded-full" style="width: 65%"></div>
+                </div>
+            </div>
+
+            <!-- Card 4: Tổng Xả Thủy Điện -->
+            <div class="glass-panel p-4 rounded-2xl relative overflow-hidden group hover:border-orange-500/50 transition duration-300">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Tổng Xả Thủy Điện (Hương Điền/Tả Trạch)</p>
+                        <h3 class="text-3xl font-black text-white mt-1 font-mono tracking-tight" id="val-discharge">
+                            1,570 <span class="text-sm font-normal text-slate-400">m³/s</span>
+                        </h3>
+                    </div>
+                    <span class="px-2.5 py-1 text-xs font-black bg-orange-500/20 text-orange-300 border border-orange-500/40 rounded-xl">
+                        Xả Lưu Lượng Lớn
+                    </span>
+                </div>
+                <div class="mt-4 flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Hương Điền: 1,250 m³/s</span>
+                    <span class="text-orange-400 font-bold">Tả Trạch: 320 m³/s</span>
+                </div>
+                <div class="w-full bg-slate-800/80 h-2 rounded-full mt-2 overflow-hidden border border-slate-700/50">
+                    <div class="bg-gradient-to-r from-orange-500 to-red-500 h-full rounded-full" style="width: 78%"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- MAIN TABS NAVIGATION -->
+        <div class="flex border-b border-slate-800/80 overflow-x-auto no-scrollbar gap-2 sm:gap-6 text-sm font-bold">
+            <button onclick="switchTab('tab-water')" id="btn-tab-water" class="tab-btn py-3 px-2 border-b-2 border-cyan-400 text-cyan-300 flex items-center gap-2 whitespace-nowrap transition">
+                <i class="fa-solid fa-chart-line"></i> Mực Nước & Biểu Đồ
+            </button>
+            <button onclick="switchTab('tab-camera')" id="btn-tab-camera" class="tab-btn py-3 px-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition relative">
+                <i class="fa-solid fa-video text-red-500 animate-pulse"></i> Camera Ngập 8 Điểm Live
+                <span class="px-1.5 py-0.5 text-[9px] bg-red-600 text-white rounded font-black tracking-wider">8 CAM</span>
+            </button>
+            <button onclick="switchTab('tab-ai')" id="btn-tab-ai" class="tab-btn py-3 px-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+                <i class="fa-solid fa-brain text-purple-400"></i> AI Dự Báo & Hồ Thủy Điện
+            </button>
+            <button onclick="switchTab('tab-rain')" id="btn-tab-rain" class="tab-btn py-3 px-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+                <i class="fa-solid fa-cloud-showers-water"></i> Lượng Mưa Các Huyện
+            </button>
+            <button onclick="switchTab('tab-report')" id="btn-tab-report" class="tab-btn py-3 px-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+                <i class="fa-solid fa-bullhorn text-amber-400"></i> Báo Cáo Ngập & Hotline
+            </button>
+        </div>
+
+        <!-- TAB CONTENT 1: MỰC NƯỚC SÔNG CHART ENGINE -->
+        <div id="tab-water" class="tab-content space-y-6">
+
+            <!-- Filter Toolbar -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 glass-panel p-4 rounded-2xl">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-white">Lọc Khung Thời Gian Theo Dõi</h4>
+                        <p class="text-xs text-slate-400">Dữ liệu quan trắc mực nước cập nhật từ Ban chỉ huy PCTT TP. Huế</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 bg-slate-900/90 p-1.5 rounded-xl border border-slate-800 w-full sm:w-auto justify-center">
+                    <button onclick="setTimeRange('6h')" id="time-6h" class="time-btn text-xs font-bold px-3.5 py-2 rounded-lg bg-cyan-600 text-white transition shadow">6 giờ qua</button>
+                    <button onclick="setTimeRange('12h')" id="time-12h" class="time-btn text-xs font-bold px-3.5 py-2 rounded-lg text-slate-400 hover:text-white transition">12 giờ qua</button>
+                    <button onclick="setTimeRange('24h')" id="time-24h" class="time-btn text-xs font-bold px-3.5 py-2 rounded-lg text-slate-400 hover:text-white transition">24 giờ qua</button>
+                    <button onclick="setTimeRange('48h')" id="time-48h" class="time-btn text-xs font-bold px-3.5 py-2 rounded-lg text-slate-400 hover:text-white transition">48 giờ qua</button>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Chart Kim Long -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800/80 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-base text-white flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full bg-cyan-400 shadow-md shadow-cyan-400/50"></span>
+                                    Trạm Kim Long (Sông Hương)
+                                </h3>
+                                <p class="text-xs text-slate-400 mt-0.5">Đập Đá: 180cm | BĐ1: 100cm | BĐ2: 200cm | BĐ3: 350cm</p>
+                            </div>
+                            <span class="px-2.5 py-1 text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-full" id="status-kim-long">
+                                Dưới Đập Đá (103cm)
+                            </span>
+                        </div>
+                        <div class="relative h-72 w-full">
+                            <canvas id="chartKimLong"></canvas>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                        <span><i class="fa-solid fa-water text-cyan-400 mr-1"></i>Tràn qua Đập Đá khi mực nước > 180cm</span>
+                        <span class="font-mono text-cyan-400 font-bold" id="kl-last-time">11:00</span>
+                    </div>
+                </div>
+
+                <!-- Chart Tứ Phú -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800/80 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-base text-white flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full bg-amber-400 shadow-md shadow-amber-400/50"></span>
+                                    Trạm Tứ Phú (Sông Bồ)
+                                </h3>
+                                <p class="text-xs text-slate-400 mt-0.5">BĐ1: 150cm | BĐ2: 300cm | BĐ3: 450cm</p>
+                            </div>
+                            <span class="px-2.5 py-1 text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full" id="status-tu-phu">
+                                Vượt BĐ2 (+4cm)
+                            </span>
+                        </div>
+                        <div class="relative h-72 w-full">
+                            <canvas id="chartTuPhu"></canvas>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                        <span><i class="fa-solid fa-triangle-exclamation text-amber-400 mr-1"></i>Cảnh báo lũ lụt vùng hạ lưu Quảng Điền</span>
+                        <span class="font-mono text-amber-400 font-bold" id="tp-last-time">11:00</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Hydro Detailed Data Table -->
+            <div class="glass-panel rounded-2xl p-5 border border-slate-800/80">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-base text-white flex items-center gap-2">
+                        <i class="fa-solid fa-table text-cyan-400"></i>
+                        Bảng Quan Trắc Chi Tiết Theo Giờ
+                    </h3>
+                    <span class="text-xs text-slate-400 font-mono">Đơn vị: Centimét (cm)</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-900/80 text-slate-400 uppercase tracking-wider font-extrabold border-b border-slate-800">
+                            <tr>
+                                <th class="p-3 rounded-l-xl">Thời Gian</th>
+                                <th class="p-3">Sông Hương (Kim Long)</th>
+                                <th class="p-3">Cảnh Báo Sông Hương</th>
+                                <th class="p-3">Sông Bồ (Tứ Phú)</th>
+                                <th class="p-3 rounded-r-xl">Cảnh Báo Sông Bồ</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60 font-medium text-slate-300" id="table-water-body">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TAB CONTENT 2: LIVE 8-CAMERA MATRIX & FULLVIEW -->
+        <div id="tab-camera" class="tab-content space-y-6 hidden">
+            
+            <!-- Controls Bar -->
+            <div class="glass-panel p-4 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-extrabold text-white text-base">Mạng Lưới 8 Camera Giám Sát Ngập Lụt Realtime</h3>
+                        <span class="px-2 py-0.5 text-[10px] bg-red-600 text-white font-extrabold rounded">LIVE 24/7</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-0.5">Truy xuất hình ảnh từ các điểm xung yếu, nút giao giao thông & ngầm tràn TP. Huế</p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <button onclick="filterCameras('all')" id="cam-filter-all" class="cam-filter-btn text-xs font-bold px-3 py-1.5 rounded-xl bg-cyan-600 text-white transition">
+                        Tất cả (8)
+                    </button>
+                    <button onclick="filterCameras('danger')" id="cam-filter-danger" class="cam-filter-btn text-xs font-bold px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white border border-slate-800 transition">
+                        🔴 Ngập Sâu (3)
+                    </button>
+                    <button onclick="filterCameras('warning')" id="cam-filter-warning" class="cam-filter-btn text-xs font-bold px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white border border-slate-800 transition">
+                        🟡 Ngập Nhẹ (3)
+                    </button>
+                    <button onclick="filterCameras('safe')" id="cam-filter-safe" class="cam-filter-btn text-xs font-bold px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white border border-slate-800 transition">
+                        🟢 An Toàn (2)
+                    </button>
+                    <button onclick="openMatrixModal()" class="text-xs font-bold px-3 py-1.5 rounded-xl bg-purple-600/30 text-purple-300 border border-purple-500/40 hover:bg-purple-600 hover:text-white transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-table-cells-large"></i> Xem Matrix 4-Cam
+                    </button>
+                </div>
+            </div>
+
+            <!-- 8 Cameras Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="cameras-grid">
+                <!-- Rendered dynamically in JS -->
+            </div>
+
+        </div>
+
+        <!-- TAB CONTENT 3: AI DỰ BÁO & DỮ LIỆU HỒ THỦY ĐIỆN -->
+        <div id="tab-ai" class="tab-content space-y-6 hidden">
+            
+            <!-- AI Forecast Banner -->
+            <div class="glass-panel p-6 rounded-2xl border border-purple-500/30 bg-gradient-to-r from-purple-950/20 via-slate-900 to-slate-900 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl"></div>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div class="space-y-2">
+                        <span class="px-3 py-1 text-xs font-extrabold bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded-full inline-flex items-center gap-1.5">
+                            <i class="fa-solid fa-microchip"></i> ĐỘC QUYỀN HUẾ-AI PREDICT ENGINE v3.0
+                        </span>
+                        <h3 class="text-xl font-black text-white">Dự Báo Xu Hướng Lũ Trong 12 Giờ Tới</h3>
+                        <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
+                            Mô hình AI kết hợp dữ liệu lượng mưa thượng nguồn Nam Đông - A Lưới và lưu lượng xả lũ từ thủy điện Hương Điền & Tả Trạch.
+                        </p>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border border-purple-500/30 text-center shrink-0 min-w-[200px]">
+                        <p class="text-[10px] text-purple-300 font-extrabold uppercase">Dự Báo Đỉnh Lũ Sông Bồ</p>
+                        <p class="text-2xl font-black text-amber-400 mt-1 font-mono">315 cm</p>
+                        <p class="text-xs text-slate-400 mt-1">Vào lúc ~ 15:30 Chiều Nay</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reservoirs Status Gauges -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Reservoir 1: Hương Điền -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-white text-sm">Thủy Điện Hương Điền</h4>
+                        <span class="px-2 py-0.5 text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30 rounded">Xả Lớn</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-400">Dung tích hồ:</span>
+                            <span class="font-mono font-bold text-slate-200">54.2m / 58.0m (93.4%)</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                            <div class="bg-red-500 h-full rounded-full" style="width: 93.4%"></div>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-slate-800 flex justify-between text-xs text-slate-400">
+                        <span>Lưu lượng về: 1,420 m³/s</span>
+                        <span class="text-red-400 font-bold">Xả: 1,250 m³/s</span>
+                    </div>
+                </div>
+
+                <!-- Reservoir 2: Tả Trạch -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-white text-sm">Hồ Chứa Tả Trạch</h4>
+                        <span class="px-2 py-0.5 text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded">Xả Vừa</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-400">Dung tích hồ:</span>
+                            <span class="font-mono font-bold text-slate-200">42.8m / 45.0m (86.0%)</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                            <div class="bg-amber-500 h-full rounded-full" style="width: 86%"></div>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-slate-800 flex justify-between text-xs text-slate-400">
+                        <span>Lưu lượng về: 520 m³/s</span>
+                        <span class="text-amber-400 font-bold">Xả: 320 m³/s</span>
+                    </div>
+                </div>
+
+                <!-- Reservoir 3: Bình Điền -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-white text-sm">Thủy Điện Bình Điền</h4>
+                        <span class="px-2 py-0.5 text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded">An Toàn</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-400">Dung tích hồ:</span>
+                            <span class="font-mono font-bold text-slate-200">79.5m / 85.0m (72.1%)</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                            <div class="bg-emerald-500 h-full rounded-full" style="width: 72.1%"></div>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-slate-800 flex justify-between text-xs text-slate-400">
+                        <span>Lưu lượng về: 210 m³/s</span>
+                        <span class="text-emerald-400 font-bold">Xả: 150 m³/s</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Evacuation Advisory Card by Wards -->
+            <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+                <h3 class="font-bold text-base text-white flex items-center gap-2">
+                    <i class="fa-solid fa-person-walking-luggage text-amber-400"></i>
+                    Khuyến Cáo Sơ Tán Theo Địa Bàn Phường / Xã
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div class="p-3.5 rounded-xl bg-red-950/20 border border-red-500/30 space-y-1.5">
+                        <p class="font-bold text-red-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-triangle-exclamation"></i> VÙNG BÁO ĐỘNG ĐỎ (Khẩn Cấp Sơ Tán)
+                        </p>
+                        <p class="text-slate-300">Phường Hương Sơ, An Hòa, Hương Vinh, Kim Long (Vùng ven sông Bồ & Sông Hương), Phường An Cựu (Vùng ven sông An Cựu).</p>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-amber-950/20 border border-amber-500/30 space-y-1.5">
+                        <p class="font-bold text-amber-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-exclamation"></i> VÙNG CẢNH BÁO VÀNG (Kê Thấp / Sẵn Sàng)
+                        </p>
+                        <p class="text-slate-300">Phường Vĩnh Ninh, Phú Hội, Xuân Phú, Thuận Hòa, Tây Lộc, Phú Xuân (Chú ý kê cao đồ đạc & ngắt điện).</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TAB CONTENT 4: LƯỢNG MƯA CÁC HUYỆN -->
+        <div id="tab-rain" class="tab-content space-y-6 hidden">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Bar Chart -->
+                <div class="lg:col-span-2 glass-panel p-5 rounded-2xl border border-slate-800/80">
+                    <h3 class="font-bold text-base text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-cloud-showers-heavy text-cyan-400"></i>
+                        Lượng Mưa Đo Được 24h Tại Các Trạm Thừa Thiên Huế (mm)
+                    </h3>
+                    <div class="relative h-80 w-full">
+                        <canvas id="chartRainfall"></canvas>
+                    </div>
+                </div>
+
+                <!-- Rain Stats breakdown -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800/80 space-y-4">
+                    <h3 class="font-bold text-base text-white flex items-center gap-2">
+                        <i class="fa-solid fa-droplet text-blue-400"></i>
+                        Phân Tích Cường Độ Mưa
+                    </h3>
+
+                    <div class="space-y-3 text-xs">
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-white">Nam Đông (Thượng Nguồn)</p>
+                                <p class="text-slate-400 text-[11px]">Mưa rất to tích lũy</p>
+                            </div>
+                            <span class="font-mono font-bold text-red-400 text-sm">218.5 mm</span>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-white">A Lưới (Vùng Núi)</p>
+                                <p class="text-slate-400 text-[11px]">Mưa rào xối xả</p>
+                            </div>
+                            <span class="font-mono font-bold text-amber-400 text-sm">172.0 mm</span>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-white">Phong Điền</p>
+                                <p class="text-slate-400 text-[11px]">Cường độ mưa vừa</p>
+                            </div>
+                            <span class="font-mono font-bold text-cyan-400 text-sm">145.8 mm</span>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-white">TP. Huế (Trung Tâm)</p>
+                                <p class="text-slate-400 text-[11px]">Mưa rải rác đến to</p>
+                            </div>
+                            <span class="font-mono font-bold text-emerald-400 text-sm">118.2 mm</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TAB CONTENT 5: BÁO CÁO NGẬP CỘNG ĐỒNG & HOTLINE -->
+        <div id="tab-report" class="tab-content space-y-6 hidden">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Crowd Form -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800/80 space-y-4">
+                    <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                        <i class="fa-solid fa-pen-to-square text-cyan-400"></i>
+                        Gửi Báo Cáo Ngập Nước Tại Khu Vực Bạn
+                    </h3>
+                    <p class="text-xs text-slate-300">Chia sẻ hình ảnh & mực nước thực tế để cảnh báo cho cộng đồng người dân Huế.</p>
+
+                    <form onsubmit="submitFloodReport(event)" class="space-y-3 text-xs">
+                        <div>
+                            <label class="block font-semibold text-slate-300 mb-1">Vị Trí Ngập (Đường / Phường):</label>
+                            <input type="text" id="rep-location" required placeholder="VD: Đường Nguyễn Huệ, Phường Vĩnh Ninh..." class="w-full p-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:border-cyan-400 focus:outline-none">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-semibold text-slate-300 mb-1">Mức Độ Ngập Ước Tính:</label>
+                                <select id="rep-depth" class="w-full p-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:border-cyan-400 focus:outline-none">
+                                    <option value="10-20cm">10 - 20 cm (Ngập nhẹ bánh xe)</option>
+                                    <option value="30-50cm">30 - 50 cm (Ngập sâu pô xe)</option>
+                                    <option value=">70cm">Trên 70 cm (Ngập lụt tràn nhà)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block font-semibold text-slate-300 mb-1">Ảnh Hiện Trường (Mô phỏng):</label>
+                                <input type="file" accept="image/*" class="w-full p-1.5 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-400">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-slate-300 mb-1">Ghi Chú Thêm:</label>
+                            <textarea id="rep-note" rows="2" placeholder="VD: Đã giăng dây cảnh báo, xe máy bị chết máy nhiều..." class="w-full p-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:border-cyan-400 focus:outline-none"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 font-bold text-white rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Gửi Báo Cáo Khẩn Cấp
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Emergency Hotlines -->
+                <div class="glass-panel p-5 rounded-2xl border border-red-500/30 bg-red-950/10 space-y-4">
+                    <h3 class="font-bold text-lg text-red-400 flex items-center gap-2">
+                        <i class="fa-solid fa-phone-volume text-red-500"></i>
+                        Đường Dây Nóng Cứu Hộ Khẩn Cấp TP. Huế
+                    </h3>
+                    <p class="text-xs text-slate-300">Chạm trực tiếp để gọi ứng cứu sơ tán & trợ giúp y tế khẩn cấp 24/7:</p>
+
+                    <div class="space-y-3">
+                        <a href="tel:114" class="flex items-center justify-between p-3.5 rounded-xl bg-red-600/20 border border-red-500/40 hover:bg-red-600/30 transition group">
+                            <div class="flex items-center gap-3">
+                                <span class="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white font-extrabold text-lg shadow-md">114</span>
+                                <div>
+                                    <p class="text-sm font-bold text-white">Cứu Nạn Cứu Hộ PCCC TP. Huế</p>
+                                    <p class="text-xs text-red-300">Tổng đài ứng cứu ngập lũ & chìm xuồng</p>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-phone text-red-400 group-hover:scale-125 transition"></i>
+                        </a>
+
+                        <a href="tel:19001075" class="flex items-center justify-between p-3.5 rounded-xl bg-slate-800/90 border border-slate-700 hover:bg-slate-800 transition group">
+                            <div class="flex items-center gap-3">
+                                <span class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-extrabold text-sm shadow-md">Hue-S</span>
+                                <div>
+                                    <p class="text-sm font-bold text-white">Tổng Đài Hue-S / PCTT Huế</p>
+                                    <p class="text-xs text-slate-400">1900 1075 (Đường dây phản ánh đô thị)</p>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-phone text-blue-400 group-hover:scale-125 transition"></i>
+                        </a>
+
+                        <a href="tel:115" class="flex items-center justify-between p-3.5 rounded-xl bg-slate-800/90 border border-slate-700 hover:bg-slate-800 transition group">
+                            <div class="flex items-center gap-3">
+                                <span class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-extrabold text-lg shadow-md">115</span>
+                                <div>
+                                    <p class="text-sm font-bold text-white">Cấp Cứu Y Tế Khẩn Cấp</p>
+                                    <p class="text-xs text-slate-400">Hỗ trợ vận chuyển người gia, bệnh nhân</p>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-phone text-emerald-400 group-hover:scale-125 transition"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FULLSCREEN SINGLE CAMERA MODAL -->
+    <div id="camera-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-4 hidden">
+        <div class="glass-panel border border-slate-700 rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col">
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/90">
+                <div class="flex items-center gap-3">
+                    <span class="w-3 h-3 rounded-full bg-red-500 animate-ping"></span>
+                    <div>
+                        <h3 class="font-black text-white text-base" id="modal-cam-title">Camera Titile</h3>
+                        <p class="text-xs text-slate-400" id="modal-cam-location">Location</p>
+                    </div>
+                </div>
+                <button onclick="closeCameraModal()" class="text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800 border border-slate-700 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="relative bg-black w-full h-[360px] sm:h-[480px] flex items-center justify-center overflow-hidden scanline">
+                <img id="modal-cam-img" src="" class="w-full h-full object-cover" alt="Live Feed">
+                
+                <div class="absolute top-4 left-4 flex items-center gap-2">
+                    <span class="px-2.5 py-1 text-xs font-black bg-red-600 text-white rounded-lg flex items-center gap-1.5 shadow">
+                        <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span> LIVE HD
+                    </span>
+                    <span class="px-2.5 py-1 text-xs font-mono bg-slate-950/80 text-cyan-300 rounded-lg border border-slate-700 backdrop-blur" id="modal-cam-timer">
+                        00:00:00
+                    </span>
+                </div>
+
+                <div class="absolute bottom-4 left-4" id="modal-depth-badge"></div>
+            </div>
+
+            <div class="p-4 bg-slate-900/90 border-t border-slate-800 flex flex-wrap justify-between items-center gap-3 text-xs">
+                <div class="flex items-center gap-2 text-slate-400 font-mono">
+                    <i class="fa-solid fa-signal text-emerald-400"></i>
+                    <span>Tín hiệu HD (60 FPS) | Nguồn: Hue-S Traffic Cam</span>
+                </div>
+                <button onclick="closeCameraModal()" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold transition">
+                    Thoát Xem Live
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4-CAMERA MATRIX MODAL -->
+    <div id="matrix-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-4 hidden">
+        <div class="glass-panel border border-slate-700 rounded-3xl w-full max-w-6xl overflow-hidden shadow-2xl flex flex-col h-[90vh]">
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/90">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-table-cells-large text-purple-400 text-lg"></i>
+                    <div>
+                        <h3 class="font-black text-white text-base">Ma Trận Giám Sát Multi-Cam (4 Luồng Đồng Thời)</h3>
+                        <p class="text-xs text-slate-400">Theo dõi 4 điểm ngập trọng yếu cùng một thời điểm</p>
+                    </div>
+                </div>
+                <button onclick="closeMatrixModal()" class="text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800 border border-slate-700 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 p-3 bg-slate-950 flex-grow overflow-y-auto" id="matrix-grid">
+                <!-- Rendered 4 cams in JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- DEVELOPER INFO MODAL -->
+    <div id="dev-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-panel border border-amber-500/40 rounded-3xl w-full max-w-md p-6 text-center space-y-4 shadow-2xl relative">
+            <button onclick="closeDevInfo()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-500 to-red-500 mx-auto flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-amber-500/20 border-4 border-slate-900">
+                TAK
+            </div>
+
+            <div>
+                <h3 class="font-black text-white text-lg">Trần Anh Khoa</h3>
+                <p class="text-xs text-amber-400 font-mono font-bold">KTS HỆ THỐNG & DEVELOPER (KHOACIT)</p>
+            </div>
+
+            <p class="text-xs text-slate-300 leading-relaxed">
+                Tác giả & Nhà phát triển hệ thống <strong>ThoitietHue Ultra Monitoring</strong>. Dự án phi lợi nhuận hỗ trợ người dân Huế cập nhật mực nước lũ và vị trí ngập trực tiếp.
+            </p>
+
+            <div class="pt-2 border-t border-slate-800 flex justify-center gap-4 text-sm text-slate-400">
+                <span class="hover:text-amber-400 cursor-pointer"><i class="fa-solid fa-globe"></i> Hue-S Ecosystem</span>
+                <span class="hover:text-amber-400 cursor-pointer"><i class="fa-solid fa-code-branch"></i> v3.0 PRO</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="mt-12 border-t border-slate-800/80 glass-panel py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400">
+            <div>
+                <p class="font-bold text-slate-200">ThoitietHue - Hệ Thống Theo Dõi Mực Nước Sông & Cảnh Báo Ngập TP. Huế</p>
+                <p class="mt-0.5 text-slate-500">Nguồn dữ liệu: Ban chỉ huy phòng thủ dân sự thành phố Huế & Giám sát Hue-S</p>
+            </div>
+
+            <div class="flex items-center gap-3 bg-slate-900/90 px-4 py-2 rounded-2xl border border-slate-800">
+                <i class="fa-solid fa-code border border-amber-500/40 p-2 rounded-xl text-amber-400 bg-amber-500/10"></i>
+                <div class="text-left">
+                    <p class="text-[9px] uppercase text-slate-400 font-extrabold tracking-widest">TÁC GIẢ PHÁT TRIỂN</p>
+                    <p class="text-xs font-black text-amber-400">Trần Anh Khoa (KHOACIT)</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT ENGINE -->
+    <script>
+        // Global Hydro Datasets
+        const timeLabels = ['06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00'];
+        let dataKimLong = [106, 103, 101, 99, 95, 98, 95, 98, 99, 103];
+        let dataTuPhu = [142, 151, 156, 174, 194, 218, 242, 267, 288, 304];
+
+        // 8 LIVE CAMERAS DATASET
+        const camerasList = [
+            {
+                id: 'cam-1',
+                title: 'Nút Giao Cầu Đập Đá',
+                location: 'Vĩnh Ninh - Phú Hội',
+                status: 'danger',
+                depth: 'Tràn Đập: 45 cm',
+                flowSpeed: 'Dòng chảy xiết (2.5m/s)',
+                statusText: 'Ngập Sâu - Cấm Xe',
+                image: 'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80',
+                vehicleStatus: 'Cấm toàn bộ phương tiện nhỏ'
+            },
+            {
+                id: 'cam-2',
+                title: 'Nút Giao Hùng Vương - Ngô Quyền',
+                location: 'Phường Vĩnh Ninh',
+                status: 'warning',
+                depth: 'Mực nước tràn: 20 cm',
+                flowSpeed: 'Dòng chậm (0.8m/s)',
+                statusText: 'Ngập Nhẹ - Di Chuyển Chậm',
+                image: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&q=80',
+                vehicleStatus: 'Xe máy chú ý tắt máy'
+            },
+            {
+                id: 'cam-3',
+                title: 'Tuyến Đường An Cựu (KĐT 24m)',
+                location: 'Phường An Cựu',
+                status: 'danger',
+                depth: 'Mực nước tràn: 60 cm',
+                flowSpeed: 'Dòng xoáy (1.8m/s)',
+                statusText: 'Ngập Sâu - Phong Tỏa',
+                image: 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80',
+                vehicleStatus: 'Đã giăng dây chốt chặn'
+            },
+            {
+                id: 'cam-4',
+                title: 'Cầu Bến Ngự - Đường Phan Đình Phùng',
+                location: 'Phường Vĩnh Ninh',
+                status: 'warning',
+                depth: 'Mực nước tràn: 18 cm',
+                flowSpeed: 'Dòng vừa (1.0m/s)',
+                statusText: 'Ngập Mép Đường',
+                image: 'https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=800&q=80',
+                vehicleStatus: 'Ô tô gầm cao đi được'
+            },
+            {
+                id: 'cam-5',
+                title: 'Cầu Tràng Tiền - Đường Lê Lợi',
+                location: 'Bờ Nam Sông Hương',
+                status: 'safe',
+                depth: 'Mực nước: 0 cm',
+                flowSpeed: 'Bình thường',
+                statusText: 'Giao Thông Thông Suốt',
+                image: 'https://images.unsplash.com/photo-1477959858617-67f30ac4ce78?auto=format&fit=crop&w=800&q=80',
+                vehicleStatus: 'Lưu thông hoàn toàn an toàn'
+            },
+            {
+                id: 'cam-6',
+                title: 'Đường Bà Triệu - Ngã 4 Lộc Tiến',
+                location: 'Phường Phú Hội',
+                status: 'warning',
+                depth: 'Mực nước tràn: 15 cm',
+                flowSpeed: 'Dòng chậm',
+                statusText: 'Ngập Cục Bộ',
+                image: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=800&q=80',
+                vehicleStatus: 'Di chuyển cẩn thận'
+            },
+            {
+                id: 'cam-7',
+                title: 'Khu Vực Cửa Hậu - Tây Lộc',
+                location: 'Phường Tây Lộc (Thành Nội)',
+                status: 'danger',
+                depth: 'Mực nước tràn: 50 cm',
+                flowSpeed: 'Dòng chảy mạnh (2.0m/s)',
+                statusText: 'Ngập Sâu Cửa Thành',
+                image: 'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?auto=format&fit=crop&w=800&q=80',
+                vehicleStatus: 'Xe nhỏ ngưng lưu thông'
+            },
+            {
+                id: 'cam-8',
+                title: 'Cầu Hương Sơ (Sông Bồ)',
+                location: 'Phường Hương Sơ',
+                status: 'safe',
+                depth: 'Mực nước: 0 cm',
+                flowSpeed: 'Bình thường',
+                statusText: 'Thông Thoáng',
+                image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=800&q=80',
+                vehicleStatus: 'Xe đi bình thường'
+            }
+        ];
+
+        let chartKLInstance = null;
+        let chartTPInstance = null;
+        let chartRainInstance = null;
+        let lastUpdateTimeSeconds = 0;
+        let currentCamFilter = 'all';
+
+        // Initialize App
+        window.onload = function() {
+            initCharts();
+            renderTable();
+            renderCameras();
+            startLiveSimulationEngine();
+        };
+
+        // Render 8 Cameras
+        function renderCameras() {
+            const container = document.getElementById('cameras-grid');
+            const filtered = camerasList.filter(c => currentCamFilter === 'all' ? true : c.status === currentCamFilter);
+
+            container.innerHTML = filtered.map(cam => {
+                let badge = '';
+                let border = '';
+                if (cam.status === 'danger') {
+                    badge = '<span class="px-2 py-0.5 text-[10px] font-black bg-red-600 text-white rounded">🔴 Ngập Sâu</span>';
+                    border = 'border-red-500/30 hover:border-red-500';
+                } else if (cam.status === 'warning') {
+                    badge = '<span class="px-2 py-0.5 text-[10px] font-black bg-amber-500 text-slate-950 rounded">🟡 Ngập Nhẹ</span>';
+                    border = 'border-amber-500/30 hover:border-amber-500';
+                } else {
+                    badge = '<span class="px-2 py-0.5 text-[10px] font-black bg-emerald-600 text-white rounded">🟢 An Toàn</span>';
+                    border = 'border-emerald-500/30 hover:border-emerald-500';
+                }
+
+                return `
+                    <div class="glass-panel rounded-2xl overflow-hidden border ${border} transition-all duration-300 flex flex-col justify-between group">
+                        <div class="relative h-40 bg-slate-900 overflow-hidden scanline">
+                            <img src="${cam.image}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="${cam.title}">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+                            
+                            <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                                <span class="px-2 py-0.5 text-[9px] font-black bg-red-600 text-white rounded flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> LIVE
+                                </span>
+                                <span class="px-2 py-0.5 text-[9px] font-mono bg-slate-950/80 text-cyan-300 rounded backdrop-blur live-clock">
+                                    --:--:--
+                                </span>
+                            </div>
+
+                            <button onclick="openCameraModal('${cam.id}')" class="absolute top-2.5 right-2.5 p-1.5 rounded-lg bg-slate-950/80 text-slate-200 hover:text-white transition border border-slate-700">
+                                <i class="fa-solid fa-expand text-[10px]"></i>
+                            </button>
+
+                            <div class="absolute bottom-2.5 left-2.5 right-2.5 flex justify-between items-end">
+                                <div>
+                                    <p class="text-xs font-black text-white drop-shadow">${cam.depth}</p>
+                                    <p class="text-[10px] text-slate-300 drop-shadow">${cam.flowSpeed}</p>
+                                </div>
+                                ${badge}
+                            </div>
+                        </div>
+
+                        <div class="p-3 space-y-2 flex-grow flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-bold text-xs text-white group-hover:text-cyan-400 transition leading-snug">${cam.title}</h4>
+                                <p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-solid fa-location-dot text-slate-500"></i> ${cam.location}</p>
+                            </div>
+                            <button onclick="openCameraModal('${cam.id}')" class="w-full py-1.5 text-[11px] font-bold rounded-xl bg-cyan-600/20 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-600 hover:text-white transition flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-play text-[9px]"></i> Xem Feed Trực Tiếp
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterCameras(type) {
+            currentCamFilter = type;
+            document.querySelectorAll('.cam-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-cyan-600', 'text-white');
+                btn.classList.add('bg-slate-900', 'text-slate-300');
+            });
+            const activeBtn = document.getElementById('cam-filter-' + type);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-900', 'text-slate-300');
+                activeBtn.classList.add('bg-cyan-600', 'text-white');
+            }
+            renderCameras();
+        }
+
+        // Camera Fullscreen Modal
+        function openCameraModal(camId) {
+            const cam = camerasList.find(c => c.id === camId);
+            if (!cam) return;
+
+            document.getElementById('modal-cam-title').innerText = cam.title;
+            document.getElementById('modal-cam-location').innerText = cam.location;
+            document.getElementById('modal-cam-img').src = cam.image;
+
+            let badgeHtml = `<span class="px-3 py-1 text-xs font-black bg-cyan-600 text-white rounded-lg shadow-lg">${cam.depth} (${cam.statusText})</span>`;
+            document.getElementById('modal-depth-badge').innerHTML = badgeHtml;
+            document.getElementById('camera-modal').classList.remove('hidden');
+        }
+
+        function closeCameraModal() {
+            document.getElementById('camera-modal').classList.add('hidden');
+        }
+
+        // 4-Camera Matrix View Modal
+        function openMatrixModal() {
+            const container = document.getElementById('matrix-grid');
+            const top4Cams = camerasList.slice(0, 4);
+
+            container.innerHTML = top4Cams.map(cam => `
+                <div class="relative bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 h-56 sm:h-64 scanline">
+                    <img src="${cam.image}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+                    <div class="absolute top-3 left-3 flex items-center gap-2">
+                        <span class="px-2 py-0.5 text-[10px] font-black bg-red-600 text-white rounded">LIVE</span>
+                        <span class="text-xs font-bold text-white drop-shadow">${cam.title}</span>
+                    </div>
+                    <div class="absolute bottom-3 left-3 text-xs font-mono text-cyan-300 font-bold drop-shadow">
+                        ${cam.depth} | ${cam.flowSpeed}
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('matrix-modal').classList.remove('hidden');
+        }
+
+        function closeMatrixModal() {
+            document.getElementById('matrix-modal').classList.add('hidden');
+        }
+
+        function showDevInfo() {
+            document.getElementById('dev-modal').classList.remove('hidden');
+        }
+
+        function closeDevInfo() {
+            document.getElementById('dev-modal').classList.add('hidden');
+        }
+
+        // Tabs Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-cyan-400', 'text-cyan-300');
+                btn.classList.add('border-transparent', 'text-slate-400');
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('border-transparent', 'text-slate-400');
+            activeBtn.classList.add('border-cyan-400', 'text-cyan-300');
+        }
+
+        // Initialize Charts
+        function initCharts() {
+            // Kim Long Chart
+            const ctxKL = document.getElementById('chartKimLong').getContext('2d');
+            const gradKL = ctxKL.createLinearGradient(0, 0, 0, 250);
+            gradKL.addColorStop(0, 'rgba(6, 182, 212, 0.4)');
+            gradKL.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+
+            chartKLInstance = new Chart(ctxKL, {
+                type: 'line',
+                data: {
+                    labels: timeLabels,
+                    datasets: [{
+                        label: 'Mực nước Kim Long (cm)',
+                        data: dataKimLong,
+                        borderColor: '#06b6d4',
+                        borderWidth: 3,
+                        backgroundColor: gradKL,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#06b6d4'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { min: 0, max: 400, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+
+            // Tứ Phú Chart
+            const ctxTP = document.getElementById('chartTuPhu').getContext('2d');
+            const gradTP = ctxTP.createLinearGradient(0, 0, 0, 250);
+            gradTP.addColorStop(0, 'rgba(245, 158, 11, 0.4)');
+            gradTP.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
+
+            chartTPInstance = new Chart(ctxTP, {
+                type: 'line',
+                data: {
+                    labels: timeLabels,
+                    datasets: [{
+                        label: 'Mực nước Tứ Phú (cm)',
+                        data: dataTuPhu,
+                        borderColor: '#f59e0b',
+                        borderWidth: 3,
+                        backgroundColor: gradTP,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#f59e0b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { min: 0, max: 600, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+
+            // Rain Bar Chart
+            const ctxRain = document.getElementById('chartRainfall').getContext('2d');
+            chartRainInstance = new Chart(ctxRain, {
+                type: 'bar',
+                data: {
+                    labels: ['Nam Đông', 'A Lưới', 'TP. Huế', 'Phong Điền', 'Phú Vang'],
+                    datasets: [{
+                        data: [218.5, 172.0, 118.2, 145.8, 92.4],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('table-water-body');
+            let html = '';
+            for (let i = timeLabels.length - 1; i >= 0; i--) {
+                const klVal = dataKimLong[i];
+                const tpVal = dataTuPhu[i];
+                
+                const klStatus = klVal >= 180 ? '<span class="text-amber-400 font-bold">Tràn Đập Đá</span>' : '<span class="text-emerald-400">An toàn</span>';
+                const tpStatus = tpVal >= 300 ? '<span class="text-red-400 font-bold">Vượt BĐ2 (+4cm)</span>' : '<span class="text-amber-400">BĐ1</span>';
+
+                html += `
+                    <tr class="hover:bg-slate-800/40 transition">
+                        <td class="p-3 font-mono text-slate-400">${timeLabels[i]}</td>
+                        <td class="p-3 font-mono font-bold text-cyan-400">${klVal} cm</td>
+                        <td class="p-3">${klStatus}</td>
+                        <td class="p-3 font-mono font-bold text-amber-400">${tpVal} cm</td>
+                        <td class="p-3">${tpStatus}</td>
+                    </tr>
+                `;
+            }
+            tbody.innerHTML = html;
+        }
+
+        function setTimeRange(range) {
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.classList.remove('bg-cyan-600', 'text-white');
+                btn.classList.add('text-slate-400');
+            });
+            const activeBtn = document.getElementById('time-' + range);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-cyan-600', 'text-white');
+                activeBtn.classList.remove('text-slate-400');
+            }
+            showToast(`Đã tải dữ liệu thủy văn trong ${range}`, 'info');
+        }
+
+        // REAL-TIME AUTO UPDATE ENGINE (Random Walk Drift)
+        function startLiveSimulationEngine() {
+            // Timer counter tick
+            setInterval(() => {
+                lastUpdateTimeSeconds++;
+                document.getElementById('live-update-timer').innerText = `Vừa cập nhật: ${lastUpdateTimeSeconds}s trước`;
+                
+                const now = new Date();
+                const timeStr = now.toTimeString().split(' ')[0];
+                document.querySelectorAll('.live-clock').forEach(el => el.innerText = timeStr);
+                const timerModal = document.getElementById('modal-cam-timer');
+                if (timerModal) timerModal.innerText = timeStr;
+            }, 1000);
+
+            // Data Drift every 3 seconds
+            setInterval(() => {
+                lastUpdateTimeSeconds = 0;
+                
+                const tpDelta = Math.floor(Math.random() * 3) - 1; // -1, 0, 1
+                const klDelta = Math.floor(Math.random() * 2) - 1;
+
+                const lastTP = dataTuPhu[dataTuPhu.length - 1];
+                const lastKL = dataKimLong[dataKimLong.length - 1];
+
+                const newTP = Math.max(100, lastTP + tpDelta);
+                const newKL = Math.max(80, lastKL + klDelta);
+
+                dataTuPhu[dataTuPhu.length - 1] = newTP;
+                dataKimLong[dataKimLong.length - 1] = newKL;
+
+                document.getElementById('val-tu-phu').innerHTML = `${newTP} <span class="text-sm font-normal text-slate-400">cm</span>`;
+                document.getElementById('val-kim-long').innerHTML = `${newKL} <span class="text-sm font-normal text-slate-400">cm</span>`;
+
+                if (chartKLInstance) chartKLInstance.update('none');
+                if (chartTPInstance) chartTPInstance.update('none');
+                renderTable();
+
+            }, 3000);
+        }
+
+        function submitFloodReport(e) {
+            e.preventDefault();
+            const location = document.getElementById('rep-location').value;
+            showToast(`Đã gửi báo cáo điểm ngập "${location}" lên hệ thống Hue-S!`, 'success');
+            e.target.reset();
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bg = 'bg-slate-900 border-slate-700 text-slate-200';
+            let icon = 'fa-circle-info text-cyan-400';
+            if (type === 'success') {
+                bg = 'bg-slate-900 border-emerald-500/50 text-emerald-300';
+                icon = 'fa-circle-check text-emerald-400';
+            }
+
+            toast.className = `animate-slide-down pointer-events-auto p-3.5 rounded-2xl border ${bg} shadow-2xl flex items-center justify-between text-xs font-bold backdrop-blur-xl`;
+            toast.innerHTML = `
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid ${icon} text-sm"></i>
+                    <span>${msg}</span>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white ml-3">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4000);
+        }
     </script>
 </body>
 </html>
