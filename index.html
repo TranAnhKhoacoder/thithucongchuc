@@ -1,1118 +1,775 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kỷ Niệm 238 Năm Nguyễn Huệ Lên Ngôi Hoàng Đế - Phường An Cựu</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Standard Vietnamese fonts supporting all diacritics perfectly without overlap -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=Philosopher:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        goldBright: '#FFE57F',
-                        goldMetallic: '#FFD700',
-                        goldDark: '#B8860B',
-                        crimsonRoyal: '#990000',
-                        deepEmpire: '#4A0000',
-                        darkObsidian: '#0B0B10',
-                        cardDark: '#14131D',
-                        jadeAccent: '#00F5D4',
-                    },
-                    fontFamily: {
-                        heading: ['Philosopher', 'Be Vietnam Pro', 'serif'],
-                        body: ['Be Vietnam Pro', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <style>
-        body {
-            background-color: #07070a;
-            color: #FDF6E2;
-            font-family: 'Be Vietnam Pro', sans-serif;
-            background-image: 
-                radial-gradient(circle at 50% 10%, rgba(153, 0, 0, 0.45) 0%, transparent 60%),
-                radial-gradient(circle at 20% 80%, rgba(184, 134, 11, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 90%, rgba(74, 0, 0, 0.6) 0%, transparent 50%);
-            min-height: 100vh;
-        }
+import React, { useState, useEffect } from 'react';
+import { 
+  Waves, 
+  Droplet, 
+  AlertTriangle, 
+  AlertOctagon, 
+  Info, 
+  CheckCircle2, 
+  RefreshCw, 
+  PhoneCall, 
+  Sliders, 
+  Activity, 
+  Navigation, 
+  ShieldAlert, 
+  Compass, 
+  TrendingUp, 
+  TrendingDown 
+} from 'lucide-react';
 
-        /* Gold Metallic Gradient Text */
-        .gold-gradient-text {
-            background: linear-gradient(135deg, #FFF6BD 0%, #FFD700 25%, #FFA500 60%, #B8860B 85%, #FFF099 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0px 2px 8px rgba(255, 215, 0, 0.3));
-        }
+// Data initial state for Hydro Stations in Huế (Updated with photo data from Ban chỉ huy phòng thủ dân sự TP Huế)
+const INITIAL_STATIONS = [
+  {
+    id: 'kim_long',
+    name: 'Trạm Kim Long (Sông Hương & Đập Đá)',
+    river: 'Sông Hương',
+    district: 'Phú Xuân / Huế',
+    level: 1.03, // 103 cm converted to meters for display consistency
+    levelCm: 103,
+    bd1: 2.0, // 200 cm
+    bd2: 2.5,
+    bd3: 3.5, // 350 cm
+    dapDaLevel: 1.8, // 180 cm
+    trend: +0.03,
+    status: 'safe',
+    lastUpdate: '11:00, 10/11/2026',
+    historyData: [
+      { time: '06:30', val: 106 },
+      { time: '07:00', val: 103 },
+      { time: '07:30', val: 101 },
+      { time: '08:00', val: 99 },
+      { time: '08:30', val: 95 },
+      { time: '09:00', val: 98 },
+      { time: '09:30', val: 95 },
+      { time: '10:00', val: 98 },
+      { time: '10:30', val: 99 },
+      { time: '11:00', val: 103 },
+    ]
+  },
+  {
+    id: 'tu_phu',
+    name: 'Trạm Tứ Phú (Sông Bồ)',
+    river: 'Sông Bồ',
+    district: 'Thị xã Hương Trà',
+    level: 3.04, // 304 cm
+    levelCm: 304,
+    bd1: 1.5, // 150 cm
+    bd2: 3.0, // 300 cm
+    bd3: 4.5, // 450 cm
+    trend: +0.16, // Water dâng nhanh
+    status: 'warning', // Đã vượt Báo động 2 (300cm)
+    lastUpdate: '11:00, 10/11/2026',
+    historyData: [
+      { time: '06:30', val: 142 },
+      { time: '07:00', val: 151 },
+      { time: '07:30', val: 156 },
+      { time: '08:00', val: 174 },
+      { time: '08:30', val: 194 },
+      { time: '09:00', val: 218 },
+      { time: '09:30', val: 242 },
+      { time: '10:00', val: 267 },
+      { time: '10:30', val: 288 },
+      { time: '11:00', val: 304 },
+    ]
+  },
+  {
+    id: 'binh_dien',
+    name: 'Trạm Thủy văn Bình Điền',
+    river: 'Thượng nguồn Sông Hương',
+    district: 'Thị xã Hương Thủy',
+    level: 71.4,
+    levelCm: 7140,
+    bd1: 65.0,
+    bd2: 70.0,
+    bd3: 74.5,
+    trend: +0.20,
+    status: 'warning',
+    lastUpdate: '11:00, 10/11/2026',
+    historyData: [
+      { time: '06:30', val: 6920 },
+      { time: '07:30', val: 7010 },
+      { time: '08:30', val: 7080 },
+      { time: '09:30', val: 7110 },
+      { time: '10:30', val: 7130 },
+      { time: '11:00', val: 7140 },
+    ]
+  },
+  {
+    id: 'thuong_nhat',
+    name: 'Trạm Thượng Nhật',
+    river: 'Sông Nam Đông',
+    district: 'Huyện Nam Đông',
+    level: 57.8,
+    levelCm: 5780,
+    bd1: 57.0,
+    bd2: 59.0,
+    bd3: 61.0,
+    trend: -0.05,
+    status: 'caution',
+    lastUpdate: '11:00, 10/11/2026',
+    historyData: [
+      { time: '06:30', val: 5820 },
+      { time: '07:30', val: 5810 },
+      { time: '08:30', val: 5800 },
+      { time: '09:30', val: 5790 },
+      { time: '10:30', val: 5785 },
+      { time: '11:00', val: 5780 },
+    ]
+  }
+];
 
-        /* Hero Glow Borders & Glassmorphism */
-        .glass-card {
-            background: rgba(20, 19, 29, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 215, 0, 0.35);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 215, 0, 0.08);
-        }
+// Hydroelectric Reservoirs Data (Hồ chứa thủy điện & thủy lợi)
+const INITIAL_DAMS = [
+  {
+    id: 'ta_trach',
+    name: 'Hồ Tả Trạch',
+    river: 'Sông Hương',
+    capacityPercent: 88,
+    waterLevel: 42.8,
+    maxLevel: 45.0,
+    inflow: 780, // m3/s
+    outflow: 520, // m3/s
+    status: 'Đang xả điều tiết',
+    gateOpen: '2 cửa xả sâu, 1 cửa xả mặt'
+  },
+  {
+    id: 'binh_dien_dam',
+    name: 'Thủy điện Bình Điền',
+    river: 'Sông Hữu Trạch',
+    capacityPercent: 94,
+    waterLevel: 83.5,
+    maxLevel: 85.0,
+    inflow: 950,
+    outflow: 890,
+    status: 'Xả lũ tăng cường',
+    gateOpen: '3 cửa tràn'
+  },
+  {
+    id: 'huong_dien',
+    name: 'Thủy điện Hương Điền',
+    river: 'Sông Bồ',
+    capacityPercent: 91,
+    waterLevel: 56.4,
+    maxLevel: 58.0,
+    inflow: 1100,
+    outflow: 1050,
+    status: 'Cảnh báo mức cao',
+    gateOpen: '4 cửa xả mặt'
+  }
+];
 
-        .glass-card-glow {
-            border: 1.5px solid rgba(255, 215, 0, 0.6);
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.25), inset 0 0 20px rgba(153, 0, 0, 0.3);
-        }
+// Key Flooded Hotspots in Huế
+const HOTSPOTS = [
+  { id: 1, name: 'Đập Đá (Huế)', location: 'Nối Lê Lợi - Nguyễn Sinh Cung', depth: 0.65, status: 'Cấm giao thông', risk: 'high', x: 52, y: 48 },
+  { id: 2, name: 'Đường Bến Nghé - Hùng Vương', location: 'Phường Phú Hội', depth: 0.35, status: 'Ngập nhẹ xe máy', risk: 'medium', x: 48, y: 52 },
+  { id: 3, name: 'Khu vực Vĩnh Ninh', location: 'Đường Nguyễn Huệ / Điện Biên Phủ', depth: 0.20, status: 'Di chuyển chậm', risk: 'low', x: 44, y: 56 },
+  { id: 4, name: 'Phường Vĩ Dạ', location: 'Đường Phạm Văn Đồng', depth: 0.50, status: 'Ngập cục bộ', risk: 'high', x: 58, y: 44 },
+  { id: 5, name: 'Khu Thành Nội (Kinh Thành)', location: 'Đoạn Cửa Quảng Đức / Nhật Lệ', depth: 0.30, status: 'Ngập nhẹ', risk: 'medium', x: 42, y: 40 },
+  { id: 6, name: 'Quốc lộ 1A qua Hương Thủy', location: 'Đoạn Dạ Lê', depth: 0.15, status: 'Thông suốt', risk: 'low', x: 35, y: 65 },
+  { id: 7, name: 'Cầu Tràng Tiền - Lê Lợi', location: 'Bờ Nam Sông Hương', depth: 0.40, status: 'Ngập mép đường Lê Lợi', risk: 'medium', x: 49, y: 46 }
+];
 
-        /* Ultra Premium Buttons */
-        .btn-tay-son-gold {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #B8860B 100%);
-            color: #2b0000;
-            font-weight: 800;
-            border: 1px solid #FFE57F;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-tay-son-gold:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            filter: brightness(1.1);
-        }
-        .btn-tay-son-gold:active {
-            transform: translateY(1px);
-        }
+export default function App() {
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'map', 'dams', 'sos'
+  const [stations, setStations] = useState(INITIAL_STATIONS);
+  const [dams, setDams] = useState(INITIAL_DAMS);
+  const [timeRange, setTimeRange] = useState('6h'); // '6h', '12h', '24h'
+  const [rainfall24h, setRainfall24h] = useState(245.8);
+  const [simulationMode, setSimulationMode] = useState('live'); 
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [lastRefreshedTime, setLastRefreshedTime] = useState('11:00, 10/11/2026');
 
-        /* Dong Son Drum Pattern Overlay */
-        .dong-son-bg {
-            background-image: radial-gradient(circle, rgba(255,215,0,0.05) 1px, transparent 1px);
-            background-size: 24px 24px;
-        }
+  // SOS state
+  const [sosForm, setSosForm] = useState({
+    name: '',
+    phone: '',
+    location: '',
+    waterDepth: '0.3',
+    description: '',
+    needEvacuation: false
+  });
+  const [sosSubmitted, setSosSubmitted] = useState(false);
+  const [communityReports, setCommunityReports] = useState([
+    { id: 1, user: 'Anh Minh (Vĩ Dạ)', phone: '0905******', location: 'Thôn Con Hến, Vĩ Dạ', depth: '0.8m', desc: 'Nước dâng nhanh vào nhà, cần hỗ trợ thuyền di dời người già.', time: '10 phút trước', status: 'Đang xử lý' },
+    { id: 2, user: 'Chị Hoa (Kim Long)', phone: '0914******', location: 'Kiệt 108 Kim Long', depth: '0.4m', desc: 'Ngập đường kiệt xóm, xe máy không đi được.', time: '25 phút trước', status: 'Đã tiếp nhận' }
+  ]);
 
-        /* Sound Equalizer Animation */
-        .eq-bar {
-            width: 3px;
-            background: #FFD700;
-            border-radius: 2px;
-            animation: eqAnim 0.8s ease-in-out infinite alternate;
-        }
-        .eq-bar:nth-child(1) { height: 14px; animation-delay: 0.1s; }
-        .eq-bar:nth-child(2) { height: 20px; animation-delay: 0.3s; }
-        .eq-bar:nth-child(3) { height: 10px; animation-delay: 0.2s; }
-        .eq-bar:nth-child(4) { height: 18px; animation-delay: 0.4s; }
-        @keyframes eqAnim {
-            0% { transform: scaleY(0.3); }
-            100% { transform: scaleY(1.1); }
-        }
+  useEffect(() => {
+    let interval = null;
+    if (autoRefresh) {
+      interval = setInterval(() => {
+        simulateTelemetryUpdate();
+      }, 5000);
+    }
+    return () => clearInterval(interval);
+  }, [autoRefresh, simulationMode]);
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #07070a; }
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #FFD700, #8B0000);
-            border-radius: 4px;
-        }
+  const simulateTelemetryUpdate = () => {
+    setLastRefreshedTime(new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ', 10/11/2026');
 
-        /* Mobile Touch & Responsive Adaptive Improvements */
-        @media (max-width: 640px) {
-            .game-container-box {
-                height: 280px !important;
-            }
-            .mobile-touch-bar {
-                display: flex !important;
-            }
-        }
-        .mobile-touch-bar {
-            display: none;
-        }
-    </style>
-</head>
-<body class="flex flex-col min-h-screen relative overflow-x-hidden selection:bg-yellow-400 selection:text-red-950 dong-son-bg">
+    setStations(prev => prev.map(st => {
+      let change = (Math.random() - 0.4) * (st.id === 'tu_phu' ? 4 : 2);
+      if (simulationMode === 'heavy_rain') change += 5;
+      if (simulationMode === 'normal') change -= 4;
+      
+      const newLevelCm = Math.max(50, Math.round(st.levelCm + change));
+      const newLevelM = parseFloat((newLevelCm / 100).toFixed(2));
+      
+      let status = 'safe';
+      if (newLevelM >= st.bd3) status = 'danger';
+      else if (newLevelM >= st.bd2) status = 'warning';
+      else if (newLevelM >= st.bd1) status = 'caution';
 
-    <!-- Golden Sparks & Fire Particles Engine Canvas -->
-    <canvas id="bgParticleCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-60"></canvas>
+      return {
+        ...st,
+        levelCm: newLevelCm,
+        level: newLevelM,
+        trend: parseFloat((change / 100).toFixed(2)),
+        status: status,
+        lastUpdate: 'Vừa xong'
+      };
+    }));
+  };
 
-    <!-- HEADER SECTION -->
-    <header class="relative z-10 bg-gradient-to-b from-black via-black/90 to-transparent border-b border-yellow-500/40 pb-5 pt-4 px-4">
-        <div class="max-w-7xl mx-auto text-center flex flex-col items-center justify-center">
-            
-            <!-- Unit Emblem Banner -->
-            <div class="flex items-center justify-center gap-3 mb-2">
-                <div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-yellow-400 to-transparent"></div>
-                <span class="text-xs sm:text-sm font-extrabold tracking-widest text-yellow-300 uppercase font-heading bg-red-950/80 px-5 py-1.5 rounded-full border border-yellow-400/60 shadow-[0_0_15px_rgba(255,215,0,0.3)]">
-                    <i class="fas fa-star text-amber-400 mr-1.5"></i> UBND PHƯỜNG AN CỰU - TP. HUẾ <i class="fas fa-star text-amber-400 ml-1.5"></i>
+  const handleScenarioChange = (mode) => {
+    setSimulationMode(mode);
+    if (mode === 'heavy_rain') {
+      setRainfall24h(340.5);
+      setStations(prev => prev.map(s => ({ ...s, levelCm: Math.round(s.levelCm * 1.3), level: parseFloat((s.level * 1.3).toFixed(2)), status: 'danger' })));
+    } else if (mode === 'normal') {
+      setRainfall24h(25.0);
+      setStations(prev => prev.map(s => ({ ...s, levelCm: Math.round(s.bd1 * 70), level: parseFloat((s.bd1 * 0.7).toFixed(2)), status: 'safe' })));
+    } else if (mode === 'dam_release') {
+      setRainfall24h(180.0);
+      setDams(prev => prev.map(d => ({ ...d, outflow: d.outflow + 350, status: 'Xả lũ khẩn cấp' })));
+    }
+  };
+
+  const handleSosSubmit = (e) => {
+    e.preventDefault();
+    if (!sosForm.location || !sosForm.phone) return;
+
+    const newReport = {
+      id: Date.now(),
+      user: sosForm.name || 'Người dân ẩn danh',
+      phone: sosForm.phone,
+      location: sosForm.location,
+      depth: `${sosForm.waterDepth}m`,
+      desc: sosForm.description,
+      time: 'Vừa xong',
+      status: 'Đã gửi tới Ban PCTT'
+    };
+
+    setCommunityReports([newReport, ...communityReports]);
+    setSosSubmitted(true);
+    setTimeout(() => {
+      setSosSubmitted(false);
+      setSosForm({ name: '', phone: '', location: '', waterDepth: '0.3', description: '', needEvacuation: false });
+    }, 4000);
+  };
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'danger':
+        return <span className="bg-red-500/20 text-red-400 border border-red-500/40 text-xs px-2.5 py-1 rounded-full font-medium inline-flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" /> Báo động 3</span>;
+      case 'warning':
+        return <span className="bg-amber-500/20 text-amber-400 border border-amber-500/40 text-xs px-2.5 py-1 rounded-full font-medium inline-flex items-center gap-1"><AlertOctagon className="w-3.5 h-3.5" /> Báo động 2</span>;
+      case 'caution':
+        return <span className="bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 text-xs px-2.5 py-1 rounded-full font-medium inline-flex items-center gap-1"><Info className="w-3.5 h-3.5" /> Báo động 1</span>;
+      default:
+        return <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs px-2.5 py-1 rounded-full font-medium inline-flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> An toàn</span>;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950">
+      
+      {/* HEADER BAR WITH BRAND HUEWEATHER & DEVELOPER INFO */}
+      <header className="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-cyan-500 to-teal-400 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                <Waves className="w-6 h-6 text-slate-950" />
+              </div>
+              <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+              </span>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-black bg-gradient-to-r from-cyan-400 via-blue-300 to-white bg-clip-text text-transparent tracking-wide">
+                  HUEWEATHER
+                </h1>
+                <span className="bg-cyan-950 text-cyan-300 border border-cyan-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">
+                  TP. Huế
                 </span>
-                <div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-yellow-400 to-transparent"></div>
+              </div>
+              <p className="text-xs text-slate-400 flex items-center gap-1">
+                <span>Theo dõi Mực Nước Sông & Mưa Lũ</span>
+                <span className="text-slate-600">•</span>
+                <span className="text-cyan-400 font-medium">Nhà phát triển: Trần Anh Khoa</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Info & Refresh status */}
+          <div className="flex items-center space-x-3">
+            <div className="hidden lg:flex flex-col items-end text-xs">
+              <span className="text-slate-300 font-medium">Số liệu cập nhật đến: <strong className="text-cyan-300">{lastRefreshedTime}</strong></span>
+              <span className="text-[11px] text-slate-400 font-italic">(Nguồn: Ban chỉ huy phòng thủ dân sự thành phố Huế)</span>
             </div>
 
-            <!-- Main Title with Metallic Gold Gradient & Standard Font -->
-            <h1 class="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black font-heading gold-gradient-text tracking-wide my-2 leading-tight uppercase">
-                KỶ NIỆM 238 NĂM NGUYỄN HUỆ LÊN NGÔI HOÀNG ĐẾ & ĐẠI PHÁ QUÂN THANH
-            </h1>
-            <p class="text-xs sm:text-base font-bold text-amber-200/90 tracking-wider uppercase flex items-center justify-center gap-2">
-                <span>(1788 - 2026)</span>
-                <span class="text-yellow-500">•</span>
-                <span class="text-yellow-400">HÀO KHÍ TÂY SƠN TRÊN ĐẤT AN CỰU - NÚI BÂN</span>
-            </p>
+            <button 
+              onClick={() => simulateTelemetryUpdate()}
+              className="p-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 hover:text-white transition-all"
+              title="Làm mới dữ liệu"
+            >
+              <RefreshCw className={`w-4 h-4 ${autoRefresh ? 'animate-spin-slow' : ''}`} />
+            </button>
 
-            <!-- Sound Controller & Score Bar -->
-            <div class="mt-4 flex flex-wrap items-center justify-center gap-4">
-                <button id="btnSound" onclick="toggleWarDrum()" class="px-4 py-2 rounded-full bg-black/60 border border-yellow-500/60 hover:border-yellow-400 text-yellow-300 text-xs sm:text-sm flex items-center gap-3 transition-all shadow-[0_0_15px_rgba(0,0,0,0.8)] backdrop-blur-md">
-                    <div id="eqVisualizer" class="flex items-center gap-1">
-                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
-                    </div>
-                    <span id="soundText" class="font-bold">Trống Trận: Bật</span>
-                </button>
-
-                <div class="text-xs sm:text-sm text-amber-200 bg-red-950/70 px-5 py-2 rounded-full border border-yellow-500/50 shadow-[0_0_15px_rgba(255,215,0,0.2)] flex items-center gap-2">
-                    <i class="fas fa-trophy text-yellow-400 text-base"></i> Điểm Tích Lũy: <span id="userTotalScore" class="font-black text-yellow-300 text-base">0</span>
-                </div>
-            </div>
+            <a 
+              href="tel:02343822240"
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all shadow-md shadow-red-900/40"
+            >
+              <PhoneCall className="w-3.5 h-3.5" />
+              <span>Cứu hộ Huế: 1022</span>
+            </a>
+          </div>
         </div>
-    </header>
+      </header>
 
-    <!-- NAVIGATION TABS -->
-    <nav class="relative z-10 bg-black/80 backdrop-blur-xl border-b border-yellow-500/30 sticky top-0">
-        <div class="max-w-6xl mx-auto flex items-center justify-start sm:justify-center overflow-x-auto py-2.5 px-3 gap-2 sm:gap-3 text-xs sm:text-sm font-bold font-heading scrollbar-none">
-            <button onclick="switchTab('history')" id="tab-history" class="nav-btn active flex-none py-2.5 px-4 rounded-xl text-center transition-all border border-yellow-400/80 bg-gradient-to-r from-red-900 to-red-950 text-yellow-300 shadow-[0_0_15px_rgba(255,215,0,0.3)]">
-                <i class="fas fa-landmark mr-2"></i> Lịch Sử Núi Bân
-            </button>
-            <button onclick="switchTab('game1')" id="tab-game1" class="nav-btn flex-none py-2.5 px-4 rounded-xl text-center transition-all border border-yellow-900/40 text-amber-200/80 hover:bg-red-950/60 hover:text-yellow-300">
-                <i class="fas fa-horse-head mr-2"></i> 1. Hành Quân Thần Tốc
-            </button>
-            <button onclick="switchTab('game2')" id="tab-game2" class="nav-btn flex-none py-2.5 px-4 rounded-xl text-center transition-all border border-yellow-900/40 text-amber-200/80 hover:bg-red-950/60 hover:text-yellow-300">
-                <i class="fas fa-scroll mr-2"></i> 2. Hào Khí Tây Sơn
-            </button>
-            <button onclick="switchTab('game3')" id="tab-game3" class="nav-btn flex-none py-2.5 px-4 rounded-xl text-center transition-all border border-yellow-900/40 text-amber-200/80 hover:bg-red-950/60 hover:text-yellow-300">
-                <i class="fas fa-dragon mr-2"></i> 3. Đại Phá Đống Đa
-            </button>
-            <button onclick="switchTab('leaderboard')" id="tab-leaderboard" class="nav-btn flex-none py-2.5 px-4 rounded-xl text-center transition-all border border-yellow-900/40 text-amber-200/80 hover:bg-red-950/60 hover:text-yellow-300">
-                <i class="fas fa-medal mr-2"></i> Bảng Vinh Danh
-            </button>
+      {/* OFFICIAL SOURCE BANNER */}
+      <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-slate-950 border-b border-blue-900/40 px-4 py-2 text-xs flex items-center justify-between text-blue-200">
+        <div className="max-w-7xl mx-auto w-full flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Info className="w-4 h-4 text-cyan-400 shrink-0" />
+            <span><strong>Nguồn dữ liệu chính thức:</strong> Ban chỉ huy phòng thủ dân sự thành phố Huế (Số liệu đến 11:00, 10/11/2026)</span>
+          </div>
+          <div className="text-[11px] text-cyan-300 bg-blue-900/40 px-2.5 py-0.5 rounded border border-blue-800/60">
+            Trạm Tứ Phú (Sông Bồ): <strong className="text-amber-300">304 cm</strong> (Vượt BD2) | Trạm Kim Long: <strong>103 cm</strong>
+          </div>
         </div>
-    </nav>
+      </div>
 
-    <!-- MAIN CONTENT CONTAINER -->
-    <main class="relative z-10 flex-grow max-w-6xl w-full mx-auto p-3 sm:p-6 my-2">
+      {/* MAIN CONTAINER */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        <!-- SECTION 1: HISTORY & NUI BAN -->
-        <section id="sec-history" class="tab-content block space-y-6">
-            <div class="glass-card glass-card-glow rounded-2xl p-6 md:p-10 relative overflow-hidden">
-                <!-- Dragon Watermark -->
-                <div class="absolute -right-16 -bottom-16 opacity-10 pointer-events-none">
-                    <i class="fas fa-dragon text-[320px] text-yellow-400"></i>
-                </div>
+        {/* CONTROLS BAR: SIMULATION & TIME RANGE */}
+        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4 backdrop-blur-sm">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5 mr-2">
+              <Sliders className="w-4 h-4 text-cyan-400" /> Kịch bản kiểm tra:
+            </span>
+            <button 
+              onClick={() => handleScenarioChange('live')} 
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${simulationMode === 'live' ? 'bg-cyan-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}
+            >
+              Thực tế (Live 10/11/2026)
+            </button>
+            <button 
+              onClick={() => handleScenarioChange('heavy_rain')} 
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${simulationMode === 'heavy_rain' ? 'bg-red-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}
+            >
+              🌧️ Mưa lớn diện rộng
+            </button>
+            <button 
+              onClick={() => handleScenarioChange('dam_release')} 
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${simulationMode === 'dam_release' ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}
+            >
+              🌊 Thủy điện tăng xả lũ
+            </button>
+          </div>
 
-                <div class="text-center max-w-3xl mx-auto mb-8">
-                    <h2 class="text-2xl sm:text-4xl font-black font-heading gold-gradient-text mb-3 uppercase tracking-wider">
-                        NÚI BÂN (AN CỰU) - NƠI KHỞI NGUỒN HÀO KHÍ TÂY SƠN
-                    </h2>
-                    <div class="h-1 w-40 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto mb-4"></div>
-                    <p class="text-amber-100/90 italic text-sm md:text-base bg-black/40 p-4 rounded-xl border border-yellow-500/20">
-                        "Đánh cho để dài tóc - Đánh cho để đen răng - Đánh cho nó bánh xe quay phụt - Đánh cho nó giáp mảnh không tan - Đánh cho sử biết nước Nam quốc hữu chủ!"
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                    <div class="space-y-4 text-justify text-sm md:text-base text-amber-50/90 leading-relaxed">
-                        <div class="bg-gradient-to-r from-red-950/80 to-transparent p-5 rounded-xl border-l-4 border-yellow-400 shadow-md">
-                            <strong class="text-yellow-300 font-heading text-base block mb-1">Dấu mốc lịch sử hoàng kim năm 1788:</strong> 
-                            Trước nguy cơ xâm lược của 29 vạn quân Thanh, ngày 25 tháng 11 năm Mậu Thân (22/12/1788), tại di tích Núi Bân (thuộc phường An Cựu, TP. Huế), Bắc Bình Vương Nguyễn Huệ đã tiến hành tế trời đất, chính thức lên ngôi Hoàng đế, lấy niên hiệu <span class="text-yellow-300 font-bold">Quang Trung</span>.
-                        </div>
-                        <p>
-                            Ngay sau lễ đăng quang thiêng liêng tại Núi Bân, Hoàng đế Quang Trung đã hạ lệnh xuất quân ra Bắc. Với thiên tài quân sự kiệt xuất, cuộc hành quân thần tốc vô tiền khoáng hậu đã đập tan toàn bộ 29 vạn quân Thanh, giải phóng Thăng Long vào mùng 5 Tết Kỷ Dậu (1789).
-                        </p>
-                        <p>
-                            Ngày nay, <strong class="text-yellow-300">Di tích lịch sử Quốc gia Núi Bân</strong> nằm trên địa bàn phường An Cựu là biểu tượng tự hào vô giá, nhắc nhở thế hệ hôm nay về tinh thần độc lập và ý chí tự cường của dân tộc.
-                        </p>
-                    </div>
-
-                    <!-- Showcase Box -->
-                    <div class="glass-card rounded-2xl p-6 text-center space-y-5 border border-yellow-500/40">
-                        <div class="relative rounded-xl overflow-hidden bg-gradient-to-b from-red-950/90 via-black to-stone-950 p-8 border border-yellow-400/30">
-                            <i class="fas fa-mountain text-7xl gold-gradient-text mb-4 animate-pulse"></i>
-                            <h3 class="text-2xl font-black font-heading text-yellow-300 tracking-wide">KHU DI TÍCH NÚI BÂN</h3>
-                            <p class="text-xs text-amber-200/80 mt-1 uppercase font-semibold">Phường An Cựu, Thành Phố Huế</p>
-                            <div class="my-4 h-px bg-yellow-500/30 w-3/4 mx-auto"></div>
-                            <p class="text-xs text-amber-100/80 leading-relaxed">
-                                Tượng đài Hoàng đế Quang Trung uy nghiêm cao 21m bằng đá granite nguyên khối, không gian văn hóa lịch sử tâm linh đặc biệt của Cố đô Huế.
-                            </p>
-                        </div>
-
-                        <button onclick="playDrumEffect(); switchTab('game1')" class="w-full btn-tay-son-gold py-3.5 px-6 rounded-xl font-black font-heading text-sm uppercase tracking-wider flex items-center justify-center gap-3">
-                            <i class="fas fa-play text-base"></i> BẮT ĐẦU TRẢI NGHIỆM MINI GAME
-                        </button>
-                    </div>
-                </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-slate-400">Khung thời gian biểu đồ:</span>
+            <div className="bg-slate-950 p-1 rounded-lg border border-slate-800 flex text-xs">
+              <button onClick={() => setTimeRange('6h')} className={`px-2.5 py-1 rounded ${timeRange === '6h' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400'}`}>6 giờ qua</button>
+              <button onClick={() => setTimeRange('12h')} className={`px-2.5 py-1 rounded ${timeRange === '12h' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400'}`}>12 giờ qua</button>
+              <button onClick={() => setTimeRange('24h')} className={`px-2.5 py-1 rounded ${timeRange === '24h' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400'}`}>24 giờ qua</button>
             </div>
-        </section>
+          </div>
+        </div>
 
-        <!-- SECTION 2: MINI GAME 1 - HÀNH QUÂN THẦN TỐC -->
-        <section id="sec-game1" class="tab-content hidden space-y-4">
-            <div class="glass-card glass-card-glow rounded-2xl p-4 sm:p-6 shadow-2xl">
-                <div class="flex flex-col md:flex-row justify-between items-center border-b border-yellow-500/30 pb-3 mb-4 gap-3">
+        {/* NAVIGATION TABS */}
+        <div className="flex border-b border-slate-800 mb-6 space-x-1 sm:space-x-4 overflow-x-auto">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`pb-3 px-3 sm:px-4 text-sm font-medium border-b-2 transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === 'overview' ? 'border-cyan-400 text-cyan-400 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+          >
+            <Activity className="w-4 h-4" />
+            Biểu Đồ & Trạm Thủy Văn
+          </button>
+
+          <button
+            onClick={() => setActiveTab('map')}
+            className={`pb-3 px-3 sm:px-4 text-sm font-medium border-b-2 transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === 'map' ? 'border-cyan-400 text-cyan-400 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+          >
+            <Navigation className="w-4 h-4" />
+            Bản Đồ Cảnh Báo Ngập Huế
+          </button>
+
+          <button
+            onClick={() => setActiveTab('dams')}
+            className={`pb-3 px-3 sm:px-4 text-sm font-medium border-b-2 transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === 'dams' ? 'border-cyan-400 text-cyan-400 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+          >
+            <Waves className="w-4 h-4" />
+            Hồ Chứa Thủy Điện (Tả Trạch, Bình Điền)
+          </button>
+
+          <button
+            onClick={() => setActiveTab('sos')}
+            className={`pb-3 px-3 sm:px-4 text-sm font-medium border-b-2 transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === 'sos' ? 'border-cyan-400 text-cyan-400 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+          >
+            <ShieldAlert className="w-4 h-4" />
+            Kênh Cứu Hộ SOS & Cảnh Báo
+          </button>
+        </div>
+
+        {/* TAB 1: HYDROLOGICAL CHARTS & STATIONS (ACTUAL DATA FROM IMAGE) */}
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
+
+            {/* CHARTS CONTAINER MATCHING IMAGE UI */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              
+              {/* SÔNG HƯƠNG & ĐẬP ĐÁ CHART CARD */}
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-800">
                     <div>
-                        <h2 class="text-xl sm:text-2xl font-black font-heading text-yellow-400 flex items-center gap-2">
-                            <i class="fas fa-horse-head text-amber-400"></i> GAME 1: HÀNH QUÂN THẦN TỐC
-                        </h2>
-                        <p class="text-xs text-amber-200/80">Sử dụng phím <kbd class="px-2 py-0.5 bg-yellow-950 border border-yellow-500/40 rounded text-yellow-300">Space</kbd> / <kbd class="px-2 py-0.5 bg-yellow-950 border border-yellow-500/40 rounded text-yellow-300">▲</kbd> hoặc nút Nhảy trên di động để né chướng ngại vật!</p>
+                      <h3 className="text-base font-bold text-white flex items-center gap-2">
+                        <Waves className="w-5 h-5 text-cyan-400" /> Nước sông Sông Hương (Trạm Kim Long)
+                      </h3>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        Mực nước Đập Đá: <strong className="text-purple-400">180 cm</strong> | BĐ1: <strong>200 cm</strong> | BĐ3: <strong className="text-red-400">350 cm</strong>
+                      </p>
                     </div>
-                    <div class="flex items-center gap-4 text-xs sm:text-sm font-bold bg-black/60 px-4 py-2 rounded-xl border border-yellow-500/40">
-                        <div>Quãng đường: <span id="g1Distance" class="text-yellow-300 font-black text-sm">0</span> / 1000m</div>
-                        <div class="w-px h-4 bg-yellow-600/50"></div>
-                        <div>Điểm: <span id="g1Score" class="text-emerald-400 font-black text-sm">0</span></div>
+                    <span className="bg-cyan-500/20 text-cyan-300 font-extrabold text-sm px-3 py-1 rounded-lg border border-cyan-500/30">
+                      {stations[0].levelCm} cm
+                    </span>
+                  </div>
+
+                  {/* Visual Chart Box matching uploaded design */}
+                  <div className="mt-4 bg-slate-950 rounded-xl p-4 border border-slate-800 relative">
+                    <div className="flex justify-between items-center text-[10px] text-slate-400 mb-2">
+                      <span>Mực nước (cm)</span>
+                      <span className="text-purple-400 font-semibold">--- Đập đá: 180 cm</span>
                     </div>
+
+                    {/* Chart Canvas Simulation with SVG */}
+                    <div className="h-44 w-full relative">
+                      <svg className="w-full h-full overflow-visible" viewBox="0 0 500 160">
+                        {/* Reference lines */}
+                        <line x1="0" y1="10" x2="500" y2="10" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="3 3" />
+                        <text x="460" y="8" fill="#ef4444" fontSize="10" fontWeight="bold">350 (BĐ3)</text>
+
+                        <line x1="0" y1="65" x2="500" y2="65" stroke="#eab308" strokeWidth="1.5" strokeDasharray="3 3" />
+                        <text x="460" y="62" fill="#eab308" fontSize="10" fontWeight="bold">200 (BĐ1)</text>
+
+                        <line x1="0" y1="75" x2="500" y2="75" stroke="#c084fc" strokeWidth="1.5" strokeDasharray="4 2" />
+                        <text x="400" y="72" fill="#c084fc" fontSize="10" fontWeight="bold">Đập đá: 180</text>
+
+                        {/* Hydro Graph Area Fill */}
+                        <defs>
+                          <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.6"/>
+                            <stop offset="100%" stopColor="#0284c7" stopOpacity="0.1"/>
+                          </linearGradient>
+                        </defs>
+
+                        {/* Water Area */}
+                        <path 
+                          d="M 10,110 Q 60,113 110,115 T 210,122 T 310,118 T 410,117 T 490,112 L 490,150 L 10,150 Z" 
+                          fill="url(#blueGradient)" 
+                        />
+                        {/* Water Line */}
+                        <path 
+                          d="M 10,110 Q 60,113 110,115 T 210,122 T 310,118 T 410,117 T 490,112" 
+                          fill="none" 
+                          stroke="#38bdf8" 
+                          strokeWidth="3" 
+                        />
+
+                        {/* Point nodes with values from photo */}
+                        <circle cx="10" cy="110" r="4" fill="#38bdf8" />
+                        <text x="5" y="100" fill="#ffffff" fontSize="10" fontWeight="bold">106</text>
+
+                        <circle cx="110" cy="115" r="4" fill="#38bdf8" />
+                        <text x="100" y="105" fill="#ffffff" fontSize="10" fontWeight="bold">101</text>
+
+                        <circle cx="210" cy="122" r="4" fill="#38bdf8" />
+                        <text x="202" y="112" fill="#ffffff" fontSize="10" fontWeight="bold">95</text>
+
+                        <circle cx="310" cy="118" r="4" fill="#38bdf8" />
+                        <text x="302" y="108" fill="#ffffff" fontSize="10" fontWeight="bold">98</text>
+
+                        <circle cx="410" cy="117" r="4" fill="#38bdf8" />
+                        <text x="402" y="107" fill="#ffffff" fontSize="10" fontWeight="bold">99</text>
+
+                        <circle cx="490" cy="112" r="5" fill="#22c55e" stroke="#ffffff" strokeWidth="2" />
+                        <text x="475" y="100" fill="#22c55e" fontSize="11" fontWeight="bold">103</text>
+                      </svg>
+                    </div>
+
+                    {/* X-Axis Timeline labels */}
+                    <div className="flex justify-between text-[10px] text-slate-400 mt-2 font-mono">
+                      <span>06:30</span>
+                      <span>07:30</span>
+                      <span>08:30</span>
+                      <span>09:30</span>
+                      <span>10:30</span>
+                      <span className="text-cyan-300 font-bold">11:00</span>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- Canvas Container -->
-                <div class="relative w-full aspect-[2/1] max-h-[440px] game-container-box bg-black rounded-xl overflow-hidden border border-yellow-500/40 shadow-inner">
-                    <canvas id="game1Canvas" class="w-full h-full block"></canvas>
-                    
-                    <!-- Overlay Start/Game Over -->
-                    <div id="g1Overlay" class="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20">
-                        <i class="fas fa-flag text-5xl gold-gradient-text mb-3 animate-bounce"></i>
-                        <h3 id="g1Title" class="text-2xl sm:text-4xl font-black font-heading gold-gradient-text mb-2">HÀNH QUÂN THẦN TỐC TỪ NÚI BÂN</h3>
-                        <p id="g1Desc" class="text-sm text-amber-100 max-w-md mb-6 leading-relaxed">
-                            Đưa đoàn quân Tây Sơn vượt sông núi, vượt qua các chướng ngại vật từ Phú Xuân (An Cựu) ra Thăng Long!
-                        </p>
-                        <button onclick="startGame1()" class="btn-tay-son-gold py-3.5 px-8 rounded-full font-black font-heading text-base tracking-wider flex items-center gap-3">
-                            <i class="fas fa-running"></i> BẮT ĐẦU HÀNH QUÂN
-                        </button>
-                    </div>
+                <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                  <span>Trạng thái: <strong className="text-emerald-400">Dưới mức tràn Đập Đá (180cm)</strong></span>
+                  <span className="text-[11px] text-slate-500">Cập nhật lúc: 11:00</span>
                 </div>
+              </div>
 
-                <!-- Mobile Touch Controls for Game 1 -->
-                <div class="mobile-touch-bar flex items-center justify-center gap-4 pt-2">
-                    <button onclick="jumpRunner()" class="w-full py-3 bg-gradient-to-r from-red-700 to-yellow-600 text-black font-black font-heading text-sm rounded-xl shadow-lg border border-yellow-300 flex items-center justify-center gap-2">
-                        <i class="fas fa-arrow-up"></i> CHẠM ĐỂ NHẢY (JUMP)
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTION 3: MINI GAME 2 - ĐỐ VUI LỊCH SỬ -->
-        <section id="sec-game2" class="tab-content hidden space-y-4">
-            <div class="glass-card glass-card-glow rounded-2xl p-4 sm:p-6 shadow-2xl">
-                <div class="flex flex-col sm:flex-row justify-between items-center border-b border-yellow-500/30 pb-3 mb-4 gap-3">
+              {/* TRẠM TỨ PHÚ (SÔNG BỒ) CHART CARD */}
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-800">
                     <div>
-                        <h2 class="text-xl sm:text-2xl font-black font-heading text-yellow-400 flex items-center gap-2">
-                            <i class="fas fa-scroll text-amber-400"></i> GAME 2: HÀO KHÍ TÂY SƠN - ĐỐ VUI LỊCH SỬ
-                        </h2>
-                        <p class="text-xs text-amber-200/80">Kiểm tra kiến thức về Hoàng đế Quang Trung & Di tích Núi Bân Phường An Cựu</p>
+                      <h3 className="text-base font-bold text-white flex items-center gap-2">
+                        <Droplet className="w-5 h-5 text-amber-400" /> Trạm Tứ Phú (Sông Bồ)
+                      </h3>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        BĐ1: <strong className="text-emerald-400">150 cm</strong> | BĐ2: <strong className="text-amber-400">300 cm</strong> | BĐ3: <strong className="text-red-400">450 cm</strong>
+                      </p>
                     </div>
-                    <div class="text-xs sm:text-sm font-bold bg-black/60 px-4 py-2 rounded-xl border border-yellow-500/40">
-                        Câu: <span id="quizIndex" class="text-yellow-300 font-black">1</span>/<span id="quizTotal" class="text-yellow-300 font-black">5</span> | Điểm: <span id="quizScore" class="text-emerald-400 font-black">0</span>
+                    <span className="bg-amber-500/20 text-amber-300 font-extrabold text-sm px-3 py-1 rounded-lg border border-amber-500/30">
+                      {stations[1].levelCm} cm
+                    </span>
+                  </div>
+
+                  {/* Visual Chart Box matching uploaded design */}
+                  <div className="mt-4 bg-slate-950 rounded-xl p-4 border border-slate-800 relative">
+                    <div className="flex justify-between items-center text-[10px] text-slate-400 mb-2">
+                      <span>Mực nước (cm) - Đang tăng mạnh</span>
+                      <span className="text-red-400 font-semibold flex items-center gap-1">
+                        <TrendingUp className="w-3 h-3" /> Vượt Báo động 2 (300 cm)
+                      </span>
                     </div>
+
+                    {/* Chart Canvas Simulation with SVG */}
+                    <div className="h-44 w-full relative">
+                      <svg className="w-full h-full overflow-visible" viewBox="0 0 500 160">
+                        {/* Alarm Threshold Lines matching picture */}
+                        <line x1="0" y1="15" x2="500" y2="15" stroke="#ef4444" strokeWidth="1.5" />
+                        <text x="460" y="12" fill="#ef4444" fontSize="10" fontWeight="bold">450 (BĐ3)</text>
+
+                        <line x1="0" y1="55" x2="500" y2="55" stroke="#eab308" strokeWidth="1.5" />
+                        <text x="460" y="52" fill="#eab308" fontSize="10" fontWeight="bold">300 (BĐ2)</text>
+
+                        <line x1="0" y1="110" x2="500" y2="110" stroke="#22c55e" strokeWidth="1.5" />
+                        <text x="460" y="107" fill="#22c55e" fontSize="10" fontWeight="bold">150 (BĐ1)</text>
+
+                        {/* Rising Water Gradient Path */}
+                        <defs>
+                          <linearGradient id="amberGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.7"/>
+                            <stop offset="100%" stopColor="#0284c7" stopOpacity="0.2"/>
+                          </linearGradient>
+                        </defs>
+
+                        {/* Water Rising Area */}
+                        <path 
+                          d="M 10,115 L 60,110 L 110,108 L 160,100 L 210,92 L 260,82 L 310,72 L 360,62 L 410,56 L 490,52 L 490,150 L 10,150 Z" 
+                          fill="url(#amberGradient)" 
+                        />
+                        {/* Rising Curve */}
+                        <path 
+                          d="M 10,115 L 60,110 L 110,108 L 160,100 L 210,92 L 260,82 L 310,72 L 360,62 L 410,56 L 490,52" 
+                          fill="none" 
+                          stroke="#f59e0b" 
+                          strokeWidth="3.5" 
+                        />
+
+                        {/* Point nodes with exact exact values from user photo */}
+                        <circle cx="10" cy="115" r="4" fill="#f59e0b" />
+                        <text x="5" y="107" fill="#ffffff" fontSize="9" fontWeight="bold">142</text>
+
+                        <circle cx="110" cy="108" r="4" fill="#f59e0b" />
+                        <text x="102" y="100" fill="#ffffff" fontSize="9" fontWeight="bold">156</text>
+
+                        <circle cx="210" cy="92" r="4" fill="#f59e0b" />
+                        <text x="202" y="84" fill="#ffffff" fontSize="9" fontWeight="bold">194</text>
+
+                        <circle cx="310" cy="72" r="4" fill="#f59e0b" />
+                        <text x="302" y="64" fill="#ffffff" fontSize="9" fontWeight="bold">242</text>
+
+                        <circle cx="410" cy="56" r="4" fill="#f59e0b" />
+                        <text x="402" y="48" fill="#ffffff" fontSize="9" fontWeight="bold">288</text>
+
+                        <circle cx="490" cy="52" r="6" fill="#ef4444" stroke="#ffffff" strokeWidth="2" />
+                        <text x="468" y="42" fill="#ef4444" fontSize="12" fontWeight="black">304</text>
+                      </svg>
+                    </div>
+
+                    {/* X-Axis Timeline labels */}
+                    <div className="flex justify-between text-[10px] text-slate-400 mt-2 font-mono">
+                      <span>06:30</span>
+                      <span>07:30</span>
+                      <span>08:30</span>
+                      <span>09:30</span>
+                      <span>10:30</span>
+                      <span className="text-amber-400 font-bold">11:00</span>
+                    </div>
+                  </div>
                 </div>
 
-                <div id="quizBox" class="max-w-3xl mx-auto space-y-6 py-4">
-                    <!-- Question Card -->
-                    <div class="bg-gradient-to-r from-red-950/80 via-black/80 to-red-950/80 border border-yellow-500/50 p-6 rounded-2xl shadow-lg">
-                        <h3 id="quizQuestion" class="text-lg sm:text-xl font-bold text-amber-100 leading-relaxed">
-                            Đang tải câu hỏi...
-                        </h3>
-                    </div>
-
-                    <!-- Answers Grid -->
-                    <div id="quizAnswers" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <!-- Dynamic Buttons -->
-                    </div>
-
-                    <div id="quizFeedback" class="hidden text-center p-4 rounded-xl font-bold backdrop-blur-md"></div>
+                <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                  <span>Cảnh báo: <strong className="text-amber-400">Nước Sông Bồ tăng nhanh +162cm trong 4.5h</strong></span>
+                  <span className="text-[11px] text-slate-500">Cập nhật lúc: 11:00</span>
                 </div>
+              </div>
 
-                <!-- Quiz Completion Card -->
-                <div id="quizResultBox" class="hidden text-center space-y-4 py-10">
-                    <div class="w-20 h-20 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto border border-yellow-400">
-                        <i class="fas fa-trophy text-5xl gold-gradient-text animate-bounce"></i>
-                    </div>
-                    <h3 class="text-3xl font-black font-heading gold-gradient-text">HOÀN THÀNH PHẦN THI ĐỐ VUI!</h3>
-                    <p class="text-lg text-amber-100">Tổng điểm đạt được: <span id="finalQuizScore" class="font-black text-yellow-300 text-3xl">0</span> điểm</p>
-                    <button onclick="resetQuiz()" class="btn-tay-son-gold py-3 px-8 rounded-full font-black font-heading text-sm tracking-wider">
-                        <i class="fas fa-redo mr-2"></i> THI LẠI
-                    </button>
-                </div>
             </div>
-        </section>
 
-        <!-- SECTION 4: MINI GAME 3 - ĐẠI PHÁ ĐỐNG ĐA -->
-        <section id="sec-game3" class="tab-content hidden space-y-4">
-            <div class="glass-card glass-card-glow rounded-2xl p-4 sm:p-6 shadow-2xl">
-                <div class="flex flex-col md:flex-row justify-between items-center border-b border-yellow-500/30 pb-3 mb-4 gap-3">
-                    <div>
-                        <h2 class="text-xl sm:text-2xl font-black font-heading text-yellow-400 flex items-center gap-2">
-                            <i class="fas fa-dragon text-amber-400"></i> GAME 3: ĐẠI PHÁ NGỌC HỒI - ĐỐNG ĐA
-                        </h2>
-                        <p class="text-xs text-amber-200/80">Chạm hoặc nhấp trực tiếp vào quân Thanh để tiêu diệt. Bấm phím <kbd class="px-1.5 py-0.5 bg-yellow-950 border border-yellow-500/40 rounded text-yellow-300">Space</kbd> hoặc nút Rồng Lửa để dùng Tuyệt Chiêu!</p>
-                    </div>
-                    <div class="flex items-center gap-4 text-xs sm:text-sm font-bold bg-black/60 px-4 py-2 rounded-xl border border-yellow-500/40">
-                        <div>Thời gian: <span id="g3Time" class="text-red-400 font-black text-sm">30</span>s</div>
-                        <div class="w-px h-4 bg-yellow-600/50"></div>
-                        <div>Tiêu diệt: <span id="g3Kills" class="text-yellow-300 font-black text-sm">0</span></div>
-                        <div class="w-px h-4 bg-yellow-600/50"></div>
-                        <div>Điểm: <span id="g3Score" class="text-emerald-400 font-black text-sm">0</span></div>
-                    </div>
+            {/* OVERVIEW SUMMARY CARDS */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                <span className="text-xs text-slate-400 uppercase font-semibold">Lượng Mưa 24h</span>
+                <div className="flex items-baseline space-x-2 mt-2">
+                  <span className="text-3xl font-bold text-white">{rainfall24h}</span>
+                  <span className="text-xs text-slate-400">mm</span>
                 </div>
+                <p className="text-[11px] text-cyan-400 mt-1">Dự báo mưa vừa đến mưa to tập trung ở trung trung bộ</p>
+              </div>
 
-                <!-- Canvas Game 3 Container -->
-                <div class="relative w-full aspect-[2/1] max-h-[440px] game-container-box bg-stone-950 rounded-xl overflow-hidden border border-yellow-500/40 cursor-crosshair">
-                    <canvas id="game3Canvas" class="w-full h-full block"></canvas>
-
-                    <!-- Dragon Power Button -->
-                    <button id="btnDragonPower" onclick="useDragonPower()" class="absolute bottom-3 right-3 bg-gradient-to-r from-red-600 to-yellow-500 border-2 border-yellow-300 text-black font-black font-heading text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-full shadow-[0_0_20px_rgba(255,215,0,0.6)] hover:scale-105 transition-all z-10 flex items-center gap-2">
-                        <i class="fas fa-fire-alt text-base"></i> TUYỆT CHIÊU RỒNG LỬA
-                    </button>
-                    
-                    <!-- Overlay Start/Game Over -->
-                    <div id="g3Overlay" class="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20">
-                        <i class="fas fa-shield-alt text-5xl gold-gradient-text mb-3 animate-pulse"></i>
-                        <h3 id="g3Title" class="text-2xl sm:text-4xl font-black font-heading gold-gradient-text mb-2">QUANG TRUNG ĐẠI PHÁ QUÂN THANH</h3>
-                        <p id="g3Desc" class="text-sm text-amber-100 max-w-md mb-6 leading-relaxed">
-                            Bảo vệ đồn Ngọc Hồi - Đống Đa! Quét sạch quân Thanh xâm lược trong thời gian 30 giây!
-                        </p>
-                        <button onclick="startGame3()" class="btn-tay-son-gold py-3.5 px-8 rounded-full font-black font-heading text-base tracking-wider flex items-center gap-3">
-                            <i class="fas fa-crosshairs"></i> KHAI HỎA PHÁ ĐỊCH
-                        </button>
-                    </div>
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                <span className="text-xs text-slate-400 uppercase font-semibold">Tình Trạng Đập Đá Huế</span>
+                <div className="flex items-baseline space-x-2 mt-2">
+                  <span className="text-3xl font-bold text-cyan-300">103</span>
+                  <span className="text-xs text-slate-400">cm / 180 cm</span>
                 </div>
+                <p className="text-[11px] text-emerald-400 mt-1">Chưa tràn qua mặt đập đá</p>
+              </div>
+
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                <span className="text-xs text-slate-400 uppercase font-semibold">Sông Bồ (Tứ Phú)</span>
+                <div className="flex items-baseline space-x-2 mt-2">
+                  <span className="text-3xl font-bold text-amber-400">3.04</span>
+                  <span className="text-xs text-slate-400">m</span>
+                </div>
+                <p className="text-[11px] text-red-400 mt-1">Đã vượt Báo động II (300 cm)</p>
+              </div>
+
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                <span className="text-xs text-slate-400 uppercase font-semibold">Xả Lũ Hồ Tả Trạch</span>
+                <div className="flex items-baseline space-x-2 mt-2">
+                  <span className="text-3xl font-bold text-purple-400">520</span>
+                  <span className="text-xs text-slate-400">m³/s</span>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1">Vận hành điều tiết bình thường</p>
+              </div>
             </div>
-        </section>
 
-        <!-- SECTION 5: LEADERBOARD & CITIZEN REGISTRATION -->
-        <section id="sec-leaderboard" class="tab-content hidden space-y-6">
-            <div class="glass-card glass-card-glow rounded-2xl p-5 sm:p-8 shadow-2xl">
-                <div class="text-center max-w-2xl mx-auto mb-8">
-                    <h2 class="text-2xl sm:text-4xl font-black font-heading gold-gradient-text mb-2 uppercase">
-                        BẢNG VINH DANH ANH HÙNG AN CỰU
-                    </h2>
-                    <div class="h-1 w-32 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto mb-3"></div>
-                    <p class="text-xs sm:text-sm text-amber-200/80">
-                        Đăng ký thành tích cá nhân & đại diện cho Tổ dân phố của bạn tại Phường An Cựu!
-                    </p>
-                </div>
+          </div>
+        )}
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Form Input -->
-                    <div class="glass-card p-6 rounded-2xl space-y-4 border border-yellow-500/40">
-                        <h3 class="text-lg font-black font-heading text-yellow-300 border-b border-yellow-500/30 pb-3 flex items-center gap-2">
-                            <i class="fas fa-user-edit text-amber-400"></i> ĐĂNG KÝ THÀNH TÍCH
-                        </h3>
-                        <div>
-                            <label class="block text-xs font-semibold text-amber-200 mb-1.5">Họ và Tên Công Dân:</label>
-                            <input type="text" id="playerNameInput" placeholder="Ví dụ: Nguyễn Văn A" class="w-full bg-black/70 border border-yellow-600/50 rounded-xl px-4 py-2.5 text-sm text-amber-100 focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-amber-200 mb-1.5">Tổ Dân Phố (Phường An Cựu):</label>
-                            <select id="playerGroupInput" class="w-full bg-black/70 border border-yellow-600/50 rounded-xl px-4 py-2.5 text-sm text-amber-100 focus:outline-none focus:border-yellow-400 transition-all">
-                                <option value="Tổ 1">Tổ dân phố 1</option>
-                                <option value="Tổ 2">Tổ dân phố 2</option>
-                                <option value="Tổ 3">Tổ dân phố 3</option>
-                                <option value="Tổ 4">Tổ dân phố 4</option>
-                                <option value="Tổ 5">Tổ dân phố 5</option>
-                                <option value="Tổ 6">Tổ dân phố 6</option>
-                                <option value="Tổ 7">Tổ dân phố 7</option>
-                                <option value="Tổ 8">Tổ dân phố 8</option>
-                                <option value="Tổ 9">Tổ dân phố 9</option>
-                                <option value="Tổ 10">Tổ dân phố 10</option>
-                                <option value="Tổ 11">Tổ dân phố 11</option>
-                                <option value="Tổ 12">Tổ dân phố 12</option>
-                                <option value="Tổ 13">Tổ dân phố 13</option>
-                                <option value="Tổ 14">Tổ dân phố 14</option>
-                                <option value="Tổ 15">Tổ dân phố 15</option>
-                                <option value="Khách Tham Quan">Khách Tham Quan / Đoàn Viên</option>
-                            </select>
-                        </div>
-                        <div class="p-3.5 bg-red-950/50 rounded-xl border border-yellow-500/30 text-xs text-amber-200 flex justify-between items-center">
-                            <span>Điểm tích lũy hiện tại:</span>
-                            <strong id="formCurrentScore" class="text-yellow-300 text-base font-black">0</strong>
-                        </div>
-                        <button onclick="saveScore()" class="w-full btn-tay-son-gold py-3 rounded-xl font-black font-heading text-xs tracking-wider uppercase">
-                            <i class="fas fa-save mr-2"></i> LƯU THÀNH TÍCH ANH HÙNG
-                        </button>
-                    </div>
+        {/* TAB 2: MAP */}
+        {activeTab === 'map' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-4">
+              <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
+                <Compass className="w-4 h-4 text-cyan-400" /> Bản Đồ Quan Trắc Ngập Lụt Huế (HUEWEATHER)
+              </h3>
+              <p className="text-xs text-slate-400 mb-4">Nhà phát triển: Trần Anh Khoa | Dữ liệu chính thức Ban chỉ huy PCTT TP Huế</p>
+              
+              <div className="relative w-full h-[400px] bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center">
+                <svg className="absolute inset-0 w-full h-full opacity-70" viewBox="0 0 600 400">
+                  <path d="M 20,40 Q 200,10 400,30 T 580,80 L 570,380 Q 300,390 40,360 Z" fill="#0f172a" stroke="#1e293b" strokeWidth="2" />
+                  <path d="M 50,350 C 150,300 180,240 250,220 C 320,200 380,180 480,160 C 520,150 560,110 590,50" fill="none" stroke="#0284c7" strokeWidth="24" opacity="0.4"/>
+                  <path d="M 50,350 C 150,300 180,240 250,220 C 320,200 380,180 480,160 C 520,150 560,110 590,50" fill="none" stroke="#38bdf8" strokeWidth="8" className="animate-pulse"/>
+                  <text x="260" y="195" fill="#bae6fd" fontSize="11" fontStyle="italic">Sông Hương</text>
+                  <text x="120" y="100" fill="#bae6fd" fontSize="11" fontStyle="italic">Sông Bồ (Tứ Phú: 304cm)</text>
+                </svg>
 
-                    <!-- Leaderboard Table -->
-                    <div class="md:col-span-2 glass-card p-6 rounded-2xl space-y-4 border border-yellow-500/40">
-                        <h3 class="text-lg font-black font-heading text-yellow-300 border-b border-yellow-500/30 pb-3 flex justify-between items-center">
-                            <span><i class="fas fa-crown text-amber-400 mr-2"></i> TOP BẢNG XẾP HẠNG</span>
-                            <span class="text-xs font-semibold text-amber-300/80 bg-black/40 px-3 py-1 rounded-full border border-yellow-600/30">Cập nhật trực tiếp</span>
-                        </h3>
-
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-xs sm:text-sm">
-                                <thead>
-                                    <tr class="border-b border-yellow-600/40 text-yellow-400 font-heading">
-                                        <th class="py-3 px-3">Hạng</th>
-                                        <th class="py-3 px-3">Họ & Tên</th>
-                                        <th class="py-3 px-3">Tổ Dân Phố</th>
-                                        <th class="py-3 px-3 text-right">Tổng Điểm</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="leaderboardBody" class="divide-y divide-yellow-900/30 text-amber-100">
-                                    <!-- Dynamic Rows -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+                {HOTSPOTS.map((spot) => (
+                  <button
+                    key={spot.id}
+                    style={{ left: `${spot.x}%`, top: `${spot.y}%` }}
+                    className="absolute transform -translate-x-1/2 -translate-y-1/2 group z-10"
+                  >
+                    <span className="relative flex h-5 w-5 items-center justify-center">
+                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${spot.risk === 'high' ? 'bg-red-400' : 'bg-amber-400'}`}></span>
+                      <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 border-2 border-white"></span>
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
-        </section>
 
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="relative z-10 bg-black/95 border-t border-yellow-500/40 py-6 px-4 text-center text-xs text-amber-200/70 space-y-2">
-        <p class="font-heading text-yellow-400 font-bold text-sm sm:text-base tracking-wide uppercase">
-            KỶ NIỆM 238 NĂM NGUYỄN HUỆ LÊN NGÔI HOÀNG ĐẾ & ĐẠI PHÁ QUÂN THANH
-        </p>
-        <p class="text-amber-100 font-medium">
-            ỦY BAN NHÂN DÂN PHƯỜNG AN CỰU - THÀNH PHỐ HUẾ (1788 - 2026)
-        </p>
-        <p class="text-xs font-semibold text-yellow-300/90 pt-1">
-            © 2026 Phường An Cựu. Phát triển bởi Trần Anh Khoa.
-        </p>
-    </footer>
-
-    <!-- JAVASCRIPT LOGIC & ENHANCED CANVAS ENGINES -->
-    <script>
-        /* -------------------------------------------------------------
-           1. AUDIO SYSTEM (WAR DRUMS)
-        ------------------------------------------------------------- */
-        let totalScore = 0;
-        let soundEnabled = true;
-        let audioCtx = null;
-
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
-
-        function playDrumSound(freq = 80, duration = 0.4) {
-            if (!soundEnabled) return;
-            initAudio();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(18, audioCtx.currentTime + duration);
-
-            gain.gain.setValueAtTime(1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
-        }
-
-        function playDrumEffect() {
-            playDrumSound(110, 0.25);
-            setTimeout(() => playDrumSound(75, 0.45), 140);
-        }
-
-        function toggleWarDrum() {
-            soundEnabled = !soundEnabled;
-            document.getElementById('soundText').innerText = soundEnabled ? 'Trống Trận: Bật' : 'Trống Trận: Tắt';
-            document.getElementById('eqVisualizer').style.display = soundEnabled ? 'flex' : 'none';
-            if (soundEnabled) playDrumEffect();
-        }
-
-        function addScore(pts) {
-            totalScore += pts;
-            document.getElementById('userTotalScore').innerText = totalScore;
-            document.getElementById('formCurrentScore').innerText = totalScore;
-        }
-
-        /* -------------------------------------------------------------
-           2. TAB NAVIGATION SYSTEM
-        ------------------------------------------------------------- */
-        function switchTab(tabId) {
-            playDrumSound(130, 0.15);
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-gradient-to-r', 'from-red-900', 'to-red-950', 'text-yellow-300', 'shadow-[0_0_15px_rgba(255,215,0,0.3)]', 'border-yellow-400/80');
-                btn.classList.add('text-amber-200/80', 'border-yellow-900/40');
-            });
-
-            document.getElementById('sec-' + tabId).classList.remove('hidden');
-            const activeBtn = document.getElementById('tab-' + tabId);
-            if (activeBtn) {
-                activeBtn.classList.add('bg-gradient-to-r', 'from-red-900', 'to-red-950', 'text-yellow-300', 'shadow-[0_0_15px_rgba(255,215,0,0.3)]', 'border-yellow-400/80');
-                activeBtn.classList.remove('text-amber-200/80', 'border-yellow-900/40');
-            }
-
-            if (tabId === 'leaderboard') renderLeaderboard();
-        }
-
-        /* -------------------------------------------------------------
-           3. GOLDEN SPARKS PARTICLES CANVAS ENGINE
-        ------------------------------------------------------------- */
-        const bgCanvas = document.getElementById('bgParticleCanvas');
-        const bgCtx = bgCanvas.getContext('2d');
-        let bgParticles = [];
-
-        function resizeBgCanvas() {
-            bgCanvas.width = window.innerWidth;
-            bgCanvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeBgCanvas);
-        resizeBgCanvas();
-
-        for (let i = 0; i < 60; i++) {
-            bgParticles.push({
-                x: Math.random() * bgCanvas.width,
-                y: Math.random() * bgCanvas.height,
-                radius: Math.random() * 2.5 + 0.5,
-                color: Math.random() > 0.3 ? '#FFD700' : '#FF4500',
-                speedY: -(Math.random() * 0.9 + 0.3),
-                speedX: (Math.random() - 0.5) * 0.6,
-                alpha: Math.random() * 0.8 + 0.2
-            });
-        }
-
-        function animateBgParticles() {
-            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
-
-            bgParticles.forEach(p => {
-                p.y += p.speedY;
-                p.x += p.speedX;
-                if (p.y < 0) p.y = bgCanvas.height;
-                if (p.x < 0 || p.x > bgCanvas.width) p.x = Math.random() * bgCanvas.width;
-
-                bgCtx.save();
-                bgCtx.globalAlpha = p.alpha;
-                bgCtx.fillStyle = p.color;
-                bgCtx.shadowColor = p.color;
-                bgCtx.shadowBlur = 8;
-                bgCtx.beginPath();
-                bgCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                bgCtx.fill();
-                bgCtx.restore();
-            });
-            requestAnimationFrame(animateBgParticles);
-        }
-        animateBgParticles();
-
-        /* -------------------------------------------------------------
-           4. MINI GAME 1: HÀNH QUÂN THẦN TỐC
-        ------------------------------------------------------------- */
-        const g1Canvas = document.getElementById('game1Canvas');
-        const g1Ctx = g1Canvas.getContext('2d');
-        let g1Running = false;
-        let g1AnimId = null;
-        let g1Distance = 0;
-        let g1Score = 0;
-
-        let runner = { x: 60, y: 150, width: 34, height: 46, vy: 0, gravity: 0.75, jumping: false };
-        let obstacles = [];
-        let g1Frame = 0;
-
-        function initG1Dimensions() {
-            g1Canvas.width = g1Canvas.parentElement.clientWidth;
-            g1Canvas.height = g1Canvas.parentElement.clientHeight || 240;
-            runner.y = g1Canvas.height - 76;
-        }
-        window.addEventListener('resize', initG1Dimensions);
-        window.addEventListener('orientationchange', () => setTimeout(initG1Dimensions, 250));
-
-        function startGame1() {
-            initG1Dimensions();
-            g1Running = true;
-            g1Distance = 0;
-            g1Score = 0;
-            obstacles = [];
-            runner.y = g1Canvas.height - 76;
-            runner.vy = 0;
-            runner.jumping = false;
-            document.getElementById('g1Overlay').classList.add('hidden');
-            playDrumEffect();
-            loopGame1();
-        }
-
-        function jumpRunner() {
-            if (!runner.jumping && g1Running) {
-                runner.vy = -14;
-                runner.jumping = true;
-                playDrumSound(170, 0.12);
-            }
-        }
-
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' || e.code === 'ArrowUp') {
-                if (!document.getElementById('sec-game1').classList.contains('hidden')) {
-                    e.preventDefault();
-                    jumpRunner();
-                }
-            }
-        });
-        g1Canvas.addEventListener('pointerdown', jumpRunner);
-
-        function loopGame1() {
-            if (!g1Running) return;
-            g1Frame++;
-            g1Ctx.clearRect(0, 0, g1Canvas.width, g1Canvas.height);
-
-            const groundY = g1Canvas.height - 30;
-
-            // Gradient Ground
-            let groundGrad = g1Ctx.createLinearGradient(0, groundY, 0, g1Canvas.height);
-            groundGrad.addColorStop(0, '#B8860B');
-            groundGrad.addColorStop(1, '#1a0505');
-            g1Ctx.fillStyle = groundGrad;
-            g1Ctx.fillRect(0, groundY, g1Canvas.width, 30);
-
-            // Ground Gold Border Glow
-            g1Ctx.strokeStyle = '#FFD700';
-            g1Ctx.lineWidth = 2;
-            g1Ctx.beginPath();
-            g1Ctx.moveTo(0, groundY);
-            g1Ctx.lineTo(g1Canvas.width, groundY);
-            g1Ctx.stroke();
-
-            // Runner Physics
-            runner.vy += runner.gravity;
-            runner.y += runner.vy;
-            if (runner.y >= groundY - runner.height) {
-                runner.y = groundY - runner.height;
-                runner.jumping = false;
-            }
-
-            // Draw Hero Runner Sprite (Gold & Crimson)
-            g1Ctx.save();
-            g1Ctx.shadowColor = '#FFD700';
-            g1Ctx.shadowBlur = 12;
-            g1Ctx.fillStyle = '#dc2626';
-            g1Ctx.fillRect(runner.x, runner.y, runner.width, runner.height);
-
-            // Banner Flag
-            g1Ctx.fillStyle = '#FFD700';
-            g1Ctx.fillRect(runner.x + 10, runner.y - 18, 32, 14);
-            g1Ctx.fillStyle = '#990000';
-            g1Ctx.font = 'bold 9px "Be Vietnam Pro"';
-            g1Ctx.fillText('TÂY SƠN', runner.x + 12, runner.y - 8);
-            g1Ctx.restore();
-
-            // Obstacles Spawn
-            if (g1Frame % 85 === 0) {
-                obstacles.push({
-                    x: g1Canvas.width,
-                    width: 28 + Math.random() * 14,
-                    height: 32 + Math.random() * 22
-                });
-            }
-
-            // Update Obstacles
-            for (let i = obstacles.length - 1; i >= 0; i--) {
-                let obs = obstacles[i];
-                obs.x -= 6.5;
-
-                g1Ctx.save();
-                g1Ctx.fillStyle = '#4a0404';
-                g1Ctx.strokeStyle = '#FFD700';
-                g1Ctx.lineWidth = 1.5;
-                g1Ctx.fillRect(obs.x, groundY - obs.height, obs.width, obs.height);
-                g1Ctx.strokeRect(obs.x, groundY - obs.height, obs.width, obs.height);
-                g1Ctx.restore();
-
-                // Collision Detection
-                if (
-                    runner.x < obs.x + obs.width &&
-                    runner.x + runner.width > obs.x &&
-                    runner.y < groundY &&
-                    runner.y + runner.height > groundY - obs.height
-                ) {
-                    endGame1(false);
-                    return;
-                }
-
-                if (obs.x + obs.width < 0) {
-                    obstacles.splice(i, 1);
-                    g1Score += 50;
-                }
-            }
-
-            g1Distance += 2.5;
-            document.getElementById('g1Distance').innerText = Math.floor(g1Distance);
-            document.getElementById('g1Score').innerText = g1Score;
-
-            if (g1Distance >= 1000) {
-                endGame1(true);
-                return;
-            }
-
-            g1AnimId = requestAnimationFrame(loopGame1);
-        }
-
-        function endGame1(win) {
-            g1Running = false;
-            cancelAnimationFrame(g1AnimId);
-            const overlay = document.getElementById('g1Overlay');
-            const title = document.getElementById('g1Title');
-            const desc = document.getElementById('g1Desc');
-
-            overlay.classList.remove('hidden');
-            if (win) {
-                title.innerText = 'XUẤT SẮC! ĐÃ ĐẾN THĂNG LONG';
-                title.className = 'text-2xl sm:text-4xl font-black font-heading gold-gradient-text mb-2';
-                desc.innerText = `Hoàn thành xuất sắc cuộc hành quân thần tốc! Cộng ${g1Score + 300} điểm vinh danh.`;
-                addScore(g1Score + 300);
-            } else {
-                title.innerText = 'HÀNH QUÂN GIÁN ĐOẠN!';
-                title.className = 'text-2xl sm:text-4xl font-black font-heading text-red-500 mb-2';
-                desc.innerText = `Đoàn quân gặp chướng ngại vấp ngã. Điểm đạt được: ${g1Score}. Thử lại ngay!`;
-                addScore(g1Score);
-            }
-        }
-
-        /* -------------------------------------------------------------
-           5. MINI GAME 2: ĐỐ VUI LỊCH SỬ (QUIZ)
-        ------------------------------------------------------------- */
-        const quizData = [
-            {
-                q: "Nguyễn Huệ đã chọn địa điểm lịch sử nào tại Huế để cử hành lễ tế trời đất, chính thức lên ngôi Hoàng đế năm 1788?",
-                options: ["A. Di tích Núi Bân (An Cựu)", "B. Núi Ngũ Bình", "C. Điện Hòn Chén", "D. Núi Tuần"],
-                correct: 0
-            },
-            {
-                q: "Hoàng đế Nguyễn Huệ lấy niên hiệu là gì sau lễ đăng quang ngày 22/12/1788 tại Núi Bân?",
-                options: ["A. Thái Đức", "B. Quang Trung", "C. Gia Long", "D. Minh Mạng"],
-                correct: 1
-            },
-            {
-                q: "Trận đại phá 29 vạn quân Thanh giải phóng kinh thành Thăng Long diễn ra vào dịp lịch sử nào?",
-                options: ["A. Tết Trung Thu 1788", "B. Tết Kỷ Dậu (1789)", "C. Lễ Đoan Ngọ", "D. Mùa thu năm 1789"],
-                correct: 1
-            },
-            {
-                q: "Di tích lịch sử Quốc gia Núi Bân hiện nay thuộc địa bàn phường nào của TP. Huế?",
-                options: ["A. Phường Trường An", "B. Phường An Cựu", "C. Phường Thủy Xuân", "D. Phường Vĩnh Ninh"],
-                correct: 1
-            },
-            {
-                q: "Tượng đài Hoàng đế Quang Trung tại Di tích Núi Bân (Phường An Cựu) có chiều cao bao nhiêu mét?",
-                options: ["A. 15 mét", "B. 21 mét", "C. 30 mét", "D. 12 mét"],
-                correct: 1
-            }
-        ];
-
-        let currentQuizIndex = 0;
-        let quizScore = 0;
-
-        function loadQuizQuestion() {
-            if (currentQuizIndex >= quizData.length) {
-                showQuizResult();
-                return;
-            }
-
-            document.getElementById('quizIndex').innerText = currentQuizIndex + 1;
-            document.getElementById('quizTotal').innerText = quizData.length;
-            document.getElementById('quizScore').innerText = quizScore;
-
-            const qObj = quizData[currentQuizIndex];
-            document.getElementById('quizQuestion').innerText = qObj.q;
-
-            const answersDiv = document.getElementById('quizAnswers');
-            answersDiv.innerHTML = '';
-            document.getElementById('quizFeedback').classList.add('hidden');
-
-            qObj.options.forEach((opt, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'glass-card hover:border-yellow-400 p-4 rounded-xl text-left text-sm sm:text-base font-bold text-amber-100 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.5)] flex items-center justify-between group';
-                btn.innerHTML = `<span>${opt}</span><i class="fas fa-chevron-right text-xs opacity-0 group-hover:opacity-100 text-yellow-400 transition-all"></i>`;
-                btn.onclick = () => checkQuizAnswer(idx, btn);
-                answersDiv.appendChild(btn);
-            });
-        }
-
-        function checkQuizAnswer(selectedIdx, btnEl) {
-            const qObj = quizData[currentQuizIndex];
-            const feedback = document.getElementById('quizFeedback');
-            feedback.classList.remove('hidden');
-
-            const allBtns = document.getElementById('quizAnswers').children;
-            for (let b of allBtns) b.disabled = true;
-
-            if (selectedIdx === qObj.correct) {
-                quizScore += 100;
-                btnEl.classList.add('border-emerald-400', 'bg-emerald-950/80');
-                feedback.className = 'text-center p-3.5 rounded-xl font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]';
-                feedback.innerHTML = '<i class="fas fa-check-circle mr-2"></i> CHÍNH XÁC! +100 Điểm';
-                playDrumSound(220, 0.2);
-            } else {
-                btnEl.classList.add('border-rose-600', 'bg-rose-950/80');
-                allBtns[qObj.correct].classList.add('border-emerald-400', 'bg-emerald-950/80');
-                feedback.className = 'text-center p-3.5 rounded-xl font-bold bg-rose-950/90 text-rose-300 border border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.4)]';
-                feedback.innerHTML = '<i class="fas fa-times-circle mr-2"></i> CHƯA CHÍNH XÁC!';
-                playDrumSound(65, 0.35);
-            }
-
-            setTimeout(() => {
-                currentQuizIndex++;
-                loadQuizQuestion();
-            }, 1500);
-        }
-
-        function showQuizResult() {
-            document.getElementById('quizBox').classList.add('hidden');
-            document.getElementById('quizResultBox').classList.remove('hidden');
-            document.getElementById('finalQuizScore').innerText = quizScore;
-            addScore(quizScore);
-        }
-
-        function resetQuiz() {
-            currentQuizIndex = 0;
-            quizScore = 0;
-            document.getElementById('quizBox').classList.remove('hidden');
-            document.getElementById('quizResultBox').classList.add('hidden');
-            loadQuizQuestion();
-        }
-        loadQuizQuestion();
-
-        /* -------------------------------------------------------------
-           6. MINI GAME 3: ĐẠI PHÁ ĐỐNG ĐA (CANVAS SHOOTER WITH DRAGON POWER)
-        ------------------------------------------------------------- */
-        const g3Canvas = document.getElementById('game3Canvas');
-        const g3Ctx = g3Canvas.getContext('2d');
-        let g3Running = false;
-        let g3Timer = 30;
-        let g3Kills = 0;
-        let g3Score = 0;
-        let enemies = [];
-        let explosions = [];
-        let g3Interval = null;
-        let g3AnimId = null;
-
-        function initG3Dimensions() {
-            g3Canvas.width = g3Canvas.parentElement.clientWidth;
-            g3Canvas.height = g3Canvas.parentElement.clientHeight || 240;
-        }
-        window.addEventListener('resize', initG3Dimensions);
-        window.addEventListener('orientationchange', () => setTimeout(initG3Dimensions, 250));
-
-        function startGame3() {
-            initG3Dimensions();
-            g3Running = true;
-            g3Timer = 30;
-            g3Kills = 0;
-            g3Score = 0;
-            enemies = [];
-            explosions = [];
-            document.getElementById('g3Overlay').classList.add('hidden');
-            document.getElementById('g3Time').innerText = g3Timer;
-            document.getElementById('g3Kills').innerText = g3Kills;
-            document.getElementById('g3Score').innerText = g3Score;
-
-            if (g3Interval) clearInterval(g3Interval);
-            g3Interval = setInterval(() => {
-                g3Timer--;
-                document.getElementById('g3Time').innerText = g3Timer;
-                if (g3Timer <= 0) endGame3();
-            }, 1000);
-
-            playDrumEffect();
-            loopGame3();
-        }
-
-        function triggerExplosion(x, y) {
-            for (let i = 0; i < 12; i++) {
-                explosions.push({
-                    x: x, y: y,
-                    vx: (Math.random() - 0.5) * 8,
-                    vy: (Math.random() - 0.5) * 8,
-                    radius: Math.random() * 4 + 2,
-                    alpha: 1
-                });
-            }
-        }
-
-        function useDragonPower() {
-            if (!g3Running) return;
-            playDrumSound(300, 0.4);
-            g3Kills += enemies.length;
-            g3Score += enemies.length * 40;
-            enemies.forEach(en => triggerExplosion(en.x, en.y));
-            enemies = [];
-            document.getElementById('g3Kills').innerText = g3Kills;
-            document.getElementById('g3Score').innerText = g3Score;
-        }
-
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && !document.getElementById('sec-game3').classList.contains('hidden')) {
-                e.preventDefault();
-                useDragonPower();
-            }
-        });
-
-        g3Canvas.addEventListener('pointerdown', (e) => {
-            if (!g3Running) return;
-            const rect = g3Canvas.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
-
-            for (let i = enemies.length - 1; i >= 0; i--) {
-                let en = enemies[i];
-                let dist = Math.hypot(clickX - en.x, clickY - en.y);
-                if (dist < en.radius + 18) {
-                    triggerExplosion(en.x, en.y);
-                    enemies.splice(i, 1);
-                    g3Kills++;
-                    g3Score += 35;
-                    document.getElementById('g3Kills').innerText = g3Kills;
-                    document.getElementById('g3Score').innerText = g3Score;
-                    playDrumSound(250, 0.1);
-                    break;
-                }
-            }
-        });
-
-        function loopGame3() {
-            if (!g3Running) return;
-            g3Ctx.clearRect(0, 0, g3Canvas.width, g3Canvas.height);
-
-            // Spawn Qing Enemies
-            if (Math.random() < 0.06 && enemies.length < 14) {
-                enemies.push({
-                    x: Math.random() * (g3Canvas.width - 50) + 25,
-                    y: -20,
-                    speed: 1.6 + Math.random() * 2.2,
-                    radius: 20
-                });
-            }
-
-            // Draw Explosions
-            for (let i = explosions.length - 1; i >= 0; i--) {
-                let ex = explosions[i];
-                ex.x += ex.vx;
-                ex.y += ex.vy;
-                ex.alpha -= 0.04;
-                if (ex.alpha <= 0) {
-                    explosions.splice(i, 1);
-                    continue;
-                }
-                g3Ctx.save();
-                g3Ctx.globalAlpha = ex.alpha;
-                g3Ctx.fillStyle = '#FFD700';
-                g3Ctx.beginPath();
-                g3Ctx.arc(ex.x, ex.y, ex.radius, 0, Math.PI * 2);
-                g3Ctx.fill();
-                g3Ctx.restore();
-            }
-
-            // Draw Qing Enemies
-            for (let i = enemies.length - 1; i >= 0; i--) {
-                let en = enemies[i];
-                en.y += en.speed;
-
-                g3Ctx.save();
-                g3Ctx.fillStyle = '#990000';
-                g3Ctx.strokeStyle = '#FFD700';
-                g3Ctx.lineWidth = 2;
-                g3Ctx.beginPath();
-                g3Ctx.arc(en.x, en.y, en.radius, 0, Math.PI * 2);
-                g3Ctx.fill();
-                g3Ctx.stroke();
-
-                g3Ctx.fillStyle = '#ffffff';
-                g3Ctx.font = 'bold 11px "Be Vietnam Pro"';
-                g3Ctx.textAlign = 'center';
-                g3Ctx.fillText('ĐỊCH', en.x, en.y + 4);
-                g3Ctx.restore();
-
-                if (en.y > g3Canvas.height + 25) {
-                    enemies.splice(i, 1);
-                }
-            }
-
-            g3AnimId = requestAnimationFrame(loopGame3);
-        }
-
-        function endGame3() {
-            g3Running = false;
-            clearInterval(g3Interval);
-            cancelAnimationFrame(g3AnimId);
-
-            const overlay = document.getElementById('g3Overlay');
-            document.getElementById('g3Title').innerText = 'HOÀN THÀNH ĐẠI PHÁ!';
-            document.getElementById('g3Desc').innerText = `Tiêu diệt ${g3Kills} tên địch! Cộng ${g3Score} điểm tích lũy.`;
-            overlay.classList.remove('hidden');
-
-            addScore(g3Score);
-        }
-
-        /* -------------------------------------------------------------
-           7. LEADERBOARD SYSTEM (LOCAL STORAGE)
-        ------------------------------------------------------------- */
-        let mockLeaderboard = [
-            { name: "Nguyễn Văn Hùng", group: "Tổ 3", score: 1150 },
-            { name: "Lê Thị Mai", group: "Tổ 1", score: 920 },
-            { name: "Trần Anh Tuấn", group: "Tổ 5", score: 840 },
-            { name: "Phạm Quốc Bảo", group: "Tổ 7", score: 710 }
-        ];
-
-        function getLeaderboardData() {
-            const stored = localStorage.getItem('ancuu_hero_lb');
-            if (stored) {
-                try { return JSON.parse(stored); } catch (e) { return mockLeaderboard; }
-            }
-            return mockLeaderboard;
-        }
-
-        function saveScore() {
-            const nameInput = document.getElementById('playerNameInput').value.trim();
-            const groupInput = document.getElementById('playerGroupInput').value;
-
-            if (!nameInput) {
-                alert('Vui lòng nhập Họ và Tên công dân!');
-                return;
-            }
-
-            let lb = getLeaderboardData();
-            lb.push({
-                name: nameInput,
-                group: groupInput,
-                score: totalScore
-            });
-
-            lb.sort((a, b) => b.score - a.score);
-            lb = lb.slice(0, 10);
-
-            localStorage.setItem('ancuu_hero_lb', JSON.stringify(lb));
-            renderLeaderboard();
-            alert('Lưu thành công thành tích anh hùng của bạn!');
-        }
-
-        function renderLeaderboard() {
-            const lb = getLeaderboardData();
-            const tbody = document.getElementById('leaderboardBody');
-            tbody.innerHTML = '';
-
-            lb.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.className = index < 3 ? 'bg-yellow-500/10 font-bold border-b border-yellow-500/30' : 'border-b border-yellow-900/20';
-                tr.innerHTML = `
-                    <td class="py-3 px-3 font-heading">
-                        ${index === 0 ? '<span class="text-yellow-300 font-black"><i class="fas fa-crown mr-1"></i>1</span>' : 
-                          index === 1 ? '<span class="text-slate-300 font-black"><i class="fas fa-medal mr-1"></i>2</span>' : 
-                          index === 2 ? '<span class="text-amber-500 font-black"><i class="fas fa-award mr-1"></i>3</span>' : index + 1}
-                    </td>
-                    <td class="py-3 px-3 font-semibold">${item.name}</td>
-                    <td class="py-3 px-3 text-amber-200/80">${item.group}</td>
-                    <td class="py-3 px-3 text-right font-black text-yellow-300">${item.score} pts</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-        renderLeaderboard();
-    </script>
-</body>
-</html>
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+              <h3 className="text-base font-bold text-white mb-3">Thông Tin Các Trạm</h3>
+              <div className="space-y-3">
+                {stations.map(s => (
+                  <div key={s.id} className="p-3 bg-slate-950 border border-slate-800 rounded-xl">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-bold text-slate-200 text-xs">{s.name}</h4>
+                      {getStatusBadge(s.status)}
+                    </div>
+                    <div className="mt-2 text-sm font-black text-cyan-300">
+                      Mực nước: {s.levelCm} cm ({s.level} m)
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-1">Thời gian: {s.lastUpdate}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: DAMS */}
+        {activeTab === 'dams' && (
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <h3 className="text-lg font-bold text-white mb-4">Vận Hành Hồ Chứa Thủy Điện Thừa Thiên Huế</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {dams.map(dam => (
+                <div key={dam.id} className="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                  <h4 className="font-bold text-white text-base">{dam.name}</h4>
+                  <p className="text-xs text-slate-400 mt-1">Lưu lượng xả: <strong className="text-amber-400">{dam.outflow} m³/s</strong></p>
+                  <p className="text-xs text-slate-400">Tình trạng: {dam.status}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: SOS */}
+        {activeTab === 'sos' && (
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+              <ShieldAlert className="w-5 h-5 text-red-500" /> Kênh Cứu Hộ SOS & Tiếp Nhận Phản Ánh Huế
+            </h3>
+            <p className="text-xs text-slate-400 mb-4">Phát triển bởi Trần Anh Khoa — Kết nối Ban Chỉ Huy PCTT & TKCN TP. Huế</p>
+            <form onSubmit={handleSosSubmit} className="space-y-3 max-w-lg">
+              <input type="text" required placeholder="Họ và tên..." value={sosForm.name} onChange={e => setSosForm({...sosForm, name: e.target.value})} className="w-full bg-slate-950 border border-slate-800 p-2.5 rounded text-xs text-white" />
+              <input type="tel" required placeholder="Số điện thoại liên hệ..." value={sosForm.phone} onChange={e => setSosForm({...sosForm, phone: e.target.value})} className="w-full bg-slate-950 border border-slate-800 p-2.5 rounded text-xs text-white" />
+              <input type="text" required placeholder="Địa điểm ngập cụ thể ở Huế..." value={sosForm.location} onChange={e => setSosForm({...sosForm, location: e.target.value})} className="w-full bg-slate-950 border border-slate-800 p-2.5 rounded text-xs text-white" />
+              <button type="submit" className="bg-red-600 hover:bg-red-500 text-white font-bold px-4 py-2 rounded text-xs">Gửi Phản Ánh Cứu Hộ</button>
+            </form>
+          </div>
+        )}
+
+      </main>
+
+      {/* FOOTER */}
+      <footer className="border-t border-slate-800 mt-12 py-6 bg-slate-950 text-slate-500 text-xs text-center">
+        <div className="max-w-7xl mx-auto px-4 space-y-2">
+          <p className="font-bold text-slate-300">Ứng dụng HUEWEATHER — Theo dõi Thời tiết & Mực nước Sông Thành phố Huế</p>
+          <p>Nhà phát triển: <strong className="text-cyan-400">Trần Anh Khoa</strong> | Nguồn dữ liệu: Ban chỉ huy phòng thủ dân sự thành phố Huế</p>
+          <p className="text-slate-600">Tổng đài cứu hộ: 1022 Huế | Cảnh báo khẩn cấp lũ lụt Thừa Thiên Huế</p>
+        </div>
+      </footer>
+
+    </div>
+  );
+}
